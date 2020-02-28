@@ -1,10 +1,20 @@
 import React from 'react';
-import { initConnection } from './messages';
+import { initConnection } from './message/child';
 
 class PermissionDialog extends React.Component<Props> {
 
-  componentDidMount() {
-    initConnection()
+  async componentDidMount() {
+    const conn = await initConnection()
+    console.log("CONN: ", conn)
+
+    const { readPermissions, writePermissions, readKey, writeKey } = conn.req
+    const res = {
+      readPermissions,
+      writePermissions,
+      readKey: readKey + 'asdfasdf',
+      writeKey: writeKey + 'asdfasdf'
+    }
+    conn.respond(res)
   }
 
   render() {

@@ -1,7 +1,7 @@
 import React from 'react';
 import FissionLoginButton from './FissionLoginButton'
 import PermissionDialog from './PermissionDialog'
-import { Permission } from './messages'
+import { Permission } from './message/types'
 
 function App() {
   // Placerholder

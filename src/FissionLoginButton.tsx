@@ -1,12 +1,13 @@
 import React from 'react'
-import { requestPermissions, Permission } from './messages'
+import { requestPermissions } from './message/parent'
+import { Permission } from './message/types'
 
 class FissionLoginButton extends React.Component<Props> {
   constructor(props: Props){
     super(props)
   }
 
-  openPopup = () => {
+  openPopup = async () => {
     const { readPermissions = [], writePermissions = [] } = this.props
     const req = {
       readPermissions,
@@ -14,9 +15,8 @@ class FissionLoginButton extends React.Component<Props> {
       readKey: '',
       writeKey: '',
     }
-    requestPermissions(req, (res) => {
-      console.log("RES: ", res)
-    })
+    const res = await requestPermissions(req)
+    console.log('RES: ', res)
   }
 
   render() {
