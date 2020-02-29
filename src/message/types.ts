@@ -27,7 +27,9 @@ export interface ReqData {
 
 export interface ResData {
   encryptedKeys: KeyMap
+  writeToken: string
   readKey: string
+  writeKey: string
 }
 
 export interface ChildConnection {

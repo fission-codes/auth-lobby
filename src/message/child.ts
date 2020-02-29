@@ -8,17 +8,14 @@ function getConvoID(): string {
 
 export async function initConnection(): Promise<ChildConnection> {
   const convoID = getConvoID()
-  console.log(convoID)
   const opener = window.opener
 
   return new Promise(resolve => {
-    console.log("sending INIT")
     opener.postMessage({ 
       type: MessageType.Init,
       convoID
     }, "*")
     window.addEventListener('message', (evt) => {
-      console.log(evt.data)
       if(evt.data.convoID !== convoID){
         return
       }

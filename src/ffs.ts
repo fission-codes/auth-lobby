@@ -30,10 +30,23 @@ export async function decryptKeyMap(keymap: KeyMap, decryptFn:(msg: string) => P
   return decrypted
 }
 
+export async function getWriteToken(permissions: Permission[], signFn: (msg: string) => Promise<string>): Promise<string> {
+  const signature = await signFn(MockWriteToken)
+  return MockWriteToken + "." + signature
+}
 
+export async function verifyWriteToken(token: string, verifyFn: (msg: string, sig: string) => Promise<boolean>): Promise<boolean> {
+  const parts = token.split('.')
+  if(parts.length !== 2){
+    throw new Error("invalid token")
+  }
+  return verifyFn(parts[0], parts[1])
+}
 
 export const MockReadKeys = {
   [Permission.Music]: window.btoa('MusicReadKey'),
   [Permission.Pictures]: window.btoa('PicturesReadKey'),
   [Permission.Document]: window.btoa('DocumentReadKey')
 }
+
+export const MockWriteToken = window.btoa('Write token that grants various permissions')

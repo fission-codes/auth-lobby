@@ -1,7 +1,7 @@
 import React from 'react'
 import { initConnection } from './message/child'
 import { ChildConnection, ReqData } from './message/types'
-import { encryptReadKeys, Permission } from './ffs'
+import { encryptReadKeys, getWriteToken, Permission } from './ffs'
 import keystore from 'keystore-idb'
 import { KeyStore } from 'keystore-idb/dist/types/types'
 
@@ -36,8 +36,15 @@ class PermissionDialog extends React.Component<Props, State> {
     return ks.encrypt(msg, req.readKey)
   }
 
+  sign = async (msg: string): Promise<string> => {
+    const { ks } = this.state
+    if(!ks){
+      throw new Error("could not load keystore")
+    }
+    return ks.sign(msg)
+  }
+
   grant = async () => {
-    console.log(this.state)
     const { ks, conn, req } = this.state
     if(!conn || !req){
       throw new Error("not connected")
@@ -46,11 +53,18 @@ class PermissionDialog extends React.Component<Props, State> {
       throw new Error("could not load keystore")
     }
     const encryptedKeys = await encryptReadKeys(req.readPermissions, this.encrypt)
-    const readKey = await ks.publicReadKey()
+    const writeToken = await getWriteToken(req.writePermissions, this.sign)
+    const [readKey, writeKey] = await Promise.all([
+      ks.publicReadKey(),
+      ks.publicWriteKey()
+    ])
     const res = {
       encryptedKeys,
+      writeToken,
       readKey,
+      writeKey,
     }
+    
     await conn.respond(res)
   }
 

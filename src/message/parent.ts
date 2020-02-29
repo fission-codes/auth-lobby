@@ -3,14 +3,12 @@ import { ReqData, ResData, MessageType } from './types'
 const WINDOW_SETTINGS = 'toolbar=no, menubar=no, width=600, height=700, top=100, left=100';
 
 function generateConvoID(){
-  // return Date.now()
-  return "abc"
+  return Date.now().toString()
 } 
 
 export async function requestPermissions(req: ReqData): Promise<ResData> {
   return new Promise((resolve, reject) => {
     const convoID = generateConvoID()
-    console.log(convoID)
     const w = window.open(
       `http://localhost:3000/login?convoid=${convoID}`,
       "Fission Login",
@@ -25,7 +23,6 @@ export async function requestPermissions(req: ReqData): Promise<ResData> {
       }
       const { type } = evt.data
       if( type === MessageType.Init) {
-        console.log("got INIT")
         const msg = {
           convoID,
           type: MessageType.Req,
@@ -34,7 +31,6 @@ export async function requestPermissions(req: ReqData): Promise<ResData> {
         w.postMessage(msg, '*')
       }
       if( type === MessageType.Res) {
-        console.log("got RES")
         const res = evt.data.data
         const msg = {
           convoID,
