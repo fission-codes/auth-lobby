@@ -1,38 +1,52 @@
-import React from 'react';
-import FissionLoginButton from './FissionLoginButton'
-import { Permission, KeyMap } from './ffs'
+import React from 'react'
+import { redirectReq, parseKeyFromRes } from './redirect/parent'
+import keystore from 'keystore-idb'
+import { KeyStore } from 'keystore-idb/dist/types/types'
 
 class ParentApp extends React.Component<Props, State> {
 
   state: State = {
-    keys: null,
-    writeToken: null
+    ks: null,
+    readKey: null,
+    symmKey: null,
   }
 
-  onGrant = (keys: KeyMap, writeToken: string) => {
-    this.setState({ keys, writeToken })
+  async componentDidMount() {
+    const ks = await keystore.init({ readKeyName: 'parent-read', writeKeyName: 'parent-write' })
+    const symmKey = await parseKeyFromRes(ks)
+    if(symmKey){
+      return this.setState({ symmKey })
+    }
+    const readKey = await ks.publicReadKey()
+    this.setState({ 
+      ks,
+      readKey,
+    })
+  }
+
+  redirect = async () => {
+    const folderCID = 'abcdefg'
+    const { readKey } = this.state
+    if(!readKey){
+      throw new Error("Could not retrieve read key")
+    }
+    redirectReq(folderCID, readKey)
   }
 
   render() {
-    const { keys } = this.state
-    if(!keys){
+    const { symmKey } = this.state
+    if(!symmKey){
       return(
-        <FissionLoginButton 
-          readPermissions={[Permission.Document, Permission.Music]}
-          writePermissions={[Permission.Document]}
-          onGrant={this.onGrant}
-        />
+        <button onClick={this.redirect}>
+          Login
+        </button>
       )
     } else{
       return (
         <div>
           <h2>Logged In!</h2>
-          <h4>Read Keys</h4>
-          <ul>
-            { Object.keys(keys).map(perm => <li key={perm}>{perm}: {keys[perm]}</li>)}
-          </ul>
-          <h4>Write Token</h4>
-          {this.state.writeToken}
+          <h4>SymmKey</h4>
+          {symmKey}
         </div>
       )
     }
@@ -42,8 +56,9 @@ class ParentApp extends React.Component<Props, State> {
 interface Props {}
 
 interface State {
-  keys: KeyMap | null
-  writeToken: string | null
+  ks: KeyStore | null
+  readKey: string | null
+  symmKey: string | null
 }
 
 export default ParentApp;

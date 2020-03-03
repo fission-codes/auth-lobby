@@ -1,6 +1,6 @@
 import React from 'react';
 import ParentApp from './ParentApp'
-import PermissionDialog from './PermissionDialog'
+import ChildApp from './ChildApp'
 
 class App extends React.Component {
   render() {
@@ -8,7 +8,7 @@ class App extends React.Component {
     // These will be on different domains
     const path = window.location.pathname
     if(path === '/login'){
-      return <PermissionDialog />
+      return <ChildApp />
     }else{
       return <ParentApp />
     }
