@@ -1,7 +1,7 @@
 import React from 'react'
-import { ReqQuery, parseReq, redirectRes } from './redirect/parent'
 import keystore from 'keystore-idb'
-import { KeyStore } from 'keystore-idb/dist/types/types'
+import { KeyStore } from 'keystore-idb/types'
+import { parseReq, redirectRes, ReqQuery } from 'fission-sdk/auth/redirect'
 
 class ChildApp extends React.Component<Props, State> {
 

@@ -1,7 +1,7 @@
 import React from 'react'
-import { redirectReq, parseKeyFromRes } from './redirect/parent'
 import keystore from 'keystore-idb'
-import { KeyStore } from 'keystore-idb/dist/types/types'
+import { KeyStore } from 'keystore-idb/types'
+import { parseKeyFromRes, redirectReq } from 'fission-sdk/auth/redirect'
 
 class ParentApp extends React.Component<Props, State> {
 
@@ -30,7 +30,7 @@ class ParentApp extends React.Component<Props, State> {
     if(!readKey){
       throw new Error("Could not retrieve read key")
     }
-    redirectReq(folderCID, readKey)
+    redirectReq(folderCID, readKey, "http://localhost:3000/login")
   }
 
   render() {
