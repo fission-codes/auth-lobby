@@ -37,8 +37,16 @@ src_dir  := "./src"
 	cp {{src_dir}}/Main.html {{dist_dir}}/index.html
 
 
+@install-deps:
+	echo "🦕  Downloading dependencies"
+	pnpm install
+	mkdir -p web_modules
+	curl https://unpkg.com/get-ipfs@1.2.0/dist/get-ipfs.umd.js -o web_modules/get-ipfs.js
+
+
 @js:
 	echo "📄  Copying static JS files"
+	cp -r web_modules {{dist_dir}}
 	cp {{src_dir}}/Main.js {{dist_dir}}/index.js
 
 
