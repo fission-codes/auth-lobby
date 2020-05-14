@@ -5,6 +5,7 @@ import Browser.Navigation as Nav
 import Radix exposing (Model, Msg(..))
 import Return
 import Routing
+import Screens
 import Url exposing (Url)
 import View
 
@@ -14,7 +15,7 @@ import View
 
 
 type alias Flags =
-    { hasCreatedAccount : Bool }
+    { hasLocalKeyPair : Bool }
 
 
 main : Program Flags Model Msg
@@ -35,9 +36,18 @@ main =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
+    let
+        screen =
+            if flags.hasLocalKeyPair then
+                -- TODO
+                Screens.Link
+
+            else
+                Screens.Choose
+    in
     Return.singleton
-        { hasCreatedAccount = flags.hasCreatedAccount
-        , navKey = navKey
+        { navKey = navKey
+        , screen = screen
         , url = url
         }
 

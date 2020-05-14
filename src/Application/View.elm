@@ -2,6 +2,7 @@ module View exposing (..)
 
 import Html exposing (Html)
 import Radix exposing (Model, Msg(..))
+import Screens exposing (Screen(..))
 import Tailwind as T
 
 
@@ -15,15 +16,19 @@ view model =
         [ T.bg_gray_600
         , T.flex
         , T.font_body
-        , T.h_screen
         , T.items_center
         , T.justify_center
+        , T.min_h_screen
         , T.w_screen
         ]
-        [ if model.hasCreatedAccount then
-            Html.text "Hello new user 👋"
+        [ case model.screen of
+            Choose ->
+                Html.text "Hello person 👋 Create new account or sign in?"
 
-          else
-            Html.text "Linking new device 📱"
+            Create ->
+                Html.text "Create new account 👩\u{200D}💻"
+
+            Link ->
+                Html.text "Linking new device 📱"
         ]
     ]

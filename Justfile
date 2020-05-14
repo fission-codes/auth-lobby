@@ -67,7 +67,7 @@ main_css := src_dir + "/Css/Main.css"
 	echo "⚙️  Compiling CSS"
 	pnpx etc {{main_css}} \
 		--config tailwind.config.js \
-		--elm-path src/Tailwind.elm \
+		--elm-path src/Application/Tailwind.elm \
 		--output {{dist_css}}
 	echo ""
 

@@ -34,11 +34,11 @@ bootElm()
 // ELM
 
 
-function bootElm() {
+async function bootElm() {
+  const hasLocalKeyPair = await keystore.idb.exists(keystore.DEFAULT_READ_KEY_NAME)
+
   Elm.Main.init({
-    flags: {
-      hasCreatedAccount: !!keystore.idb.exists(keystore.DEFAULT_READ_KEY_NAME)
-    }
+    flags: { hasLocalKeyPair }
   })
 }
 
