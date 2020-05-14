@@ -8,17 +8,26 @@ const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyL
 const PEER_TCP = "/ip4/3.215.160.238/tcp/4001/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
 
 let ipfs
+let ks
 
 
 // 🚀
 
 
-getIpfs.default().then(i => {
-  ipfs = i
+bootElm()
 
-  bootElm()
-  bootIpfs()
-})
+
+// getIpfs.default().then(i => {
+//   ipfs = i
+//   return keystore.init({ type: "rsa" })
+//
+// }).then(k => {
+//   ks = k
+//
+//   bootElm()
+//   bootIpfs()
+//
+// })
 
 
 
@@ -26,7 +35,11 @@ getIpfs.default().then(i => {
 
 
 function bootElm() {
-  Elm.Main.init()
+  Elm.Main.init({
+    flags: {
+      hasCreatedAccount: !!keystore.idb.exists(keystore.DEFAULT_READ_KEY_NAME)
+    }
+  })
 }
 
 

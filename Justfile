@@ -29,12 +29,12 @@ src_dir  := "./src"
 
 @dev-server:
 	echo "🤵  Putting up a server for ya"
-	devd --livewatch --quiet build
+	devd --quiet build
 
 
 @html:
 	echo "📄  Copying static HTML files"
-	cp {{src_dir}}/Main.html {{dist_dir}}/index.html
+	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
 
 
 @install-deps:
@@ -42,12 +42,13 @@ src_dir  := "./src"
 	pnpm install
 	mkdir -p web_modules
 	curl https://unpkg.com/get-ipfs@1.2.0/dist/get-ipfs.umd.js -o web_modules/get-ipfs.js
+	curl https://unpkg.com/keystore-idb@0.12.0-alpha/index.umd.js -o web_modules/keystore-idb.js
 
 
 @js:
 	echo "📄  Copying static JS files"
 	cp -r web_modules {{dist_dir}}
-	cp {{src_dir}}/Main.js {{dist_dir}}/index.js
+	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
 @production-build: css-small production-elm html js
@@ -59,7 +60,7 @@ src_dir  := "./src"
 # ---
 
 dist_css := dist_dir + "/stylesheet.css"
-main_css := src_dir + "/Main.css"
+main_css := src_dir + "/Css/Main.css"
 
 
 @css-large:
@@ -85,7 +86,7 @@ main_css := src_dir + "/Main.css"
 # ---
 
 dist_elm := dist_dir + "/elm.js"
-main_elm := src_dir + "/Main.elm"
+main_elm := src_dir + "/Application/Main.elm"
 
 @elm:
 	echo "🌳  Compiling Elm"
