@@ -15,6 +15,9 @@ export default {
 
     colors: {
       ...kit.dasherizeObjectKeys(kit.colors),
+
+      "inherit": "inherit",
+      "transparent": "transparent"
     },
 
     // Fonts

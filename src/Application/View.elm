@@ -1,8 +1,13 @@
 module View exposing (..)
 
+import Account.Creation.Context
+import Account.Creation.View
+import Branding
 import Html exposing (Html)
+import Html.Attributes as A
+import Page exposing (Page(..))
 import Radix exposing (Model, Msg(..))
-import Screens exposing (Screen(..))
+import Styling as S
 import Tailwind as T
 
 
@@ -13,22 +18,76 @@ import Tailwind as T
 view : Model -> List (Html Msg)
 view model =
     [ Html.div
-        [ T.bg_gray_600
-        , T.flex
+        [ T.flex
         , T.font_body
         , T.items_center
         , T.justify_center
         , T.min_h_screen
         , T.w_screen
         ]
-        [ case model.screen of
+        [ case model.page of
             Choose ->
-                Html.text "Hello person 👋 Create new account or sign in?"
+                choose model
 
-            Create ->
-                Html.text "Create new account 👩\u{200D}💻"
+            Create context ->
+                Account.Creation.View.view context model
 
             Link ->
                 Html.text "Linking new device 📱"
         ]
     ]
+
+
+
+-- CHOOSE
+
+
+choose model =
+    Html.div
+        [ T.text_gray_300
+        , T.text_center
+        ]
+        [ Branding.logo
+
+        -----------------------------------------
+        -- Message
+        -----------------------------------------
+        , Html.div
+            [ T.max_w_lg
+            , T.mt_10
+            , T.mx_auto
+            ]
+            [ Html.text "It doesn't look like you've signed in on this device before."
+            , Html.br [] []
+            , Html.text "If you don't know what Fission is, learn more on "
+            , Html.a
+                [ A.href "https://fission.codes"
+                , T.text_gray_100
+                , T.underline
+                ]
+                [ Html.text "our website" ]
+            , Html.text "."
+            ]
+
+        -----------------------------------------
+        -- Buttons
+        -----------------------------------------
+        , Html.div
+            [ T.flex
+            , T.items_center
+            , T.justify_center
+            , T.mt_10
+            , T.mx_auto
+            ]
+            [ S.buttonLink
+                [ A.href (Page.toPath <| Page.Create Account.Creation.Context.default)
+                , T.bg_gray_200
+                ]
+                [ Html.text "Create account" ]
+
+            --
+            , S.button
+                [ T.bg_gray_400, T.ml_3 ]
+                [ Html.text "Sign in" ]
+            ]
+        ]

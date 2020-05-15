@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "fission-kit": "fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6",
+    "fission-kit": "fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472",
     "tailwindcss": "^1.4.6"
   },
   "devDependencies": {

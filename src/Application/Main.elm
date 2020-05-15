@@ -2,10 +2,10 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
+import Page
 import Radix exposing (Model, Msg(..))
-import Return
+import Return exposing (return)
 import Routing
-import Screens
 import Url exposing (Url)
 import View
 
@@ -37,19 +37,25 @@ main =
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
-        screen =
-            if flags.hasLocalKeyPair then
-                -- TODO
-                Screens.Link
+        page =
+            Page.fromUrl url
+
+        pageCmd =
+            if flags.hasLocalKeyPair && page == Page.Link then
+                Cmd.none
+
+            else if flags.hasLocalKeyPair then
+                Nav.replaceUrl navKey (Page.toPath Page.Link)
 
             else
-                Screens.Choose
+                Cmd.none
     in
-    Return.singleton
+    return
         { navKey = navKey
-        , screen = screen
+        , page = page
         , url = url
         }
+        pageCmd
 
 
 

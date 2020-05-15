@@ -24,17 +24,22 @@ src_dir  := "./src"
 	rm -rf {{dist_dir}}
 
 
-@dev-build: clean css-large elm html js
+@dev-build: clean css-large elm html js images
 
 
 @dev-server:
 	echo "🤵  Putting up a server for ya"
-	devd --quiet build
+	devd --notfound=index.html --quiet build
 
 
 @html:
 	echo "📄  Copying static HTML files"
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
+
+
+@images:
+	echo "🌄  Copying images"
+	cp -r node_modules/fission-kit/images/ {{dist_dir}}/images/
 
 
 @install-deps:
@@ -51,7 +56,7 @@ src_dir  := "./src"
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
-@production-build: css-small production-elm html js
+@production-build: css-small production-elm html js images
 
 
 

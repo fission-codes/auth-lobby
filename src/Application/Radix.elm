@@ -5,7 +5,7 @@ module Radix exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Screens exposing (Screen)
+import Page exposing (Page)
 import Url exposing (Url)
 
 
@@ -14,8 +14,8 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { navKey : Nav.Key
-    , screen : Screen
+    { page : Page
+    , navKey : Nav.Key
     , url : Url
     }
 

@@ -1,5 +1,5 @@
 dependencies:
-  fission-kit: github.com/fission-suite/kit/52007072cf459d02de6b49f5ca13229a7a03f4c6
+  fission-kit: github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472
   tailwindcss: 1.4.6
 devDependencies:
   elm-tailwind-css: 0.1.1
@@ -886,14 +886,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==
-  github.com/fission-suite/kit/52007072cf459d02de6b49f5ca13229a7a03f4c6:
+  github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472:
     dev: false
     name: fission-kit
     resolution:
-      registry: 'https://registry.npmjs.org/'
-      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/52007072cf459d02de6b49f5ca13229a7a03f4c6'
+      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/6a20e9af963dd000903b1c6e64f9fbb2102ba472'
     version: 0.2.0
 specifiers:
   elm-tailwind-css: ^0.1.1
-  fission-kit: 'fission-suite/kit#52007072cf459d02de6b49f5ca13229a7a03f4c6'
+  fission-kit: 'fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472'
   tailwindcss: ^1.4.6
