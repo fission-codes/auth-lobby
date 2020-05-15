@@ -10,18 +10,16 @@ import Tailwind as T
 logo : Html msg
 logo =
     Html.div
-        [ T.relative ]
-        [ Html.div
-            [ T.max_w_xs
-            , T.mx_auto
-            , T.text_gray_200
-            , T.w_full
+        [ T.max_w_xs
+        , T.mx_auto
+        , T.relative
+        , T.text_gray_200
 
-            -- Dark mode
-            ------------
-            , T.dark__text_gray_500
-            ]
-            [ logoSvg ]
+        -- Dark mode
+        ------------
+        , T.dark__text_gray_500
+        ]
+        [ logoSvg
 
         -----------------------------------------
         -- Auth tag
@@ -35,13 +33,14 @@ logo =
             , T.bg_pink
             , T.font_display
             , T.font_medium
-            , T.neg_translate_x_2
+            , T.neg_mr_1
             , T.right_0
             , T.rounded
             , T.top_0
             , T.text_xs
             , T.text_white
             , T.tracking_widest
+            , T.translate_x_10
             , T.transform
             , T.uppercase
 
