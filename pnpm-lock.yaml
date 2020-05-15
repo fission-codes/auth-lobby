@@ -890,6 +890,7 @@ packages:
     dev: false
     name: fission-kit
     resolution:
+      registry: 'https://registry.npmjs.org/'
       tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/6a20e9af963dd000903b1c6e64f9fbb2102ba472'
     version: 0.2.0
 specifiers:

@@ -24,6 +24,10 @@ view model =
         , T.justify_center
         , T.min_h_screen
         , T.w_screen
+
+        -- Dark mode
+        ------------
+        , T.dark__bg_darkness
         ]
         [ case model.page of
             Choose ->
@@ -46,6 +50,10 @@ choose model =
     Html.div
         [ T.text_gray_300
         , T.text_center
+
+        -- Dark mode
+        ------------
+        , T.dark__text_gray_400
         ]
         [ Branding.logo
 
@@ -64,6 +72,10 @@ choose model =
                 [ A.href "https://fission.codes"
                 , T.text_gray_100
                 , T.underline
+
+                -- Dark mode
+                ------------
+                , T.dark__text_gray_500
                 ]
                 [ Html.text "our website" ]
             , Html.text "."
@@ -82,12 +94,22 @@ choose model =
             [ S.buttonLink
                 [ A.href (Page.toPath <| Page.Create Account.Creation.Context.default)
                 , T.bg_gray_200
+
+                -- Dark mode
+                ------------
+                , T.dark__bg_purple_shade
                 ]
                 [ Html.text "Create account" ]
 
             --
             , S.button
-                [ T.bg_gray_400, T.ml_3 ]
+                [ T.bg_gray_400
+                , T.ml_3
+
+                -- Dark mode
+                ------------
+                , T.dark__bg_gray_200
+                ]
                 [ Html.text "Sign in" ]
             ]
         ]
