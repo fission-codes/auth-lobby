@@ -4,6 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Page
 import Radix exposing (Model, Msg(..))
+import RemoteData
 import Return exposing (return)
 import Routing
 import Url exposing (Url)
@@ -54,6 +55,11 @@ init flags url navKey =
         { navKey = navKey
         , page = page
         , url = url
+
+        -----------------------------------------
+        -- Remote Data
+        -----------------------------------------
+        , reCreateAccount = RemoteData.NotAsked
         }
         pageCmd
 

@@ -9,8 +9,12 @@ import Tailwind as T
 
 logo : Html msg
 logo =
-    Html.div
-        [ T.max_w_xs
+    Html.a
+        [ A.href "/"
+
+        --
+        , T.block
+        , T.max_w_xs
         , T.mx_auto
         , T.relative
         , T.text_gray_200
@@ -47,6 +51,7 @@ logo =
             -- Dark mode
             ------------
             , T.dark__bg_purple_shade
+            , T.dark__text_purple_tint
             ]
             [ Html.text "Auth"
             ]

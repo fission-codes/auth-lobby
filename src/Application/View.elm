@@ -19,15 +19,10 @@ view : Model -> List (Html Msg)
 view model =
     [ Html.div
         [ T.flex
-        , T.font_body
         , T.items_center
         , T.justify_center
         , T.min_h_screen
         , T.w_screen
-
-        -- Dark mode
-        ------------
-        , T.dark__bg_darkness
         ]
         [ case model.page of
             Choose ->

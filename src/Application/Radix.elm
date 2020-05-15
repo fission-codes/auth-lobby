@@ -6,6 +6,7 @@ module Radix exposing (..)
 import Browser
 import Browser.Navigation as Nav
 import Page exposing (Page)
+import RemoteData exposing (RemoteData)
 import Url exposing (Url)
 
 
@@ -17,6 +18,11 @@ type alias Model =
     { page : Page
     , navKey : Nav.Key
     , url : Url
+
+    -----------------------------------------
+    -- Remote Data
+    -----------------------------------------
+    , reCreateAccount : RemoteData String ()
     }
 
 
