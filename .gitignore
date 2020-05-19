@@ -2,5 +2,5 @@
 /elm-stuff
 /node_modules
 /package-lock.json
-/src/Application/Tailwind.elm
+/src/Library/Tailwind.elm
 /web_modules

@@ -117,6 +117,11 @@ textField attributes =
             , T.rounded
             , T.text_inherit
             , T.text_base
+            , T.transition_colors
+
+            --
+            , default_transition_duration
+            , default_transition_easing
 
             -- Dark mode
             ------------

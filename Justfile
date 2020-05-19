@@ -53,6 +53,7 @@ src_dir  := "./src"
 @js:
 	echo "📄  Copying static JS files"
 	cp -r web_modules {{dist_dir}}
+	cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
@@ -72,7 +73,7 @@ main_css := src_dir + "/Css/Main.css"
 	echo "⚙️  Compiling CSS"
 	pnpx etc {{main_css}} \
 		--config tailwind.config.js \
-		--elm-path src/Application/Tailwind.elm \
+		--elm-path src/Library/Tailwind.elm \
 		--output {{dist_css}}
 	echo ""
 

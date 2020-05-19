@@ -3,9 +3,11 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472",
-    "tailwindcss": "^1.4.6"
+    "fission-sdk": "0.6.0"
   },
   "devDependencies": {
-    "elm-tailwind-css": "^0.1.1"
+    "elm-tailwind-css": "^0.1.1",
+    "tailwindcss": "^1.4.6",
+    "tailwindcss-animations": "^2.0.0"
   }
 }

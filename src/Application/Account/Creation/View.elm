@@ -3,11 +3,13 @@ module Account.Creation.View exposing (..)
 import Account.Creation.Context exposing (..)
 import Branding
 import Common exposing (ifThenElse)
-import Common.View as Common
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Icons
+import Loading
+import Page
 import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
 import Styling as S
@@ -30,24 +32,39 @@ view context model =
                 form (Just err) context
 
             Loading ->
-                -- TODO: creatingAccount
-                Html.text ""
+                creatingAccount
 
             NotAsked ->
                 form Nothing context
 
             Success _ ->
-                -- TODO: creatingAccount
-                Html.text ""
+                creatingAccount
         ]
+
+
+
+-- ⏲
+
+
+creatingAccount : Html msg
+creatingAccount =
+    [ Html.text "Just a moment, creating your file system." ]
+        |> Html.div [ T.italic, T.mt_3 ]
+        |> List.singleton
+        |> Loading.screen
+
+
+
+-- FORM
 
 
 form : Maybe String -> Context -> Html Msg
 form maybeError context =
     Html.form
-        [ -- E.onSubmit (CreateAccount context)
-          --
-          T.max_w_sm
+        [ E.onSubmit (CreateAccount context)
+
+        --
+        , T.max_w_sm
         , T.mt_8
         , T.mx_auto
         , T.w_full
@@ -55,17 +72,15 @@ form maybeError context =
         [ -- Email
           --------
           S.label
-            [ A.for "email"
-            ]
+            [ A.for "email" ]
             [ Html.text "Email" ]
         , S.textField
             [ A.id "email"
             , A.placeholder "doctor@who.tv"
             , A.required True
             , A.type_ "email"
-
-            -- , A.value context.email
-            -- , E.onInput GotSignUpEmailInput
+            , A.value context.email
+            , E.onInput GotCreateEmailInput
             , T.w_full
             ]
             []
@@ -82,9 +97,8 @@ form maybeError context =
             , A.id "username"
             , A.placeholder "thedoctor"
             , A.required True
-
-            -- , A.value context.username
-            -- , E.onInput GotSignUpUsernameInput
+            , A.value context.username
+            , E.onInput GotCreateUsernameInput
             , T.w_full
             ]
             []
@@ -134,9 +148,10 @@ form maybeError context =
             Nothing ->
                 [ Html.text "Can I sign in instead?" ]
                     |> Html.a
-                        [ -- A.href (Routing.routeUrl Routing.LinkAccount model.url)
-                          --
-                          T.italic
+                        [ A.href (Page.toPath Page.Link)
+
+                        --
+                        , T.italic
                         , T.text_center
                         , T.text_gray_300
                         , T.text_sm
@@ -186,7 +201,7 @@ usernameMessage context =
         ]
         [ FeatherIcons.globe
             |> FeatherIcons.withSize 16
-            |> Common.wrapIcon [ T.mr_2, T.opacity_60 ]
+            |> Icons.wrap [ T.mr_2, T.opacity_60 ]
 
         --
         , if hidden then

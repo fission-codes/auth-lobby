@@ -1,8 +1,12 @@
 module Main exposing (main)
 
+import Account.Creation.State as Creation
 import Browser
 import Browser.Navigation as Nav
-import Page
+import Debouncer.Messages as Debouncer exposing (Debouncer)
+import Debouncing
+import Page exposing (Page(..))
+import Ports
 import Radix exposing (Model, Msg(..))
 import RemoteData
 import Return exposing (return)
@@ -16,14 +20,14 @@ import View
 
 
 type alias Flags =
-    { hasLocalKeyPair : Bool }
+    { usedKeyPair : Bool }
 
 
 main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         , update = update
         , onUrlChange = UrlChanged
         , onUrlRequest = UrlRequested
@@ -42,10 +46,10 @@ init flags url navKey =
             Page.fromUrl url
 
         pageCmd =
-            if flags.hasLocalKeyPair && page == Page.Link then
+            if flags.usedKeyPair && page == Page.Link then
                 Cmd.none
 
-            else if flags.hasLocalKeyPair then
+            else if flags.usedKeyPair then
                 Nav.replaceUrl navKey (Page.toPath Page.Link)
 
             else
@@ -55,6 +59,10 @@ init flags url navKey =
         { navKey = navKey
         , page = page
         , url = url
+
+        -- Debouncers
+        -------------
+        , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
 
         -----------------------------------------
         -- Remote Data
@@ -75,6 +83,36 @@ update msg =
             Return.singleton
 
         -----------------------------------------
+        -- Create
+        -----------------------------------------
+        CheckIfUsernameIsAvailable ->
+            Creation.checkIfUsernameIsAvailable
+
+        CreateAccount a ->
+            Creation.createAccount a
+
+        GotCreateAccountFailure a ->
+            Creation.gotCreateAccountFailure a
+
+        GotCreateAccountSuccess a ->
+            Creation.gotCreateAccountSuccess a
+
+        GotCreateEmailInput a ->
+            Creation.gotCreateEmailInput a
+
+        GotCreateUsernameInput a ->
+            Creation.gotCreateUsernameInput a
+
+        GotUsernameAvailability a ->
+            Creation.gotUsernameAvailability a
+
+        -----------------------------------------
+        -- Debouncers
+        -----------------------------------------
+        UsernameAvailabilityDebouncerMsg a ->
+            Debouncer.update update Debouncing.usernameAvailability.updateConfig a
+
+        -----------------------------------------
         -- URL
         -----------------------------------------
         UrlChanged a ->
@@ -85,11 +123,41 @@ update msg =
 
 
 
+-- 📰
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.batch
+        [ Ports.gotCreateAccountFailure GotCreateAccountFailure
+        , Ports.gotCreateAccountSuccess GotCreateAccountSuccess
+        , Ports.gotUsernameAvailability GotUsernameAvailability
+        ]
+
+
+
 -- 🖼
 
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Fission"
+    { title = title model
     , body = View.view model
     }
+
+
+title : Model -> String
+title model =
+    case model.page of
+        Choose ->
+            "Fission"
+
+        Create _ ->
+            "Create account" ++ titleSuffix
+
+        Link ->
+            "Sign in" ++ titleSuffix
+
+
+titleSuffix =
+    "\u{2002}/\u{2002}Fission"

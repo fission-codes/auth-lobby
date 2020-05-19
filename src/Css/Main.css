@@ -52,7 +52,7 @@ textarea:user-invalid {
 
 input:focus,
 textarea:focus {
-  @apply border-purple-tint;
+  @apply border-gray-300;
 }
 
 
@@ -65,10 +65,5 @@ textarea:focus {
   input:user-invalid,
   textarea:user-invalid {
     @apply border-pink-shade;
-  }
-
-  input:focus,
-  textarea:focus {
-    @apply border-purple-shade;
   }
 }

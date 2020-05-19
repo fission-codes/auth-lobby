@@ -32,7 +32,7 @@ view model =
                 Account.Creation.View.view context model
 
             Link ->
-                Html.text "Linking new device 📱"
+                Html.text "Under construction 🚜"
         ]
     ]
 
