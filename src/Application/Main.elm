@@ -5,6 +5,7 @@ import Browser
 import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
+import External.Context
 import Page exposing (Page(..))
 import Ports
 import Radix exposing (Model, Msg(..))
@@ -56,7 +57,8 @@ init flags url navKey =
                 Cmd.none
     in
     return
-        { navKey = navKey
+        { externalContext = External.Context.extractFromUrl url
+        , navKey = navKey
         , page = page
         , url = url
 
