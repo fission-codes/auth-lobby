@@ -67,18 +67,12 @@ async function createAccount(userProps) {
   }
 
   if (response.status < 300) {
-    const dnsLink = `${userProps.username}.fission.name`
+    const username = userProps.username
 
     localStorage.setItem("usedKeyPair", "t")
 
     app.ports.gotCreateAccountSuccess.send({
-      dnsLink
-    })
-
-    app.ports.ipfsGotResolvedAddress.send({
-      isDnsLink: true,
-      resolved: await fs.cid(),
-      unresolved: dnsLink
+      username
     })
 
   } else {

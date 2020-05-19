@@ -47,7 +47,7 @@ type Msg
     | CheckIfUsernameIsAvailable
     | CreateAccount Create.Context
     | GotCreateAccountFailure String
-    | GotCreateAccountSuccess { dnsLink : String }
+    | GotCreateAccountSuccess { username : String }
     | GotCreateEmailInput String
     | GotCreateUsernameInput String
     | GotUsernameAvailability { available : Bool, valid : Bool }

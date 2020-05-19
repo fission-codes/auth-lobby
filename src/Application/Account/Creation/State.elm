@@ -2,6 +2,7 @@ module Account.Creation.State exposing (..)
 
 import Account.Creation.Context as Context exposing (Context)
 import Debouncing
+import External.Context
 import Page
 import Ports
 import Radix exposing (..)
@@ -59,9 +60,20 @@ gotCreateAccountFailure err model =
     Return.singleton { model | reCreateAccount = Failure err }
 
 
-gotCreateAccountSuccess : { dnsLink : String } -> Manager
-gotCreateAccountSuccess a model =
-    Return.singleton { model | reCreateAccount = Success () }
+gotCreateAccountSuccess : { username : String } -> Manager
+gotCreateAccountSuccess { username } model =
+    return
+        { model | reCreateAccount = Success () }
+        (case model.externalContext of
+            Just context ->
+                context
+                    |> External.Context.redirectCmd username
+                    |> Maybe.withDefault Cmd.none
+
+            Nothing ->
+                -- No `redirectTo` param provided
+                Cmd.none
+        )
 
 
 gotCreateEmailInput : String -> Manager
