@@ -3,6 +3,7 @@ module Account.Creation.View exposing (..)
 import Account.Creation.Context exposing (..)
 import Branding
 import Common exposing (ifThenElse)
+import External.Context
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
@@ -25,6 +26,12 @@ view context model =
     Html.div
         []
         [ Branding.logo
+
+        --
+        , model.externalContext
+            |> Debug.log ""
+            |> Maybe.map External.Context.redirectToNote
+            |> Maybe.withDefault (Html.text "")
 
         --
         , case model.reCreateAccount of
