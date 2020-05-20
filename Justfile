@@ -24,12 +24,13 @@ src_dir  := "./src"
 	rm -rf {{dist_dir}}
 
 
-@dev-build: clean css-large elm html js images
+@dev-build: clean css-large elm html js images static
 
 
 @dev-server:
 	echo "🤵  Putting up a server for ya"
-	devd --notfound=index.html --quiet build
+	echo "http://localhost:8001"
+	devd --notfound=index.html --quiet build --port=8001
 
 
 @html:
@@ -51,13 +52,19 @@ src_dir  := "./src"
 
 
 @js:
-	echo "📄  Copying static JS files"
+	echo "📄  Copying JS files"
 	cp -r web_modules {{dist_dir}}
 	cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
-@production-build: css-small production-elm html js images
+@production-build: css-small production-elm html js images static
+
+
+@static:
+	echo "⛰  Copying some more static files"
+	cp -r {{src_dir}}/Static/Favicons/ {{dist_dir}}
+	cp -r {{src_dir}}/Static/Manifests/ {{dist_dir}}
 
 
 
