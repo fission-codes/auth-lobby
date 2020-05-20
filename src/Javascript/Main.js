@@ -61,8 +61,9 @@ async function createAccount(userProps) {
   let response
 
   try {
-    response = await sdk.user.createAccount(userProps, api.endpoint)
-  } catch (_) {
+    response = await sdk.user.createAccount(userProps)
+  } catch (err) {
+    console.error(err)
     response = { status: 500 }
   }
 

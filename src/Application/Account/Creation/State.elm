@@ -1,6 +1,7 @@
 module Account.Creation.State exposing (..)
 
 import Account.Creation.Context as Context exposing (Context)
+import Browser.Navigation as Nav
 import Debouncing
 import External.Context
 import Page
@@ -64,15 +65,9 @@ gotCreateAccountSuccess : { username : String } -> Manager
 gotCreateAccountSuccess { username } model =
     return
         { model | reCreateAccount = Success () }
-        (case model.externalContext of
-            Just context ->
-                context
-                    |> External.Context.redirectCmd username
-                    |> Maybe.withDefault Cmd.none
-
-            Nothing ->
-                -- No `redirectTo` param provided
-                Cmd.none
+        (model.externalContext
+            |> Maybe.andThen (External.Context.redirectCmd username)
+            |> Maybe.withDefault (Nav.load <| "https://" ++ username ++ ".fission.app")
         )
 
 

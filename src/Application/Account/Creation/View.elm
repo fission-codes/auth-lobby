@@ -23,30 +23,18 @@ import Tailwind as T
 
 view : Context -> Model -> Html Msg
 view context model =
-    Html.div
-        []
-        [ Branding.logo
+    case model.reCreateAccount of
+        Failure err ->
+            formWithToppings (Just err) context model
 
-        --
-        , model.externalContext
-            |> Debug.log ""
-            |> Maybe.map External.Context.redirectToNote
-            |> Maybe.withDefault (Html.text "")
+        Loading ->
+            creatingAccount
 
-        --
-        , case model.reCreateAccount of
-            Failure err ->
-                form (Just err) context
+        NotAsked ->
+            formWithToppings Nothing context model
 
-            Loading ->
-                creatingAccount
-
-            NotAsked ->
-                form Nothing context
-
-            Success _ ->
-                creatingAccount
-        ]
+        Success _ ->
+            creatingAccount
 
 
 
@@ -63,6 +51,22 @@ creatingAccount =
 
 
 -- FORM
+
+
+formWithToppings : Maybe String -> Context -> Model -> Html Msg
+formWithToppings maybeError context model =
+    Html.div
+        []
+        [ Branding.logo
+
+        --
+        , model.externalContext
+            |> Maybe.map External.Context.redirectToNote
+            |> Maybe.withDefault (Html.text "")
+
+        --
+        , form maybeError context
+        ]
 
 
 form : Maybe String -> Context -> Html Msg
