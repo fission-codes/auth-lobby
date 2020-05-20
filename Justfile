@@ -30,12 +30,19 @@ src_dir  := "./src"
 @dev-server:
 	echo "🤵  Putting up a server for ya"
 	echo "http://localhost:8001"
-	devd --notfound=index.html --quiet build --port=8001
+	devd --quiet build --port=8001
 
 
 @html:
 	echo "📄  Copying static HTML files"
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
+
+	# We don't SPA routing on the server, so let's do this manually
+	mkdir -p {{dist_dir}}/create-account
+	mkdir -p {{dist_dir}}/link-account
+
+	cp {{dist_dir}}/index.html {{dist_dir}}/create-account/index.html
+	cp {{dist_dir}}/index.html {{dist_dir}}/link-account/index.html
 
 
 @images:
