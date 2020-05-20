@@ -58,13 +58,7 @@ formWithToppings maybeError context model =
     Html.div
         []
         [ Branding.logo
-
-        --
-        , model.externalContext
-            |> Maybe.map External.Context.redirectToNote
-            |> Maybe.withDefault (Html.text "")
-
-        --
+        , External.Context.note model.externalContext
         , form maybeError context
         ]
 

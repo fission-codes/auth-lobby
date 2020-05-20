@@ -1,6 +1,10 @@
 module Radix exposing (..)
 
 {-| Our top-level state.
+
+“Radix”
+A root or point of origin.
+
 -}
 
 import Account.Creation.Context as Create
@@ -18,7 +22,7 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { externalContext : Maybe External.Context
+    { externalContext : RemoteData () External.Context
     , page : Page
     , navKey : Nav.Key
     , url : Url

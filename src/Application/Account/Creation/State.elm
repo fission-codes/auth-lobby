@@ -66,6 +66,7 @@ gotCreateAccountSuccess { username } model =
     return
         { model | reCreateAccount = Success () }
         (model.externalContext
+            |> RemoteData.toMaybe
             |> Maybe.andThen (External.Context.redirectCmd username)
             |> Maybe.withDefault (Nav.load <| "https://" ++ username ++ ".fission.app")
         )
