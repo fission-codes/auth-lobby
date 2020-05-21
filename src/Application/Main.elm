@@ -51,7 +51,9 @@ init flags url navKey =
                 Cmd.none
 
             else if flags.usedKeyPair then
-                Nav.replaceUrl navKey (Page.toPath Page.Link)
+                { url | path = Page.toPath Page.Link }
+                    |> Url.toString
+                    |> Nav.replaceUrl navKey
 
             else
                 Cmd.none
