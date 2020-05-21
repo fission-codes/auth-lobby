@@ -75,13 +75,16 @@ gotCreateAccountSuccess ({ ucan, username } as params) model =
             , query = Nothing
             , fragment = Nothing
             }
+
+        maybeRedirectUrl =
+            model.externalContext
+                |> RemoteData.map .redirectTo
+                |> RemoteData.toMaybe
+                |> Maybe.join
     in
     return
         { model | reCreateAccount = Success () }
-        (model.externalContext
-            |> RemoteData.map .redirectTo
-            |> RemoteData.toMaybe
-            |> Maybe.join
+        (maybeRedirectUrl
             |> Maybe.withDefault defaultUrl
             |> (\u ->
                     case u.query of
@@ -96,9 +99,15 @@ gotCreateAccountSuccess ({ ucan, username } as params) model =
                         |> Maybe.map (String.split "&")
                         |> Maybe.withDefault []
                         |> List.append
-                            [ "ucan=" ++ Url.percentEncode ucan
-                            , "username=" ++ Url.percentEncode username
-                            ]
+                            (if Maybe.isJust maybeRedirectUrl then
+                                [ "ucan=" ++ Url.percentEncode ucan
+                                , "username=" ++ Url.percentEncode username
+                                ]
+
+                             else
+                                [ "ucan=" ++ Url.percentEncode ucan
+                                ]
+                            )
                         |> String.join "&"
                         |> (\q -> { u | query = Just q })
                )
