@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472
-  fission-sdk: 0.6.0
+  fission-sdk: 0.6.1
 devDependencies:
   elm-tailwind-css: 0.1.1
   tailwindcss: 1.4.6
@@ -431,7 +431,7 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
-  /fission-sdk/0.6.0:
+  /fission-sdk/0.6.1:
     dependencies:
       '@types/lodash': 4.14.151
       base58-universal: 1.0.0
@@ -446,7 +446,7 @@ packages:
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-jqt/7cHzaoWzaiVr/pkSsgmejjf3OEQCg5xwt+ZKDHCszvCvWRewFVmbmR6edVj1fkNn7CnHuvd1UXjbJGlRYw==
+      integrity: sha512-ttIBQSdPkGs2Xq0+nF3a55GD2wUasfpqXreWpVQAxmj/5cK1nK1ESpwIGbEkRcRfZ2yBX3yWaKV+qFUABjs2cA==
   /fs-extra/8.1.0:
     dependencies:
       graceful-fs: 4.2.4
@@ -1278,6 +1278,6 @@ packages:
 specifiers:
   elm-tailwind-css: ^0.1.1
   fission-kit: 'fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472'
-  fission-sdk: 0.6.0
+  fission-sdk: 0.6.1
   tailwindcss: ^1.4.6
   tailwindcss-animations: ^2.0.0

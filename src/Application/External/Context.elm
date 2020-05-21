@@ -57,7 +57,7 @@ extractFromUrl url =
 
 note : RemoteData () Context -> Html msg
 note remoteData =
-    case Debug.log "" remoteData of
+    case remoteData of
         Loading ->
             text ""
 

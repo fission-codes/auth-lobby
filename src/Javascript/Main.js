@@ -68,9 +68,9 @@ async function createAccount(userProps) {
   }
 
   if (response.status < 300) {
-    const ucan = userProps.didKey && await sdk.identity.ucan({
+    const ucan = userProps.didKey && await sdk.user.ucan({
       audience: userProps.didKey,
-      issuer: await sdk.identity.didKey(),
+      issuer: await sdk.user.didKey(),
 
       // User is signed into the app for 1 month
       lifetimeInSeconds: 60 * 60 * 24 * 30,
