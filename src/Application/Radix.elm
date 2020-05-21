@@ -51,7 +51,7 @@ type Msg
     | CheckIfUsernameIsAvailable
     | CreateAccount Create.Context
     | GotCreateAccountFailure String
-    | GotCreateAccountSuccess { username : String }
+    | GotCreateAccountSuccess { ucan : String, username : String }
     | GotCreateEmailInput String
     | GotCreateUsernameInput String
     | GotUsernameAvailability { available : Bool, valid : Bool }

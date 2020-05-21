@@ -4,12 +4,14 @@ import Account.Creation.Context as Context exposing (Context)
 import Browser.Navigation as Nav
 import Debouncing
 import External.Context
+import Maybe.Extra as Maybe
 import Page
 import Ports
 import Radix exposing (..)
 import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
 import Return.Extra as Return
+import Url
 
 
 
@@ -46,7 +48,8 @@ createAccount context model =
                 dnsLink =
                     context.username ++ ".fission.name"
             in
-            { email = String.trim context.email
+            { didKey = Maybe.map .didKey (RemoteData.toMaybe model.externalContext)
+            , email = String.trim context.email
             , username = String.trim context.username
             }
                 |> Ports.createAccount
@@ -61,14 +64,46 @@ gotCreateAccountFailure err model =
     Return.singleton { model | reCreateAccount = Failure err }
 
 
-gotCreateAccountSuccess : { username : String } -> Manager
-gotCreateAccountSuccess { username } model =
+gotCreateAccountSuccess : { ucan : String, username : String } -> Manager
+gotCreateAccountSuccess ({ ucan, username } as params) model =
+    let
+        defaultUrl =
+            { protocol = Url.Https
+            , host = username ++ ".fission.app"
+            , port_ = Nothing
+            , path = ""
+            , query = Nothing
+            , fragment = Nothing
+            }
+    in
     return
         { model | reCreateAccount = Success () }
         (model.externalContext
+            |> RemoteData.map .redirectTo
             |> RemoteData.toMaybe
-            |> Maybe.andThen (External.Context.redirectCmd username)
-            |> Maybe.withDefault (Nav.load <| "https://" ++ username ++ ".fission.app")
+            |> Maybe.join
+            |> Maybe.withDefault defaultUrl
+            |> (\u ->
+                    case u.query of
+                        Just "" ->
+                            { u | query = Nothing }
+
+                        _ ->
+                            u
+               )
+            |> (\u ->
+                    u.query
+                        |> Maybe.map (String.split "&")
+                        |> Maybe.withDefault []
+                        |> List.append
+                            [ "ucan=" ++ Url.percentEncode ucan
+                            , "username=" ++ Url.percentEncode username
+                            ]
+                        |> String.join "&"
+                        |> (\q -> { u | query = Just q })
+               )
+            |> Url.toString
+            |> Nav.load
         )
 
 

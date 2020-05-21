@@ -1,4 +1,4 @@
-module External.Context exposing (Context, extractFromUrl, note, redirectCmd)
+module External.Context exposing (Context, extractFromUrl, note)
 
 import Browser.Navigation as Nav
 import FeatherIcons
@@ -8,6 +8,7 @@ import Maybe.Extra as Maybe
 import RemoteData exposing (RemoteData(..))
 import Tailwind as T
 import Url exposing (Url)
+import Url.Builder
 import Url.Parser as Url exposing (..)
 import Url.Parser.Query as Query
 
@@ -48,31 +49,6 @@ extractFromUrl url =
 
                 Nothing ->
                     NotAsked
-
-
-redirectCmd : String -> Context -> Maybe (Cmd msg)
-redirectCmd username context =
-    let
-        kv =
-            "username=" ++ username
-    in
-    Maybe.map
-        (\redirectTo ->
-            redirectTo.query
-                |> Maybe.map
-                    (\q ->
-                        if q == "" then
-                            kv
-
-                        else
-                            q ++ "&" ++ kv
-                    )
-                |> Maybe.withDefault kv
-                |> (\q -> { redirectTo | query = Just q })
-                |> Url.toString
-                |> Nav.load
-        )
-        context.redirectTo
 
 
 

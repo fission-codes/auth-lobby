@@ -24,7 +24,7 @@ bootElm()
 // ===
 
 async function bootElm() {
-  const usedKeyPair = localStorage.getItem("usedKeyPair") === "t"
+  const usedKeyPair = !!localStorage.getItem("usedKeyPair")
 
   app = Elm.Main.init({
     flags: { usedKeyPair }
@@ -68,12 +68,19 @@ async function createAccount(userProps) {
   }
 
   if (response.status < 300) {
-    const username = userProps.username
+    const ucan = userProps.didKey && await sdk.identity.ucan({
+      audience: userProps.didKey,
+      issuer: await sdk.identity.didKey(),
 
-    localStorage.setItem("usedKeyPair", "t")
+      // User is signed into the app for 1 month
+      lifetimeInSeconds: 60 * 60 * 24 * 30,
+    })
+
+    localStorage.setItem("usedKeyPair", userProps.username)
 
     app.ports.gotCreateAccountSuccess.send({
-      username
+      ucan: ucan,
+      username: userProps.username
     })
 
   } else {
