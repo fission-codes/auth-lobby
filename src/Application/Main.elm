@@ -22,7 +22,9 @@ import View
 
 
 type alias Flags =
-    { usedKeyPair : Bool }
+    { usedKeyPair : Bool
+    , usedUsername : Maybe String
+    }
 
 
 main : Program Flags Model Msg
@@ -59,6 +61,7 @@ init flags url navKey =
         , navKey = navKey
         , page = page
         , url = url
+        , usedUsername = flags.usedUsername
 
         -- Debouncers
         -------------

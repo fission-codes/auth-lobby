@@ -25,9 +25,10 @@ bootElm()
 
 async function bootElm() {
   const usedKeyPair = !!localStorage.getItem("usedKeyPair")
+  const usedUsername = localStorage.getItem("usedUsername")
 
   app = Elm.Main.init({
-    flags: { usedKeyPair }
+    flags: { usedKeyPair, usedUsername }
   })
 
   ports()
@@ -70,6 +71,7 @@ async function createAccount(args) {
 
   if (response.status < 300) {
     localStorage.setItem("usedKeyPair", "t")
+    localStorage.setItem("usedUsername", args.username)
 
     app.ports.gotCreateAccountSuccess.send(
       { ucan: args.did ? await makeUcan(args.did) : null }
@@ -85,8 +87,8 @@ async function createAccount(args) {
 
 
 async function linkApp({ did }) {
-  app.ports.gotUcanForApplication(
-    await makeUcan(did)
+  app.ports.gotUcanForApplication.send(
+    { ucan: await makeUcan(did) }
   )
 }
 

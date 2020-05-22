@@ -3,7 +3,7 @@ module Account.Creation.State exposing (..)
 import Account.Creation.Context as Context exposing (Context)
 import Browser.Navigation as Nav
 import Debouncing
-import External.Context
+import External.Context as External
 import Maybe.Extra as Maybe
 import Page
 import Ports
@@ -74,54 +74,10 @@ gotCreateAccountSuccess ({ ucan } as params) model =
 
                 _ ->
                     ""
-
-        defaultUrl =
-            { protocol = Url.Https
-            , host = username ++ ".fission.app"
-            , port_ = Nothing
-            , path = ""
-            , query = Nothing
-            , fragment = Nothing
-            }
-
-        maybeRedirectUrl =
-            model.externalContext
-                |> RemoteData.map .redirectTo
-                |> RemoteData.toMaybe
-                |> Maybe.join
     in
-    return
-        { model | reCreateAccount = Success () }
-        (maybeRedirectUrl
-            |> Maybe.withDefault defaultUrl
-            |> (\u ->
-                    case u.query of
-                        Just "" ->
-                            { u | query = Nothing }
-
-                        _ ->
-                            u
-               )
-            |> (\u ->
-                    u.query
-                        |> Maybe.map (String.split "&")
-                        |> Maybe.withDefault []
-                        |> List.append
-                            (case ( ucan, maybeRedirectUrl ) of
-                                ( Just ucantoo, Just _ ) ->
-                                    [ "ucan=" ++ Url.percentEncode ucantoo
-                                    , "username=" ++ Url.percentEncode username
-                                    ]
-
-                                _ ->
-                                    []
-                            )
-                        |> String.join "&"
-                        |> (\q -> { u | query = Just q })
-               )
-            |> Url.toString
-            |> Nav.load
-        )
+    model.externalContext
+        |> External.redirectCommand { ucan = ucan, username = username }
+        |> return { model | reCreateAccount = Success () }
 
 
 gotCreateEmailInput : String -> Manager

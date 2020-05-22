@@ -26,6 +26,7 @@ type alias Model =
     , page : Page
     , navKey : Nav.Key
     , url : Url
+    , usedUsername : Maybe String
 
     -----------------------------------------
     -- Debouncers

@@ -1,4 +1,4 @@
-module External.Context exposing (Context, extractFromUrl, note)
+module External.Context exposing (Context, extractFromUrl, note, redirectCommand)
 
 import Browser.Navigation as Nav
 import FeatherIcons
@@ -49,6 +49,55 @@ extractFromUrl url =
 
                 Nothing ->
                     NotAsked
+
+
+redirectCommand : { ucan : Maybe String, username : String } -> RemoteData () Context -> Cmd msg
+redirectCommand { ucan, username } remoteData =
+    let
+        defaultUrl =
+            { protocol = Url.Https
+            , host = username ++ ".fission.app"
+            , port_ = Nothing
+            , path = ""
+            , query = Nothing
+            , fragment = Nothing
+            }
+
+        maybeRedirectUrl =
+            remoteData
+                |> RemoteData.map .redirectTo
+                |> RemoteData.toMaybe
+                |> Maybe.join
+    in
+    maybeRedirectUrl
+        |> Maybe.withDefault defaultUrl
+        |> (\u ->
+                case u.query of
+                    Just "" ->
+                        { u | query = Nothing }
+
+                    _ ->
+                        u
+           )
+        |> (\u ->
+                u.query
+                    |> Maybe.map (String.split "&")
+                    |> Maybe.withDefault []
+                    |> List.append
+                        (case ( ucan, maybeRedirectUrl ) of
+                            ( Just ucantoo, Just _ ) ->
+                                [ "ucan=" ++ Url.percentEncode ucantoo
+                                , "username=" ++ Url.percentEncode username
+                                ]
+
+                            _ ->
+                                []
+                        )
+                    |> String.join "&"
+                    |> (\q -> { u | query = Just q })
+           )
+        |> Url.toString
+        |> Nav.load
 
 
 
