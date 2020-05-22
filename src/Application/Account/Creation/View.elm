@@ -153,7 +153,7 @@ form maybeError context =
             Nothing ->
                 [ Html.text "Can I sign in instead?" ]
                     |> Html.a
-                        [ A.href (Page.toPath Page.Link)
+                        [ A.href (Page.toPath Page.LinkAccount)
 
                         --
                         , T.italic

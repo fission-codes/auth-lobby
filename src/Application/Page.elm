@@ -11,8 +11,9 @@ import Url.Parser as Url exposing (..)
 
 type Page
     = Choose
-    | Create Creation.Context
-    | Link
+    | CreateAccount Creation.Context
+    | LinkAccount
+    | LinkingApplication
 
 
 
@@ -32,11 +33,14 @@ toPath page =
         Choose ->
             "/"
 
-        Create _ ->
+        CreateAccount _ ->
             "/create-account"
 
-        Link ->
+        LinkAccount ->
             "/link-account"
+
+        LinkingApplication ->
+            "/"
 
 
 
@@ -47,6 +51,6 @@ urlParser : Url.Parser (Page -> a) a
 urlParser =
     oneOf
         [ map Choose Url.top
-        , map (Create Creation.default) (s "create-account")
-        , map Link (s "link-account")
+        , map (CreateAccount Creation.default) (s "create-account")
+        , map LinkAccount (s "link-account")
         ]

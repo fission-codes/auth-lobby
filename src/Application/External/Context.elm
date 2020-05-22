@@ -18,7 +18,7 @@ import Url.Parser.Query as Query
 
 
 type alias Context =
-    { didKey : String
+    { did : String
     , redirectTo : Maybe Url
     }
 
@@ -65,7 +65,7 @@ note remoteData =
             [ text "You provided some query params, but they didn't check out."
             , text " Maybe you're missing one?"
             , text " The correct ones are "
-            , semibold "didKey"
+            , semibold "did"
             , text " and "
             , semibold "redirectTo"
             , text ", where "
@@ -131,10 +131,10 @@ queryStringParser =
     Query.map2
         (Maybe.map2
             (\d r ->
-                { didKey = d
+                { did = d
                 , redirectTo = Url.fromString r
                 }
             )
         )
-        (Query.string "didKey")
+        (Query.string "did")
         (Query.string "redirectTo")

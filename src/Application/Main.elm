@@ -6,7 +6,7 @@ import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
 import External.Context
-import Page exposing (Page(..))
+import Page
 import Ports
 import Radix exposing (Model, Msg(..))
 import RemoteData
@@ -44,16 +44,15 @@ init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
         page =
-            Page.fromUrl url
+            if flags.usedKeyPair && url.path /= Page.toPath Page.LinkAccount then
+                Page.LinkingApplication
+
+            else
+                Page.fromUrl url
 
         pageCmd =
-            if flags.usedKeyPair && page == Page.Link then
-                Cmd.none
-
-            else if flags.usedKeyPair then
-                { url | path = Page.toPath Page.Link }
-                    |> Url.toString
-                    |> Nav.replaceUrl navKey
+            if page == Page.LinkingApplication && url.path /= "" then
+                Nav.replaceUrl navKey "/"
 
             else
                 Cmd.none
@@ -153,14 +152,17 @@ view model =
 title : Model -> String
 title model =
     case model.page of
-        Choose ->
+        Page.Choose ->
             "Fission"
 
-        Create _ ->
+        Page.CreateAccount _ ->
             "Create account" ++ titleSuffix
 
-        Link ->
+        Page.LinkAccount ->
             "Sign in" ++ titleSuffix
+
+        Page.LinkingApplication ->
+            "Granting access"
 
 
 titleSuffix =

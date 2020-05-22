@@ -68,20 +68,9 @@ async function createAccount(userProps) {
   }
 
   if (response.status < 300) {
-    const ucan = userProps.didKey && await sdk.user.ucan({
-      audience: userProps.didKey,
-      issuer: await sdk.user.didKey(),
-
-      // User is signed into the app for 1 month
-      lifetimeInSeconds: 60 * 60 * 24 * 30,
-    })
-
-    localStorage.setItem("usedKeyPair", userProps.username)
-
-    app.ports.gotCreateAccountSuccess.send({
-      ucan: ucan,
-      username: userProps.username
-    })
+    app.ports.gotCreateAccountSuccess.send(
+      await link(userProps)
+    )
 
   } else {
     app.ports.gotCreateAccountFailure.send(
@@ -112,4 +101,27 @@ async function bootIpfs() {
   sdk.ipfs.setIpfs(ipfs)
 
   return null
+}
+
+
+
+// LINK
+// ====
+
+async function link(userProps) {
+  const ucan = userProps.did && await sdk.user.ucan({
+    audience: userProps.did,
+    issuer: await sdk.user.didKey(),
+
+    // User is signed into the app for 1 month
+    lifetimeInSeconds: 60 * 60 * 24 * 30,
+  })
+
+  // Indicate that we used the automatically-generated key-pair
+  localStorage.setItem("usedKeyPair", "t")
+
+  // Fin
+  return {
+    ucan: ucan
+  }
 }

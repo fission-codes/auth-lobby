@@ -21,7 +21,7 @@ import Url
 checkIfUsernameIsAvailable : Manager
 checkIfUsernameIsAvailable model =
     case model.page of
-        Page.Create context ->
+        Page.CreateAccount context ->
             case context.username of
                 "" ->
                     Return.singleton model
@@ -48,7 +48,7 @@ createAccount context model =
                 dnsLink =
                     context.username ++ ".fission.name"
             in
-            { didKey = Maybe.map .didKey (RemoteData.toMaybe model.externalContext)
+            { did = Maybe.map .did (RemoteData.toMaybe model.externalContext)
             , email = String.trim context.email
             , username = String.trim context.username
             }
@@ -64,9 +64,17 @@ gotCreateAccountFailure err model =
     Return.singleton { model | reCreateAccount = Failure err }
 
 
-gotCreateAccountSuccess : { ucan : String, username : String } -> Manager
-gotCreateAccountSuccess ({ ucan, username } as params) model =
+gotCreateAccountSuccess : { ucan : Maybe String } -> Manager
+gotCreateAccountSuccess ({ ucan } as params) model =
     let
+        username =
+            case model.page of
+                Page.CreateAccount c ->
+                    c.username
+
+                _ ->
+                    ""
+
         defaultUrl =
             { protocol = Url.Https
             , host = username ++ ".fission.app"
@@ -99,14 +107,14 @@ gotCreateAccountSuccess ({ ucan, username } as params) model =
                         |> Maybe.map (String.split "&")
                         |> Maybe.withDefault []
                         |> List.append
-                            (if Maybe.isJust maybeRedirectUrl then
-                                [ "ucan=" ++ Url.percentEncode ucan
-                                , "username=" ++ Url.percentEncode username
-                                ]
+                            (case ( ucan, maybeRedirectUrl ) of
+                                ( Just ucantoo, Just _ ) ->
+                                    [ "ucan=" ++ Url.percentEncode ucantoo
+                                    , "username=" ++ Url.percentEncode username
+                                    ]
 
-                             else
-                                [ "ucan=" ++ Url.percentEncode ucan
-                                ]
+                                _ ->
+                                    []
                             )
                         |> String.join "&"
                         |> (\q -> { u | query = Just q })
@@ -166,8 +174,8 @@ gotUsernameAvailability { available, valid } =
 adjustContext : (Context -> Context) -> Manager
 adjustContext mapFn model =
     case model.page of
-        Page.Create context ->
-            Return.singleton { model | page = Page.Create (mapFn context) }
+        Page.CreateAccount context ->
+            Return.singleton { model | page = Page.CreateAccount (mapFn context) }
 
         _ ->
             Return.singleton model

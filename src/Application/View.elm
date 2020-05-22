@@ -5,7 +5,8 @@ import Account.Creation.View
 import Branding
 import Html exposing (Html)
 import Html.Attributes as A
-import Page exposing (Page(..))
+import Loading
+import Page
 import Radix exposing (Model, Msg(..))
 import Styling as S
 import Tailwind as T
@@ -25,14 +26,20 @@ view model =
         , T.w_screen
         ]
         [ case model.page of
-            Choose ->
+            Page.Choose ->
                 choose model
 
-            Create context ->
+            Page.CreateAccount context ->
                 Account.Creation.View.view context model
 
-            Link ->
+            Page.LinkAccount ->
                 Html.text "Under construction 🚜"
+
+            Page.LinkingApplication ->
+                [ Html.text "Just a moment, granting access." ]
+                    |> Html.div [ T.italic, T.mt_3 ]
+                    |> List.singleton
+                    |> Loading.screen
         ]
     ]
 
@@ -87,7 +94,7 @@ choose model =
             , T.mx_auto
             ]
             [ S.buttonLink
-                [ A.href (Page.toPath <| Page.Create Account.Creation.Context.default)
+                [ A.href (Page.toPath <| Page.CreateAccount Account.Creation.Context.default)
                 , T.bg_gray_200
 
                 -- Dark mode
