@@ -49,13 +49,6 @@ init flags url navKey =
 
             else
                 Page.fromUrl url
-
-        pageCmd =
-            if page == Page.LinkingApplication && url.path /= "" then
-                Nav.replaceUrl navKey "/"
-
-            else
-                Cmd.none
     in
     return
         { externalContext = External.Context.extractFromUrl url
@@ -72,7 +65,7 @@ init flags url navKey =
         -----------------------------------------
         , reCreateAccount = RemoteData.NotAsked
         }
-        pageCmd
+        Cmd.none
 
 
 
