@@ -5,11 +5,12 @@ import Browser
 import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
+import External.Application as External
 import External.Context
 import Page
 import Ports
 import Radix exposing (Model, Msg(..))
-import RemoteData
+import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
 import Routing
 import Url exposing (Url)
@@ -43,15 +44,18 @@ main =
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
     let
+        externalContext =
+            External.Context.extractFromUrl url
+
         page =
-            if flags.usedKeyPair && url.path /= Page.toPath Page.LinkAccount then
+            if flags.usedKeyPair then
                 Page.LinkingApplication
 
             else
                 Page.fromUrl url
     in
     return
-        { externalContext = External.Context.extractFromUrl url
+        { externalContext = externalContext
         , navKey = navKey
         , page = page
         , url = url
@@ -65,7 +69,13 @@ init flags url navKey =
         -----------------------------------------
         , reCreateAccount = RemoteData.NotAsked
         }
-        Cmd.none
+        (case ( page, externalContext ) of
+            ( Page.LinkingApplication, Success ext ) ->
+                Ports.linkApp { did = ext.did }
+
+            _ ->
+                Cmd.none
+        )
 
 
 
@@ -77,6 +87,9 @@ update msg =
     case msg of
         Bypassed ->
             Return.singleton
+
+        GotUcanForApplication a ->
+            External.gotUcanForApplication a
 
         -----------------------------------------
         -- Create
@@ -127,6 +140,7 @@ subscriptions _ =
     Sub.batch
         [ Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess GotCreateAccountSuccess
+        , Ports.gotUcanForApplication GotUcanForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
         ]
 

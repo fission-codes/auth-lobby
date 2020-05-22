@@ -45,6 +45,7 @@ type alias Model =
 
 type Msg
     = Bypassed
+    | GotUcanForApplication { ucan : String }
       -----------------------------------------
       -- Create
       -----------------------------------------

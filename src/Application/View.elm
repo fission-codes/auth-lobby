@@ -3,11 +3,13 @@ module View exposing (..)
 import Account.Creation.Context
 import Account.Creation.View
 import Branding
+import External.Context
 import Html exposing (Html)
 import Html.Attributes as A
 import Loading
 import Page
 import Radix exposing (Model, Msg(..))
+import RemoteData exposing (RemoteData(..))
 import Styling as S
 import Tailwind as T
 
@@ -36,10 +38,18 @@ view model =
                 Html.text "Under construction 🚜"
 
             Page.LinkingApplication ->
-                [ Html.text "Just a moment, granting access." ]
-                    |> Html.div [ T.italic, T.mt_3 ]
-                    |> List.singleton
-                    |> Loading.screen
+                case model.externalContext of
+                    Failure () ->
+                        External.Context.note model.externalContext
+
+                    Success _ ->
+                        [ Html.text "Just a moment, granting access." ]
+                            |> Html.div [ T.italic, T.mt_3 ]
+                            |> List.singleton
+                            |> Loading.screen
+
+                    _ ->
+                        External.Context.note (Failure ())
         ]
     ]
 

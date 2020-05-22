@@ -42,6 +42,7 @@ async function bootElm() {
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
   app.ports.createAccount.subscribe(createAccount)
+  app.ports.linkApp.subscribe(linkApp)
 }
 
 
@@ -57,19 +58,21 @@ async function checkIfUsernameIsAvailable(username) {
 }
 
 
-async function createAccount(userProps) {
+async function createAccount(args) {
   let response
 
   try {
-    response = await sdk.user.createAccount(userProps)
+    response = await sdk.user.createAccount(args)
   } catch (err) {
     console.error(err)
     response = { status: 500 }
   }
 
   if (response.status < 300) {
+    localStorage.setItem("usedKeyPair", "t")
+
     app.ports.gotCreateAccountSuccess.send(
-      await link(userProps)
+      { ucan: args.did ? await makeUcan(args.did) : null }
     )
 
   } else {
@@ -78,6 +81,13 @@ async function createAccount(userProps) {
     )
 
   }
+}
+
+
+async function linkApp({ did }) {
+  app.ports.gotUcanForApplication(
+    await makeUcan(did)
+  )
 }
 
 
@@ -105,23 +115,15 @@ async function bootIpfs() {
 
 
 
-// LINK
+// UCAN
 // ====
 
-async function link(userProps) {
-  const ucan = userProps.did && await sdk.user.ucan({
-    audience: userProps.did,
+async function makeUcan(externalDID) {
+  return await sdk.user.ucan({
+    audience: externalDID,
     issuer: await sdk.user.didKey(),
 
     // User is signed into the app for 1 month
     lifetimeInSeconds: 60 * 60 * 24 * 30,
   })
-
-  // Indicate that we used the automatically-generated key-pair
-  localStorage.setItem("usedKeyPair", "t")
-
-  // Fin
-  return {
-    ucan: ucan
-  }
 }
