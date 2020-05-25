@@ -56,7 +56,7 @@ redirectCommand { ucan, username } remoteData =
     let
         defaultUrl =
             { protocol = Url.Https
-            , host = username ++ ".fission.app"
+            , host = username ++ ".fission.name"
             , port_ = Nothing
             , path = ""
             , query = Nothing
