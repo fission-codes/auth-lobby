@@ -10,10 +10,15 @@ import Svg.Attributes
 import Tailwind as T
 
 
-logo : Html Msg
-logo =
+logo : { usedUsername : Maybe String } -> Html Msg
+logo { usedUsername } =
     Html.span
-        [ E.onClick (GoToPage Page.Choose)
+        [ case usedUsername of
+            Just _ ->
+                E.onClick (GoToPage Page.SuggestAuthorisation)
+
+            Nothing ->
+                E.onClick (GoToPage Page.Choose)
 
         --
         , T.block

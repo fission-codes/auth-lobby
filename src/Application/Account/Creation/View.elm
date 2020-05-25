@@ -57,7 +57,7 @@ formWithToppings : Maybe String -> Context -> Model -> Html Msg
 formWithToppings maybeError context model =
     Html.div
         []
-        [ Branding.logo
+        [ Branding.logo { usedUsername = model.usedUsername }
         , External.Context.note model.externalContext
         , form maybeError context
         ]

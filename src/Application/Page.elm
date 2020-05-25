@@ -11,4 +11,5 @@ type Page
     = Choose
     | CreateAccount Creation.Context
     | LinkAccount
-    | LinkingApplication
+    | PerformingAuthorisation
+    | SuggestAuthorisation

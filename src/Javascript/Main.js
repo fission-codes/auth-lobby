@@ -24,13 +24,11 @@ bootElm()
 // ===
 
 async function bootElm() {
-  const usedKeyPair = !!localStorage.getItem("usedKeyPair")
   const usedUsername = localStorage.getItem("usedUsername")
 
   app = Elm.Main.init({
     flags: {
       url: location.href,
-      usedKeyPair,
       usedUsername
     }
   })
@@ -47,7 +45,7 @@ async function bootElm() {
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
   app.ports.createAccount.subscribe(createAccount)
-  app.ports.linkApp.subscribe(linkApp)
+  // app.ports.linkApp.subscribe(linkApp)
 }
 
 
@@ -74,7 +72,6 @@ async function createAccount(args) {
   }
 
   if (response.status < 300) {
-    localStorage.setItem("usedKeyPair", "t")
     localStorage.setItem("usedUsername", args.username)
 
     app.ports.gotCreateAccountSuccess.send(

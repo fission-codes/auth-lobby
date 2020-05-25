@@ -2,6 +2,8 @@ module View exposing (..)
 
 import Account.Creation.Context
 import Account.Creation.View
+import Authorisation.Performing.View
+import Authorisation.Suggest.View
 import Branding
 import External.Context
 import Html exposing (Html)
@@ -38,19 +40,11 @@ view model =
             Page.LinkAccount ->
                 Html.text "Under construction 🚜"
 
-            Page.LinkingApplication ->
-                case model.externalContext of
-                    Failure () ->
-                        External.Context.note model.externalContext
+            Page.PerformingAuthorisation ->
+                Authorisation.Performing.View.view model
 
-                    Success _ ->
-                        [ Html.text "Just a moment, granting access." ]
-                            |> Html.div [ T.italic, T.mt_3 ]
-                            |> List.singleton
-                            |> Loading.screen
-
-                    _ ->
-                        External.Context.note (Failure ())
+            Page.SuggestAuthorisation ->
+                Authorisation.Suggest.View.view model
         ]
     ]
 
@@ -59,6 +53,7 @@ view model =
 -- CHOOSE
 
 
+choose : Model -> Html Msg
 choose model =
     Html.div
         [ T.text_gray_300
@@ -68,7 +63,7 @@ choose model =
         ------------
         , T.dark__text_gray_400
         ]
-        [ Branding.logo
+        [ Branding.logo { usedUsername = model.usedUsername }
 
         -----------------------------------------
         -- Message

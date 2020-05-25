@@ -22,7 +22,7 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { externalContext : RemoteData () External.Context
+    { externalContext : External.ParsedContext
     , page : Page
     , navKey : Nav.Key
     , url : Url

@@ -7,6 +7,7 @@ import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
 import External.Application as External
 import External.Context
+import Maybe.Extra as Maybe
 import Page
 import Ports
 import Radix exposing (Model, Msg(..))
@@ -22,8 +23,7 @@ import View
 
 
 type alias Flags =
-    { usedKeyPair : Bool
-    , usedUsername : Maybe String
+    { usedUsername : Maybe String
     }
 
 
@@ -50,13 +50,13 @@ init flags url navKey =
             External.Context.extractFromUrl url
 
         page =
-            if flags.usedKeyPair then
-                Page.LinkingApplication
+            if Maybe.isJust flags.usedUsername then
+                Page.SuggestAuthorisation
 
             else
                 Page.Choose
     in
-    return
+    Return.singleton
         { externalContext = externalContext
         , navKey = navKey
         , page = page
@@ -72,13 +72,6 @@ init flags url navKey =
         -----------------------------------------
         , reCreateAccount = RemoteData.NotAsked
         }
-        (case ( page, externalContext ) of
-            ( Page.LinkingApplication, Success ext ) ->
-                Ports.linkApp { did = ext.did }
-
-            _ ->
-                Cmd.none
-        )
 
 
 
@@ -174,9 +167,12 @@ title model =
         Page.LinkAccount ->
             "Sign in" ++ titleSuffix
 
-        Page.LinkingApplication ->
-            "Granting access"
+        Page.SuggestAuthorisation ->
+            "Authorise" ++ titleSuffix
+
+        Page.PerformingAuthorisation ->
+            "Granting access" ++ titleSuffix
 
 
 titleSuffix =
-    "\u{2002}/\u{2002}Fission"
+    " - Fission"

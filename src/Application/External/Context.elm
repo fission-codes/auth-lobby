@@ -1,4 +1,4 @@
-module External.Context exposing (Context, extractFromUrl, note, redirectCommand)
+module External.Context exposing (..)
 
 import Browser.Navigation as Nav
 import FeatherIcons
@@ -19,7 +19,28 @@ import Url.Parser.Query as Query
 
 type alias Context =
     { did : String
-    , redirectTo : Maybe Url
+    , redirectTo : Url
+    }
+
+
+type alias FailedState =
+    { invalidRedirectTo : Bool
+    , required : Bool
+    }
+
+
+type alias ParsedContext =
+    RemoteData FailedState Context
+
+
+
+-- 🏔
+
+
+defaultFailedState : FailedState
+defaultFailedState =
+    { invalidRedirectTo = False
+    , required = False
     }
 
 
@@ -27,7 +48,7 @@ type alias Context =
 -- 🛠
 
 
-extractFromUrl : Url -> RemoteData () Context
+extractFromUrl : Url -> ParsedContext
 extractFromUrl url =
     let
         maybeContext =
@@ -36,8 +57,13 @@ extractFromUrl url =
                 |> Maybe.join
     in
     case maybeContext of
-        Just context ->
-            Success context
+        Just c ->
+            case c.redirectTo of
+                Just redirectTo ->
+                    Success { did = c.did, redirectTo = redirectTo }
+
+                Nothing ->
+                    Failure { defaultFailedState | invalidRedirectTo = True }
 
         Nothing ->
             case url.query of
@@ -45,13 +71,16 @@ extractFromUrl url =
                     NotAsked
 
                 Just _ ->
-                    Failure ()
+                    Failure defaultFailedState
 
                 Nothing ->
                     NotAsked
 
 
-redirectCommand : { ucan : Maybe String, username : String } -> RemoteData () Context -> Cmd msg
+redirectCommand :
+    { ucan : Maybe String, username : String }
+    -> ParsedContext
+    -> Cmd msg
 redirectCommand { ucan, username } remoteData =
     let
         defaultUrl =
@@ -67,7 +96,6 @@ redirectCommand { ucan, username } remoteData =
             remoteData
                 |> RemoteData.map .redirectTo
                 |> RemoteData.toMaybe
-                |> Maybe.join
     in
     maybeRedirectUrl
         |> Maybe.withDefault defaultUrl
@@ -104,49 +132,64 @@ redirectCommand { ucan, username } remoteData =
 -- 🖼
 
 
-note : RemoteData () Context -> Html msg
+note : ParsedContext -> Html msg
 note remoteData =
     case remoteData of
         Loading ->
             text ""
 
-        Failure () ->
-            [ text "You provided some query params, but they didn't check out."
-            , text " Maybe you're missing one?"
-            , text " The correct ones are "
-            , semibold "did"
-            , text " and "
-            , semibold "redirectTo"
-            , text ", where "
-            , semibold "redirectTo"
-            , text " is a valid url."
-            ]
-                |> warning
+        Failure { invalidRedirectTo, required } ->
+            if invalidRedirectTo then
+                warning
+                    [ text "You provided an invalid"
+                    , semibold " redirectTo "
+                    , text "parameter, make sure it's a valid url."
+                    ]
+
+            else if required then
+                warning
+                    [ text "I'm missing some query parameters. You'll need the parameters "
+                    , queryParams
+                    ]
+
+            else
+                warning
+                    [ text "You provided some query params, but they didn't check out."
+                    , text " Maybe you're missing one?"
+                    , text " The correct ones are "
+                    , queryParams
+                    ]
 
         NotAsked ->
             text ""
 
         Success context ->
-            noteForSuccess context
-
-
-noteForSuccess : Context -> Html msg
-noteForSuccess { redirectTo } =
-    case redirectTo of
-        Just _ ->
             text ""
 
-        Nothing ->
-            warning
-                [ text "You provided an invalid"
-                , semibold " redirectTo "
-                , text "parameter, make sure it's a valid url."
-                ]
+
+queryParams : Html msg
+queryParams =
+    Html.span
+        []
+        [ semibold "did"
+        , text " and "
+        , semibold "redirectTo"
+        , text ", where "
+        , semibold "redirectTo"
+        , text " is a valid url."
+        ]
 
 
 semibold : String -> Html msg
 semibold t =
-    Html.span [ T.font_semibold ] [ text t ]
+    Html.span
+        [ T.font_semibold
+        , T.inline_block
+        , T.mx_1
+        , T.underline
+        , T.underline_thick
+        ]
+        [ text t ]
 
 
 warning : List (Html msg) -> Html msg

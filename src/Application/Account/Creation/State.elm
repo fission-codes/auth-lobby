@@ -67,17 +67,20 @@ gotCreateAccountFailure err model =
 gotCreateAccountSuccess : { ucan : Maybe String } -> Manager
 gotCreateAccountSuccess ({ ucan } as params) model =
     let
-        username =
+        maybeUsername =
             case model.page of
                 Page.CreateAccount c ->
-                    c.username
+                    Just c.username
 
                 _ ->
-                    ""
+                    Nothing
     in
-    model.externalContext
-        |> External.redirectCommand { ucan = ucan, username = username }
-        |> return { model | reCreateAccount = Success () }
+    Return.singleton
+        { model
+            | page = Page.SuggestAuthorisation
+            , reCreateAccount = Success ()
+            , usedUsername = maybeUsername
+        }
 
 
 gotCreateEmailInput : String -> Manager
