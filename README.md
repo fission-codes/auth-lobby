@@ -1,11 +1,14 @@
 __UI for [auth.fission.codes](https://auth.fission.codes)__
 
-This SPA allows you to:
+
+## How does it work?
+
+_This SPA allows you to:_
 * Create a Fission account
 * Link a Fission account from another device/browser
 * Authorise an application
 
-For each of those, you have two options:
+_For each of those, you have two options:_
 * Redirecting back to a Fission-enabled application:
   ```
   https://auth.fission.codes
@@ -31,7 +34,7 @@ When the user decides to go back to the app for some reason (eg. not agreeing
 with the authorisation), the query parameter `cancelled=reason` will be added.
 
 
-### Development
+## Development
 
 * [Node v14+](https://nodejs.org/)
 * [PNPM](https://pnpm.js.org/)
