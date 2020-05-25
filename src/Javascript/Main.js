@@ -28,7 +28,11 @@ async function bootElm() {
   const usedUsername = localStorage.getItem("usedUsername")
 
   app = Elm.Main.init({
-    flags: { usedKeyPair, usedUsername }
+    flags: {
+      url: location.href,
+      usedKeyPair,
+      usedUsername
+    }
   })
 
   ports()

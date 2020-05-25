@@ -2,18 +2,22 @@ module Branding exposing (..)
 
 import Html exposing (Html)
 import Html.Attributes as A
+import Html.Events as E
+import Page
+import Radix exposing (Msg(..))
 import Svg exposing (Svg)
 import Svg.Attributes
 import Tailwind as T
 
 
-logo : Html msg
+logo : Html Msg
 logo =
-    Html.a
-        [ A.href "/"
+    Html.span
+        [ E.onClick (GoToPage Page.Choose)
 
         --
         , T.block
+        , T.cursor_pointer
         , T.max_w_xs
         , T.mx_auto
         , T.relative

@@ -152,8 +152,8 @@ form maybeError context =
 
             Nothing ->
                 [ Html.text "Can I sign in instead?" ]
-                    |> Html.a
-                        [ A.href (Page.toPath Page.LinkAccount)
+                    |> Html.span
+                        [ E.onClick (GoToPage Page.LinkAccount)
 
                         --
                         , T.italic

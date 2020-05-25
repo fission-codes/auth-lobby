@@ -6,6 +6,7 @@ import Branding
 import External.Context
 import Html exposing (Html)
 import Html.Attributes as A
+import Html.Events as E
 import Loading
 import Page
 import Radix exposing (Model, Msg(..))
@@ -103,8 +104,8 @@ choose model =
             , T.mt_10
             , T.mx_auto
             ]
-            [ S.buttonLink
-                [ A.href (Page.toPath <| Page.CreateAccount Account.Creation.Context.default)
+            [ S.button
+                [ E.onClick (GoToPage <| Page.CreateAccount Account.Creation.Context.default)
                 , T.bg_gray_200
 
                 -- Dark mode

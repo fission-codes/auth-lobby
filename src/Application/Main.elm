@@ -54,7 +54,7 @@ init flags url navKey =
                 Page.LinkingApplication
 
             else
-                Page.fromUrl url
+                Page.Choose
     in
     return
         { externalContext = externalContext
@@ -125,8 +125,11 @@ update msg =
             Debouncer.update update Debouncing.usernameAvailability.updateConfig a
 
         -----------------------------------------
-        -- URL
+        -- Routing
         -----------------------------------------
+        GoToPage a ->
+            Routing.goToPage a
+
         UrlChanged a ->
             Routing.urlChanged a
 

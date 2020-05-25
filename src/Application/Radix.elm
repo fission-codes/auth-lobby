@@ -62,8 +62,9 @@ type Msg
       -----------------------------------------
     | UsernameAvailabilityDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
-      -- URL
+      -- Routing
       -----------------------------------------
+    | GoToPage Page
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
 

@@ -37,13 +37,6 @@ src_dir  := "./src"
 	echo "📄  Copying static HTML files"
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
 
-	# We don't SPA routing on the server, so let's do this manually
-	mkdir -p {{dist_dir}}/create-account
-	mkdir -p {{dist_dir}}/link-account
-
-	cp {{dist_dir}}/index.html {{dist_dir}}/create-account/index.html
-	cp {{dist_dir}}/index.html {{dist_dir}}/link-account/index.html
-
 
 @images:
 	echo "🌄  Copying images"
