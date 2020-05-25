@@ -3,12 +3,12 @@ __UI for [auth.fission.codes](https://auth.fission.codes)__
 
 ## How does it work?
 
-_This SPA allows you to:_
+🧙‍♀️ _This SPA allows you to:_
 * Create a Fission account
 * Link a Fission account from another device/browser
 * Authorise an application
 
-_For each of those, you have two options:_
+🌓 _For each of those, you have two options:_
 * Redirecting back to a Fission-enabled application:
   ```
   https://auth.fission.codes
@@ -30,7 +30,7 @@ _For each of those, you have two options:_
   the user will be redirect to `https://chosen_username.fission.app?ucan=…`.
 
 
-When the user decides to go back to the app for some reason (eg. not agreeing  
+✋ When the user decides to go back to the app for some reason (eg. not agreeing  
 with the authorisation), the query parameter `cancelled=reason` will be added.
 
 
