@@ -63,8 +63,9 @@ init flags url navKey =
         , url = url
         , usedUsername = flags.usedUsername
 
+        -----------------------------------------
         -- Debouncers
-        -------------
+        -----------------------------------------
         , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
 
         -----------------------------------------

@@ -27,7 +27,7 @@ __UI for [auth.fission.codes](https://auth.fission.codes)__
   or go straight to the authorise-this-application screen.
 
 * When you don't provide the `redirectTo` query parameter,  
-  the user will be redirect to `https://chosen_username.fission.name?ucan=…`.
+  the user will be redirected to `https://chosen_username.fission.name?ucan=…`.
 
 
 ✋ When the user decides to go back to the app for some reason (eg. not agreeing  
