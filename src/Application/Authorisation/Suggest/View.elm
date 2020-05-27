@@ -4,6 +4,7 @@ import Branding
 import External.Context exposing (Context, defaultFailedState)
 import FeatherIcons
 import Html exposing (Html)
+import Html.Events as E
 import Icons
 import Loading
 import Radix exposing (..)
@@ -39,7 +40,10 @@ view context model =
             , T.mt_8
             ]
             [ S.button
-                [ T.bg_gray_200
+                [ E.onClick AllowAuthorisation
+
+                --
+                , T.bg_gray_200
                 , T.flex
                 , T.items_center
 
@@ -53,7 +57,10 @@ view context model =
 
             --
             , S.button
-                [ T.bg_gray_400
+                [ E.onClick DenyAuthorisation
+
+                --
+                , T.bg_gray_400
                 , T.flex
                 , T.items_center
                 , T.ml_3

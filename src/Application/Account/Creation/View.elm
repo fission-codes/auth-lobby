@@ -43,7 +43,7 @@ view context model =
 
 creatingAccount : Html msg
 creatingAccount =
-    [ Html.text "Just a moment, creating your file system." ]
+    [ Html.text "Just a moment, creating your account." ]
         |> Html.div [ T.italic, T.mt_3 ]
         |> List.singleton
         |> Loading.screen
