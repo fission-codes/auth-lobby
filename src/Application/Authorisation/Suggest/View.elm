@@ -7,6 +7,7 @@ import Html exposing (Html)
 import Html.Events as E
 import Icons
 import Loading
+import Maybe.Extra as Maybe
 import Radix exposing (..)
 import RemoteData exposing (RemoteData(..))
 import Styling as S
@@ -29,7 +30,9 @@ view context model =
             [ Html.text "Should I allow "
             , Html.span
                 [ T.font_semibold ]
-                [ Html.text context.redirectTo.host ]
+                [ Html.text context.redirectTo.host
+                , Html.text (Maybe.unwrap "" (String.fromInt >> (++) ":") context.redirectTo.port_)
+                ]
             , Html.text " access to your entire file system for a month?"
             ]
 
