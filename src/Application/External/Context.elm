@@ -1,6 +1,7 @@
 module External.Context exposing (..)
 
 import Browser.Navigation as Nav
+import Common exposing (ifThenElse)
 import FeatherIcons
 import Html exposing (Html, text)
 import Icons
@@ -19,6 +20,7 @@ import Url.Parser.Query as Query
 
 type alias Context =
     { did : String
+    , newUser : Maybe Bool
     , redirectTo : Url
     }
 
@@ -60,10 +62,15 @@ extractFromUrl url =
         Just c ->
             case c.redirectTo of
                 Just redirectTo ->
-                    Success { did = c.did, redirectTo = redirectTo }
+                    Success
+                        { did = c.did
+                        , newUser = c.newUser
+                        , redirectTo = redirectTo
+                        }
 
                 Nothing ->
-                    Failure { defaultFailedState | invalidRedirectTo = True }
+                    Failure
+                        { defaultFailedState | invalidRedirectTo = True }
 
         Nothing ->
             case url.query of
@@ -78,27 +85,30 @@ extractFromUrl url =
 
 
 redirectCommand :
-    { ucan : Maybe String, username : String }
+    Result String
+        { newUser : Bool
+        , ucan : String
+        , username : String
+        }
     -> ParsedContext
     -> Cmd msg
-redirectCommand { ucan, username } remoteData =
+redirectCommand result remoteData =
     let
         defaultUrl =
             { protocol = Url.Https
-            , host = username ++ ".fission.name"
+            , host = "fission.codes"
             , port_ = Nothing
             , path = ""
             , query = Nothing
             , fragment = Nothing
             }
 
-        maybeRedirectUrl =
+        redirectUrl =
             remoteData
                 |> RemoteData.map .redirectTo
-                |> RemoteData.toMaybe
+                |> RemoteData.withDefault defaultUrl
     in
-    maybeRedirectUrl
-        |> Maybe.withDefault defaultUrl
+    redirectUrl
         |> (\u ->
                 case u.query of
                     Just "" ->
@@ -112,14 +122,16 @@ redirectCommand { ucan, username } remoteData =
                     |> Maybe.map (String.split "&")
                     |> Maybe.withDefault []
                     |> List.append
-                        (case ( ucan, maybeRedirectUrl ) of
-                            ( Just ucantoo, Just _ ) ->
-                                [ "ucan=" ++ Url.percentEncode ucantoo
+                        (case result of
+                            Ok { newUser, ucan, username } ->
+                                [ "newUser=" ++ ifThenElse newUser "t" "f"
+                                , "ucan=" ++ Url.percentEncode ucan
                                 , "username=" ++ Url.percentEncode username
                                 ]
 
-                            _ ->
-                                []
+                            Err cancellationReason ->
+                                [ "cancelled=" ++ Url.percentEncode cancellationReason
+                                ]
                         )
                     |> String.join "&"
                     |> (\q -> { u | query = Just q })
@@ -220,13 +232,18 @@ warning nodes =
 
 
 queryStringParser =
-    Query.map2
-        (Maybe.map2
-            (\d r ->
-                { did = d
-                , redirectTo = Url.fromString r
-                }
-            )
+    Query.map3
+        (\n ->
+            Maybe.map2
+                (\d r ->
+                    { did = d
+                    , newUser = Maybe.map (String.toLower >> (==) "t") n
+                    , redirectTo = Url.fromString r
+                    }
+                )
         )
+        -- Optional
+        (Query.string "newUser")
+        -- Required
         (Query.string "did")
         (Query.string "redirectTo")

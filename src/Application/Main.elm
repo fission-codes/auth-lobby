@@ -1,11 +1,12 @@
 module Main exposing (main)
 
+import Account.Creation.Context
 import Account.Creation.State as Creation
+import Authorisation.State as Authorisation
 import Browser
 import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
-import External.Application as External
 import External.Context
 import Maybe.Extra as Maybe
 import Page
@@ -54,7 +55,15 @@ init flags url navKey =
                 Page.SuggestAuthorisation
 
             else
-                Page.Choose
+                case RemoteData.map .newUser externalContext of
+                    Success (Just True) ->
+                        Page.CreateAccount Account.Creation.Context.default
+
+                    Success (Just False) ->
+                        Page.LinkAccount
+
+                    _ ->
+                        Page.Choose
     in
     Return.singleton
         { externalContext = externalContext
@@ -85,8 +94,17 @@ update msg =
         Bypassed ->
             Return.singleton
 
+        -----------------------------------------
+        -- Authorisation
+        -----------------------------------------
+        AllowAuthorisation ->
+            Authorisation.allow
+
+        DenyAuthorisation ->
+            Authorisation.deny
+
         GotUcanForApplication a ->
-            External.gotUcanForApplication a
+            Authorisation.gotUcanForApplication a
 
         -----------------------------------------
         -- Create
@@ -100,8 +118,8 @@ update msg =
         GotCreateAccountFailure a ->
             Creation.gotCreateAccountFailure a
 
-        GotCreateAccountSuccess a ->
-            Creation.gotCreateAccountSuccess a
+        GotCreateAccountSuccess ->
+            Creation.gotCreateAccountSuccess
 
         GotCreateEmailInput a ->
             Creation.gotCreateEmailInput a
@@ -139,7 +157,7 @@ subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
         [ Ports.gotCreateAccountFailure GotCreateAccountFailure
-        , Ports.gotCreateAccountSuccess GotCreateAccountSuccess
+        , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotUcanForApplication GotUcanForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
         ]
@@ -151,7 +169,7 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = title model
+    { title = title model ++ titleSuffix model
     , body = View.view model
     }
 
@@ -163,17 +181,23 @@ title model =
             "Fission"
 
         Page.CreateAccount _ ->
-            "Create account" ++ titleSuffix
+            "Create account"
 
         Page.LinkAccount ->
-            "Sign in" ++ titleSuffix
+            "Sign in"
 
         Page.SuggestAuthorisation ->
-            "Authorise" ++ titleSuffix
+            "Authorise"
 
         Page.PerformingAuthorisation ->
-            "Granting access" ++ titleSuffix
+            "Granting access"
 
 
-titleSuffix =
-    " - Fission"
+titleSuffix : Model -> String
+titleSuffix model =
+    case model.page of
+        Page.Choose ->
+            ""
+
+        _ ->
+            " - Fission"

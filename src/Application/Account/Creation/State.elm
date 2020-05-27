@@ -44,11 +44,7 @@ createAccount context model =
             Return.singleton model
 
         ( True, _ ) ->
-            let
-                dnsLink =
-                    context.username ++ ".fission.name"
-            in
-            { did = Maybe.map .did (RemoteData.toMaybe model.externalContext)
+            { did = Maybe.unwrap "" .did (RemoteData.toMaybe model.externalContext)
             , email = String.trim context.email
             , username = String.trim context.username
             }
@@ -64,8 +60,8 @@ gotCreateAccountFailure err model =
     Return.singleton { model | reCreateAccount = Failure err }
 
 
-gotCreateAccountSuccess : { ucan : Maybe String } -> Manager
-gotCreateAccountSuccess ({ ucan } as params) model =
+gotCreateAccountSuccess : Manager
+gotCreateAccountSuccess model =
     let
         maybeUsername =
             case model.page of

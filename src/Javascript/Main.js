@@ -45,18 +45,31 @@ async function bootElm() {
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
   app.ports.createAccount.subscribe(createAccount)
-  // app.ports.linkApp.subscribe(linkApp)
+  app.ports.linkApp.subscribe(linkApp)
 }
 
 
 async function checkIfUsernameIsAvailable(username) {
   if (sdk.user.isUsernameValid(username)) {
-    const isAvailable = await sdk.user.isUsernameAvailable(username)
+    const isAvailable = await isUsernameAvailable(username)
     app.ports.gotUsernameAvailability.send({ available: isAvailable, valid: true })
 
   } else {
     app.ports.gotUsernameAvailability.send({ available: false, valid: false })
 
+  }
+}
+
+
+async function isUsernameAvailable(username) {
+  try {
+    const resp = await fetch(
+      `https://${username}.fission.name`,
+      { method: "HEAD", mode: "no-cors" }
+    )
+    return resp.status >= 300
+  } catch (_) {
+    return true
   }
 }
 
@@ -75,7 +88,7 @@ async function createAccount(args) {
     localStorage.setItem("usedUsername", args.username)
 
     app.ports.gotCreateAccountSuccess.send(
-      { ucan: args.did ? await makeUcan(args.did) : null }
+      null
     )
 
   } else {

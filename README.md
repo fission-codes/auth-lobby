@@ -29,6 +29,9 @@ You can define some optional parameters as well:
 When the user decides to go back to the app for some reason (eg. not agreeing  
 with the authorisation), the query parameter `cancelled=reason` will be added.
 
+Possible cancellation reasons:
+* `DENIED`, user chose to cancel the authorization
+
 
 
 ## Development

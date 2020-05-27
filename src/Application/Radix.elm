@@ -46,6 +46,11 @@ type alias Model =
 
 type Msg
     = Bypassed
+      -----------------------------------------
+      -- Authorisation
+      -----------------------------------------
+    | AllowAuthorisation
+    | DenyAuthorisation
     | GotUcanForApplication { ucan : String }
       -----------------------------------------
       -- Create
@@ -53,7 +58,7 @@ type Msg
     | CheckIfUsernameIsAvailable
     | CreateAccount Create.Context
     | GotCreateAccountFailure String
-    | GotCreateAccountSuccess { ucan : Maybe String }
+    | GotCreateAccountSuccess
     | GotCreateEmailInput String
     | GotCreateUsernameInput String
     | GotUsernameAvailability { available : Bool, valid : Bool }

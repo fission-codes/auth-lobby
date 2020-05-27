@@ -5,7 +5,7 @@ import Account.Creation.View
 import Authorisation.Performing.View
 import Authorisation.Suggest.View
 import Branding
-import External.Context
+import External.Context exposing (Context, defaultFailedState)
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
@@ -28,23 +28,34 @@ view model =
         , T.items_center
         , T.justify_center
         , T.min_h_screen
+        , T.px_4
         , T.w_screen
         ]
-        [ case model.page of
-            Page.Choose ->
-                choose model
+        [ case model.externalContext of
+            Failure _ ->
+                External.Context.note model.externalContext
 
-            Page.CreateAccount context ->
-                Account.Creation.View.view context model
+            Success context ->
+                case model.page of
+                    Page.Choose ->
+                        choose model
 
-            Page.LinkAccount ->
-                Html.text "Under construction 🚜"
+                    Page.CreateAccount a ->
+                        Account.Creation.View.view a model
 
-            Page.PerformingAuthorisation ->
-                Authorisation.Performing.View.view model
+                    Page.LinkAccount ->
+                        Html.text "Under construction 🚜"
 
-            Page.SuggestAuthorisation ->
-                Authorisation.Suggest.View.view model
+                    Page.PerformingAuthorisation ->
+                        Authorisation.Performing.View.view model
+
+                    Page.SuggestAuthorisation ->
+                        Authorisation.Suggest.View.view context model
+
+            _ ->
+                { defaultFailedState | required = True }
+                    |> Failure
+                    |> External.Context.note
         ]
     ]
 
