@@ -58,7 +58,7 @@ src_dir  := "./src"
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
-@production-build: css-small production-elm html js images static
+@production-build: clean css-large production-elm css-small html js images static
 
 
 @static:
@@ -90,7 +90,7 @@ main_css := src_dir + "/Css/Main.css"
 	NODE_ENV=production pnpx etc {{main_css}} \
 		--config tailwind.config.js \
 		--output {{dist_css}} \
-		--purge-content ./build/javascript.js
+		--purge-content {{dist_elm}}
 	echo ""
 
 
