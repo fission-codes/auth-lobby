@@ -21,12 +21,12 @@ import Tailwind as T
 view : Context -> Model -> Html Msg
 view context model =
     Html.div
-        []
+        [ T.text_center ]
         [ Branding.logo { usedUsername = model.usedUsername }
 
         --
         , Html.div
-            [ T.mt_8 ]
+            [ T.mt_10 ]
             [ Html.text "Should I allow "
             , Html.span
                 [ T.font_semibold ]
@@ -40,7 +40,7 @@ view context model =
         , Html.div
             [ T.flex
             , T.justify_center
-            , T.mt_8
+            , T.mt_10
             ]
             [ S.button
                 [ E.onClick AllowAuthorisation

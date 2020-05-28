@@ -25,8 +25,12 @@ logo { usedUsername } =
         , T.cursor_pointer
         , T.max_w_xs
         , T.mx_auto
+        , T.px_6
         , T.relative
         , T.text_gray_200
+
+        --
+        , T.sm__px_0
 
         -- Dark mode
         ------------
@@ -46,6 +50,7 @@ logo { usedUsername } =
             , T.bg_pink
             , T.font_display
             , T.font_medium
+            , T.hidden
             , T.neg_mr_1
             , T.right_0
             , T.rounded
@@ -56,6 +61,9 @@ logo { usedUsername } =
             , T.translate_x_10
             , T.transform
             , T.uppercase
+
+            --
+            , T.sm__block
 
             -- Dark mode
             ------------

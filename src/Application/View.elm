@@ -85,7 +85,8 @@ choose model =
             , T.mx_auto
             ]
             [ Html.text "It doesn't look like you've signed in on this device before."
-            , Html.br [] []
+            , Html.br [ T.hidden, T.sm__block ] []
+            , Html.span [ T.sm__hidden ] [ Html.text " " ]
             , Html.text "If you don't know what Fission is, learn more on "
             , Html.a
                 [ A.href "https://fission.codes"
