@@ -20,7 +20,7 @@ You can define some optional parameters as well:
 * `newUser`, `t` or `f`, if this parameter is given and the user has not signed in before, this will pre-select the appropriate screen for the user. If `newUser` is set to `t`, it'll show the create-account screen, and if set to `f`, it'll show the sign-in (aka. link) screen. If this parameter is not given at all, the user will be able to chose themselves.
 
 
-🎒_When redirecting back it'll add the query params:_
+🎒 _When redirecting back it'll add the query params:_
 
 * `newUser`, `t` or `f`, whether the user has just created an account or not
 * `ucan`, a token authorising the application to perform actions
