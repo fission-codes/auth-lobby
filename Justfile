@@ -48,17 +48,26 @@ src_dir  := "./src"
 	pnpm install
 	mkdir -p web_modules
 	curl https://unpkg.com/get-ipfs@1.2.0/dist/get-ipfs.umd.js -o web_modules/get-ipfs.js
-	curl https://unpkg.com/keystore-idb@0.12.0-alpha/index.umd.js -o web_modules/keystore-idb.js
+	curl https://unpkg.com/ipfs@0.46.0/dist/index.min.js -o web_modules/ipfs.min.js
 
 
 @js:
 	echo "📄  Copying JS files"
 	cp -r web_modules {{dist_dir}}
-	cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
+	# cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
+	cp ../ts-sdk/dist/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
 @production-build: clean css-large production-elm css-small html js images static
+	echo "⚙️  Minifying Javascript Files"
+	{{node_bin}}/terser-dir \
+		{{dist_dir}} \
+		--each --extension .js \
+		--patterns "**/*.js, !**/*.min.js" \
+		--pseparator ", " \
+		--output {{dist_dir}} \
+		-- --compress --mangle
 
 
 @static:
