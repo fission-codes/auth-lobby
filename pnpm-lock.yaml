@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472
-  fission-sdk: 0.6.2
+  fission-sdk: 0.7.0
 devDependencies:
   elm-tailwind-css: 0.1.1
   tailwindcss: 1.4.6
@@ -61,10 +61,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
-  /@types/lodash/4.14.151:
-    dev: false
-    resolution:
-      integrity: sha512-Zst90IcBX5wnwSu7CAS0vvJkTjTELY4ssKbHiTnGcJgi170uiS8yQDdc3v6S77bRqYQIN1App5a1Pc2lceE5/g==
   /@types/minimist/1.2.0:
     dev: true
     resolution:
@@ -390,12 +386,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
-  /decode-uri-component/0.2.0:
-    dev: false
-    engines:
-      node: '>=0.10'
-    resolution:
-      integrity: sha1-6zkTMzRYd1y4TNGh+uBiEGu4dUU=
   /defined/1.0.0:
     dev: true
     resolution:
@@ -512,22 +502,20 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
-  /fission-sdk/0.6.2:
+  /fission-sdk/0.7.0:
     dependencies:
-      '@types/lodash': 4.14.151
       base58-universal: 1.0.0
       borc: 2.1.2
       get-ipfs: 1.2.0
       ipld-dag-pb: 0.18.5
-      keystore-idb: 0.11.1
-      lodash: 4.17.15
+      keystore-idb: 0.12.0
+      localforage: 1.7.3
       make-error: 1.3.6
-      query-string: 6.12.1
     dev: false
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-tSIAb3YaH44G6Em7uLSgospM2yani+RTMKchI8QIuodFy9tpJS9hjsp8jR7qlPEEtkgRos+Kio+fhQPvbGVBiw==
+      integrity: sha512-pJtju6G6xf8aZifrg9P4jwoUBSF7mcsZgP8AWDUsyRbu8ScZwAifklAebEl6p9lHDFVd1Etc+MCP0jy6MdS8jQ==
   /fs-extra/8.1.0:
     dependencies:
       graceful-fs: 4.2.4
@@ -719,14 +707,14 @@ packages:
       graceful-fs: 4.2.4
     resolution:
       integrity: sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=
-  /keystore-idb/0.11.1:
+  /keystore-idb/0.12.0:
     dependencies:
       localforage: 1.7.3
     dev: false
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-1+0mkbriz9591KvYK3ZJ62m7HFmIhmboSxZLKOvcolspFc6F274tIMZ6oUx7iISVIBfShQqbANPZceZARV8Kzw==
+      integrity: sha512-3xfMYM1lCat92xBLGRf4HdG/wmegd8E4PgZAb0wCj8mLS3tG5QJyN3Ep1KnnALjwA+0qlRjDk1rG3SZzY1pLKA==
   /kind-of/6.0.3:
     dev: true
     engines:
@@ -771,6 +759,7 @@ packages:
     resolution:
       integrity: sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
   /lodash/4.17.15:
+    dev: true
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /make-error/1.3.6:
@@ -1191,16 +1180,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-wngRSLW1dpNr8kr3TL9nTJMyTFI5BiRiaUUEys5M1CA4zEHLF25fRHoshEeDqmhstaNTOddmpYM34zRrUtEGbQ==
-  /query-string/6.12.1:
-    dependencies:
-      decode-uri-component: 0.2.0
-      split-on-first: 1.1.0
-      strict-uri-encode: 2.0.0
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-OHj+zzfRMyj3rmo/6G8a5Ifvw3AleL/EbcHMD27YA31Q+cO5lfmQxECkImuNVjcskLcvBRVHNAB3w6udMs1eAA==
   /quick-lru/4.0.1:
     dev: true
     engines:
@@ -1333,22 +1312,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-J+FWzZoynJEXGphVIS+XEh3kFSjZX/1i9gFBaWQcB+/tmpe2qUsSBABpcxqxnAxFdiUFEgAX1bjYGQvIZmoz9Q==
-  /split-on-first/1.1.0:
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
   /stable/0.1.8:
     dev: false
     resolution:
       integrity: sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==
-  /strict-uri-encode/2.0.0:
-    dev: false
-    engines:
-      node: '>=4'
-    resolution:
-      integrity: sha1-ucczDHBChi9rFC3CdLvMWGbONUY=
   /string_decoder/1.3.0:
     dependencies:
       safe-buffer: 5.2.1
@@ -1529,7 +1496,7 @@ packages:
 specifiers:
   elm-tailwind-css: ^0.1.1
   fission-kit: 'fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472'
-  fission-sdk: 0.6.2
+  fission-sdk: 0.7.0
   tailwindcss: ^1.4.6
   tailwindcss-animations: ^2.0.0
   terser-dir: ^1.0.7

@@ -54,8 +54,7 @@ src_dir  := "./src"
 @js:
 	echo "📄  Copying JS files"
 	cp -r web_modules {{dist_dir}}
-	# cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
-	cp ../ts-sdk/dist/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
+	cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
