@@ -1,0 +1,69 @@
+@charset "UTF-8";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  @apply font-body min-h-screen text-gray-100;
+  text-rendering: optimizeLegibility;
+}
+
+
+@screen dark {
+  body {
+    @apply bg-darkness text-gray-500;
+  }
+}
+
+
+
+/* Utilities
+   ========= */
+
+.underline-thick {
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+
+
+/* Forms
+   ----- */
+
+input::placeholder,
+textarea::placeholder {
+  @apply text-gray-400 opacity-75;
+}
+
+
+input:-moz-ui-invalid,
+textarea:-moz-ui-invalid {
+  @apply border-pink outline-none shadow-none;
+}
+
+
+input:user-invalid,
+textarea:user-invalid {
+  @apply border-pink outline-none shadow-none;
+}
+
+
+input:focus,
+textarea:focus {
+  @apply border-gray-300;
+}
+
+
+@screen dark {
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-300 opacity-75;
+  }
+
+  input:user-invalid,
+  textarea:user-invalid {
+    @apply border-pink-shade;
+  }
+}

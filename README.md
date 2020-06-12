@@ -1,44 +1,49 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+__UI for [auth.fission.codes](https://auth.fission.codes)__
 
-## Available Scripts
 
-In the project directory, you can run:
 
-### `yarn start`
+## How does it work?
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+⚗️ _This SPA allows you to:_
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+* Create a Fission account
+* Link a Fission account from another device/browser
+* Authorise an application
 
-### `yarn test`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+🔑 _For each of those, you have to pass the required query parameters:_
 
-### `yarn build`
+* `did`, the did of the user on the domain you'll be redirect to
+* `redirectTo`, the url the user will redirected to
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+You can define some optional parameters as well:
+* `newUser`, `t` or `f`, if this parameter is given and the user has not signed in before, this will pre-select the appropriate screen for the user. If `newUser` is set to `t`, it'll show the create-account screen, and if set to `f`, it'll show the sign-in (aka. link) screen. If this parameter is not given at all, the user will be able to chose themselves.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+🎒 _When redirecting back it'll add the query params:_
 
-### `yarn eject`
+* `newUser`, `t` or `f`, whether the user has just created an account or not
+* `ucan`, a token authorising the application to perform actions
+* `username`, the username that was chosen by the user
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+When the user decides to go back to the app for some reason (eg. not agreeing  
+with the authorisation), the query parameter `cancelled=reason` will be added.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Possible cancellation reasons:
+* `DENIED`, user chose to cancel the authorization
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+## Development
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+* [Node v14+](https://nodejs.org/)
+* [PNPM](https://pnpm.js.org/)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```shell
+just install-deps
+just dev-build
+
+# Build, serve & watch
+# (requires watchexec & devd)
+just
+```
