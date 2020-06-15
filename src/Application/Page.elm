@@ -1,6 +1,7 @@
 module Page exposing (..)
 
 import Account.Creation.Context as Creation
+import Account.Linking.Context as Linking
 
 
 
@@ -10,6 +11,6 @@ import Account.Creation.Context as Creation
 type Page
     = Choose
     | CreateAccount Creation.Context
-    | LinkAccount
+    | LinkAccount Linking.Context
     | PerformingAuthorisation
     | SuggestAuthorisation

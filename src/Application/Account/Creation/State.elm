@@ -3,7 +3,6 @@ module Account.Creation.State exposing (..)
 import Account.Creation.Context as Context exposing (Context)
 import Browser.Navigation as Nav
 import Debouncing
-import External.Context as External
 import Maybe.Extra as Maybe
 import Page
 import Ports

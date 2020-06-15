@@ -2,6 +2,8 @@ module View exposing (..)
 
 import Account.Creation.Context
 import Account.Creation.View
+import Account.Linking.Context
+import Account.Linking.View
 import Authorisation.Performing.View
 import Authorisation.Suggest.View
 import Branding
@@ -43,8 +45,8 @@ view model =
                     Page.CreateAccount a ->
                         Account.Creation.View.view a model
 
-                    Page.LinkAccount ->
-                        Html.text "Under construction 🚜"
+                    Page.LinkAccount a ->
+                        Account.Linking.View.view a model
 
                     Page.PerformingAuthorisation ->
                         Authorisation.Performing.View.view model
@@ -112,8 +114,13 @@ choose model =
             , T.mx_auto
             ]
             [ S.button
-                [ E.onClick (GoToPage <| Page.CreateAccount Account.Creation.Context.default)
-                , T.bg_gray_200
+                [ T.bg_gray_200
+
+                --
+                , Account.Creation.Context.default
+                    |> Page.CreateAccount
+                    |> GoToPage
+                    |> E.onClick
 
                 -- Dark mode
                 ------------
@@ -125,6 +132,12 @@ choose model =
             , S.button
                 [ T.bg_gray_400
                 , T.ml_3
+
+                --
+                , Account.Linking.Context.default
+                    |> Page.LinkAccount
+                    |> GoToPage
+                    |> E.onClick
 
                 -- Dark mode
                 ------------

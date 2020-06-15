@@ -2,6 +2,8 @@ module Main exposing (main)
 
 import Account.Creation.Context
 import Account.Creation.State as Creation
+import Account.Linking.Context
+import Account.Linking.State as Linking
 import Authorisation.State as Authorisation
 import Browser
 import Browser.Navigation as Nav
@@ -60,7 +62,7 @@ init flags url navKey =
                         Page.CreateAccount Account.Creation.Context.default
 
                     Success (Just False) ->
-                        Page.LinkAccount
+                        Page.LinkAccount Account.Linking.Context.default
 
                     _ ->
                         Page.Choose
@@ -137,6 +139,12 @@ update msg =
             Debouncer.update update Debouncing.usernameAvailability.updateConfig a
 
         -----------------------------------------
+        -- Linking
+        -----------------------------------------
+        GotLinkUsernameInput a ->
+            Linking.gotUsernameInput a
+
+        -----------------------------------------
         -- Routing
         -----------------------------------------
         GoToPage a ->
@@ -183,7 +191,7 @@ title model =
         Page.CreateAccount _ ->
             "Create account"
 
-        Page.LinkAccount ->
+        Page.LinkAccount _ ->
             "Sign in"
 
         Page.SuggestAuthorisation ->

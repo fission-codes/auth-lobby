@@ -67,6 +67,10 @@ type Msg
       -----------------------------------------
     | UsernameAvailabilityDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
+      -- Linking
+      -----------------------------------------
+    | GotLinkUsernameInput String
+      -----------------------------------------
       -- Routing
       -----------------------------------------
     | GoToPage Page
