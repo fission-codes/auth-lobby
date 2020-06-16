@@ -22,7 +22,8 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { externalContext : External.ParsedContext
+    { dataRootDomain : String
+    , externalContext : External.ParsedContext
     , page : Page
     , navKey : Nav.Key
     , url : Url

@@ -4,19 +4,33 @@
 
 */
 
-const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
-const PEER_TCP = "/ip4/3.215.160.238/tcp/4001/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
+const apiEndpoint = "https://runfission.net"
+const dataRootDomain = "fissionuser.net"
+
 const sdk = fissionSdk
 
 let app
 let ipfs
-let ks
 
 
 // 🚀
 
 
-bootElm()
+bootElm().then(_ => {
+  return sdk.ipfs.getIpfs({
+    permissions: [
+      "id",
+      "swarm.connect",
+      "version",
+    ],
+
+    jsIpfs: "./web_modules/ipfs.min.js"
+  })
+
+}).then(i => {
+  ipfs = i
+
+})
 
 
 
@@ -28,6 +42,7 @@ async function bootElm() {
 
   app = Elm.Main.init({
     flags: {
+      dataRootDomain,
       url: location.href,
       usedUsername
     }
@@ -51,7 +66,7 @@ function ports() {
 
 async function checkIfUsernameIsAvailable(username) {
   if (sdk.lobby.isUsernameValid(username)) {
-    const isAvailable = await isUsernameAvailable(username)
+    const isAvailable = await sdk.lobby.isUsernameAvailable(username, dataRootDomain)
     app.ports.gotUsernameAvailability.send({ available: isAvailable, valid: true })
 
   } else {
@@ -61,30 +76,10 @@ async function checkIfUsernameIsAvailable(username) {
 }
 
 
-async function isUsernameAvailable(username) {
-  try {
-    const resp = await fetch(
-      `https://${username}.fission.name`,
-      { method: "HEAD", mode: "no-cors" }
-    )
-    return resp.status >= 300
-  } catch (_) {
-    return true
-  }
-}
-
-
 async function createAccount(args) {
-  let response
+  const { success } = await sdk.lobby.createAccount(args, { apiEndpoint })
 
-  try {
-    response = await sdk.lobby.createAccount(args)
-  } catch (err) {
-    console.error(err)
-    response = { status: 500 }
-  }
-
-  if (response.status < 300) {
+  if (success) {
     localStorage.setItem("usedUsername", args.username)
 
     app.ports.gotCreateAccountSuccess.send(
@@ -104,27 +99,4 @@ async function linkApp({ did }) {
   app.ports.gotUcanForApplication.send(
     { ucan: await sdk.lobby.makeRootUcan(did) }
   )
-}
-
-
-
-// IPFS
-// ====
-
-async function bootIpfs() {
-  ipfs = await getIpfs.default({
-    permissions: [
-      "id",
-      "swarm.connect",
-      "version",
-    ],
-
-    browserPeers: [ PEER_WSS ],
-    localPeers: [ PEER_TCP ],
-    jsIpfs: "./web_modules/ipfs.min.js"
-  })
-
-  sdk.ipfs.setIpfs(ipfs)
-
-  return null
 }

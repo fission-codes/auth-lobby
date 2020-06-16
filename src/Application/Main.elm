@@ -26,7 +26,8 @@ import View
 
 
 type alias Flags =
-    { usedUsername : Maybe String
+    { dataRootDomain : String
+    , usedUsername : Maybe String
     }
 
 
@@ -68,7 +69,8 @@ init flags url navKey =
                         Page.Choose
     in
     Return.singleton
-        { externalContext = externalContext
+        { dataRootDomain = flags.dataRootDomain
+        , externalContext = externalContext
         , navKey = navKey
         , page = page
         , url = url

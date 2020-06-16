@@ -33,7 +33,17 @@ view context model =
                 [ Html.text context.redirectTo.host
                 , Html.text (Maybe.unwrap "" (String.fromInt >> (++) ":") context.redirectTo.port_)
                 ]
-            , Html.text " access to your entire file system for a month?"
+
+            -- Resource
+            -----------
+            , Html.text " access to "
+            , Html.text "your entire filesystem"
+
+            -- Duration
+            -----------
+            , Html.text " for a "
+            , Html.text "month"
+            , Html.text "?"
             ]
 
         --

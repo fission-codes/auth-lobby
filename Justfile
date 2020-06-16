@@ -47,7 +47,6 @@ src_dir  := "./src"
 	echo "🦕  Downloading dependencies"
 	pnpm install
 	mkdir -p web_modules
-	curl https://unpkg.com/get-ipfs@1.2.0/dist/get-ipfs.umd.js -o web_modules/get-ipfs.js
 	curl https://unpkg.com/ipfs@0.46.0/dist/index.min.js -o web_modules/ipfs.min.js
 
 
