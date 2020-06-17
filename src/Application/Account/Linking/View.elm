@@ -36,9 +36,10 @@ formWithToppings context model =
 form : Context -> Html Msg
 form context =
     Html.form
-        [ -- E.onSubmit (CreateAccount context)
-          --
-          T.max_w_sm
+        [ E.onSubmit (LinkAccount context)
+
+        --
+        , T.max_w_sm
         , T.mt_8
         , T.mx_auto
         , T.w_full
@@ -63,22 +64,11 @@ form context =
 
         -- Sign in
         ----------
-        , let
-            enteredUsername =
-                String.trim context.username /= ""
-          in
-          S.button
+        , S.button
             [ T.bg_gray_200
             , T.block
-            , T.duration_75
-            , S.default_transition_easing
             , T.mt_6
-            , T.transition_opacity
             , T.w_full
-
-            --
-            , ifThenElse enteredUsername T.opacity_100 T.opacity_0
-            , ifThenElse enteredUsername T.pointer_events_auto T.pointer_events_none
 
             -- Dark mode
             ------------

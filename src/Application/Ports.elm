@@ -1,5 +1,9 @@
 port module Ports exposing (..)
 
+import Json.Decode as Json
+
+
+
 -- 📣
 
 
@@ -10,6 +14,16 @@ port createAccount : { did : String, email : String, username : String } -> Cmd 
 
 
 port linkApp : { did : String } -> Cmd msg
+
+
+
+-- 📣  ▒▒  SECURE CHANNEL
+
+
+port openSecureChannel : () -> Cmd msg
+
+
+port publishOnSecureChannel : () -> Cmd msg
 
 
 
@@ -26,3 +40,16 @@ port gotUcanForApplication : ({ ucan : String } -> msg) -> Sub msg
 
 
 port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg
+
+
+
+-- 📰  ▒▒  SECURE CHANNEL
+
+
+port gotSecureChannelMessage : (Json.Value -> msg) -> Sub msg
+
+
+port secureChannelOpened : (() -> msg) -> Sub msg
+
+
+port secureChannelTimeout : (() -> msg) -> Sub msg

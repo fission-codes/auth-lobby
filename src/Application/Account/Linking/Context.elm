@@ -4,7 +4,8 @@ module Account.Linking.Context exposing (..)
 
 
 type alias Context =
-    { username : String
+    { requestOtherDevice : Bool
+    , username : String
     }
 
 
@@ -14,5 +15,6 @@ type alias Context =
 
 default : Context
 default =
-    { username = ""
+    { requestOtherDevice = False
+    , username = ""
     }

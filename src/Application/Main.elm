@@ -7,6 +7,7 @@ import Account.Linking.State as Linking
 import Authorisation.State as Authorisation
 import Browser
 import Browser.Navigation as Nav
+import Channel.State as Channel
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
 import External.Context
@@ -68,7 +69,7 @@ init flags url navKey =
                     _ ->
                         Page.Choose
     in
-    Return.singleton
+    return
         { dataRootDomain = flags.dataRootDomain
         , externalContext = externalContext
         , navKey = navKey
@@ -86,6 +87,14 @@ init flags url navKey =
         -----------------------------------------
         , reCreateAccount = RemoteData.NotAsked
         }
+        -- If authenticated, subscribe to the pubsub channel.
+        (case flags.usedUsername of
+            Just _ ->
+                Ports.openSecureChannel ()
+
+            Nothing ->
+                Cmd.none
+        )
 
 
 
@@ -146,6 +155,9 @@ update msg =
         GotLinkUsernameInput a ->
             Linking.gotUsernameInput a
 
+        LinkAccount a ->
+            Linking.linkAccount a
+
         -----------------------------------------
         -- Routing
         -----------------------------------------
@@ -157,6 +169,18 @@ update msg =
 
         UrlRequested a ->
             Routing.urlRequested a
+
+        -----------------------------------------
+        -- Secure Channel
+        -----------------------------------------
+        GotSecureChannelMessage a ->
+            Channel.gotMessage a
+
+        SecureChannelOpened ->
+            Channel.opened
+
+        SecureChannelTimeout ->
+            Channel.timeout
 
 
 
@@ -170,6 +194,12 @@ subscriptions _ =
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotUcanForApplication GotUcanForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
+
+        -- Secure Channel
+        -----------------
+        , Ports.gotSecureChannelMessage GotSecureChannelMessage
+        , Ports.secureChannelOpened (\_ -> SecureChannelOpened)
+        , Ports.secureChannelTimeout (\_ -> SecureChannelTimeout)
         ]
 
 
