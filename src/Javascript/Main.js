@@ -68,16 +68,21 @@ let rootDidCache
 /**
  * Get the root DID for a user.
  *
- * That might be the DID on this domain/device,
- * or it could be another DID from a UCAN.
+ * That might be the DID of this domain/device,
+ * it could be another DID from a UCAN,
+ * or it might be that we need to look this up.
  *
  * The only way we get a UCAN in this lobby,
  * is to link this domain/device to another one.
  */
-async function rootDid() {
+async function rootDid(maybeUsername) {
+  let ucan
+
   if (rootDidCache) {
     null
-  } else if (let ucan = localStorage.getItem("ucan")) {
+  } else if (maybeUsername) {
+    rootDidCache = await sdk.dns.lookupTxtRecord(`_did.${maybeUsername}.${DATA_ROOT_DOMAIN}`)
+  } else if (ucan = localStorage.getItem("ucan")) {
     rootDidCache = sdk.core.ucanRootIssuer(ucan)
   } else {
     rootDidCache = await sdk.core.did()
@@ -148,13 +153,22 @@ async function linkApp({ did }) {
  * If it succeeds, it'll call the `secureChannelOpened` port,
  * otherwise the `secureChannelTimeout` port will called.
  */
-async function openSecureChannel() {
-  await ipfs.pubsub.subscribe(await rootDid(), ({ data }) => {
-    const decodedJson = JSON.parse(new TextDecoder().decode(data))
-    app.ports.gotSecureChannelMessage.send(decodedJson)
+async function openSecureChannel(maybeUsername) {
+  console.log(await rootDid(maybeUsername))
+  await ipfs.pubsub.subscribe(await rootDid(maybeUsername), ({ from, data }) => {
+    const string = new TextDecoder().decode(data)
+    const decodedJson = JSON.parse(string)
+
+    console.log(decodedJson)
+
+    app.ports.gotSecureChannelMessage.send({
+      ...decodedJson,
+      from,
+      timestamp: new Date().now()
+    })
 
   }, {
-    timeout: 5000
+    timeout: 30000
 
   }).then(_ => {
     app.ports.secureChannelOpened.send(null)
@@ -166,6 +180,23 @@ async function openSecureChannel() {
 }
 
 
-async function publishOnSecureChannel(string) {
-  await ipfs.pubsub.publish(await rootDid(), string)
+async function publishOnSecureChannel(maybeUsername, dataWithPlaceholders) {
+  const payloadToSign = dataWithPlaceholders.signature
+    ? { ...dataWithPlaceholders }
+    : {}
+
+  delete payloadToSign.signature
+
+  // Replace placeholders
+  const data = {
+    ...dataWithPlaceholders,
+    did: dataWithPlaceholders.did ? await sdk.core.did() : undefined,
+    signature: dataWithPlaceholders.signature ? await ks.sign(payloadToSign) : undefined,
+  }
+
+  // Publish message
+  await ipfs.pubsub.publish(
+    await rootDid(maybeUsername),
+    JSON.stringify(data)
+  )
 }

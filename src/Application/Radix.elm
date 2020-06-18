@@ -74,6 +74,7 @@ type Msg
       -----------------------------------------
     | GotLinkUsernameInput String
     | LinkAccount Linking.Context
+    | StartLinkingExchange Linking.Context ( String, String )
       -----------------------------------------
       -- Routing
       -----------------------------------------

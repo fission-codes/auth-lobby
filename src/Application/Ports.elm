@@ -20,10 +20,10 @@ port linkApp : { did : String } -> Cmd msg
 -- 📣  ▒▒  SECURE CHANNEL
 
 
-port openSecureChannel : () -> Cmd msg
+port openSecureChannel : Maybe String -> Cmd msg
 
 
-port publishOnSecureChannel : () -> Cmd msg
+port publishOnSecureChannel : ( Maybe String, Json.Value ) -> Cmd msg
 
 
 

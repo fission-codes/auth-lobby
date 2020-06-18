@@ -1,10 +1,15 @@
 module Account.Linking.Context exposing (..)
 
+import Account.Linking.Exchange exposing (Exchange)
+
+
+
 -- 🧩
 
 
 type alias Context =
-    { requestOtherDevice : Bool
+    { exchange : Maybe Exchange
+    , requestOtherDevice : Bool
     , username : String
     }
 
@@ -15,6 +20,7 @@ type alias Context =
 
 default : Context
 default =
-    { requestOtherDevice = False
+    { exchange = Nothing
+    , requestOtherDevice = False
     , username = ""
     }

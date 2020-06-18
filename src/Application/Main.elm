@@ -90,7 +90,7 @@ init flags url navKey =
         -- If authenticated, subscribe to the pubsub channel.
         (case flags.usedUsername of
             Just _ ->
-                Ports.openSecureChannel ()
+                Ports.openSecureChannel Nothing
 
             Nothing ->
                 Cmd.none
@@ -157,6 +157,9 @@ update msg =
 
         LinkAccount a ->
             Linking.linkAccount a
+
+        StartLinkingExchange a b ->
+            Linking.startExchange a b
 
         -----------------------------------------
         -- Routing

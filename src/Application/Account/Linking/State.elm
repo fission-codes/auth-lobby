@@ -1,6 +1,7 @@
 module Account.Linking.State exposing (..)
 
 import Account.Linking.Context as Context exposing (Context)
+import Account.Linking.Exchange as Exchange
 import Page
 import Ports
 import Radix exposing (..)
@@ -21,7 +22,21 @@ linkAccount : Context -> Manager
 linkAccount context model =
     return
         { model | page = Page.LinkAccount { context | requestOtherDevice = True } }
-        (Ports.openSecureChannel ())
+        (Ports.openSecureChannel <| Just context.username)
+
+
+startExchange : Context -> ( String, String ) -> Manager
+startExchange context nonces model =
+    nonces
+        |> Exchange.inquire context.username
+        |> Return.map
+            (\e ->
+                { context | exchange = Just e }
+            )
+        |> Return.map
+            (\c ->
+                { model | page = Page.LinkAccount c }
+            )
 
 
 
