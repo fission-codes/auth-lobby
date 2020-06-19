@@ -16,21 +16,24 @@ import Tailwind as T
 
 
 view : Context -> Model -> Html Msg
-view =
-    formWithToppings
+view context model =
+    Html.div
+        []
+        [ Branding.logo { usedUsername = model.usedUsername }
+
+        --
+        , if context.waitingForDevices then
+            Html.div
+                []
+                [ Html.text "Open this website on your other device" ]
+
+          else
+            form context
+        ]
 
 
 
 -- FORM
-
-
-formWithToppings : Context -> Model -> Html Msg
-formWithToppings context model =
-    Html.div
-        []
-        [ Branding.logo { usedUsername = model.usedUsername }
-        , form context
-        ]
 
 
 form : Context -> Html Msg

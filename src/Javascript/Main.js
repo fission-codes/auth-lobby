@@ -13,11 +13,10 @@ let app
 let ipfs
 
 
-
 // 🚀
 
 
-bootElm().then(bootIpfs)
+bootIpfs().then(bootElm)
 
 
 // ELM
@@ -51,11 +50,18 @@ function ports() {
 // ----
 
 async function bootIpfs() {
-  return await sdk.ipfs.getIpfs({
-    jsIpfs: "./web_modules/ipfs.min.js"
-  }).then(i => {
-    ipfs = i
+  ipfs = await Ipfs.create({
+    config: {
+      Addresses: {
+        Swarm: [
+          "/ip4/0.0.0.0/tcp/9090/ws/p2p-webrtc-star/",
+          // "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
+        ]
+      }
+    }
   })
+
+  await sdk.ipfs.setIpfs(ipfs)
 }
 
 
@@ -97,7 +103,7 @@ async function rootDid(maybeUsername) {
 
 async function checkIfUsernameIsAvailable(username) {
   if (sdk.lobby.isUsernameValid(username)) {
-    const isAvailable = await sdk.lobby.isUsernameAvailable(username, dataRootDomain)
+    const isAvailable = await sdk.lobby.isUsernameAvailable(username, DATA_ROOT_DOMAIN)
     app.ports.gotUsernameAvailability.send({ available: isAvailable, valid: true })
 
   } else {
@@ -146,6 +152,9 @@ async function linkApp({ did }) {
 // SECURE CHANNEL
 // ==============
 
+let pingInterval
+
+
 /**
  * Tries to subscribe to a pubsub channel
  * with the root DID as the topic.
@@ -154,33 +163,55 @@ async function linkApp({ did }) {
  * otherwise the `secureChannelTimeout` port will called.
  */
 async function openSecureChannel(maybeUsername) {
-  console.log(await rootDid(maybeUsername))
-  await ipfs.pubsub.subscribe(await rootDid(maybeUsername), ({ from, data }) => {
-    const string = new TextDecoder().decode(data)
-    const decodedJson = JSON.parse(string)
+  const rootDid_ = await rootDid(maybeUsername)
+  const ipfsId = (await ipfs.id()).id
 
-    console.log(decodedJson)
+  await ipfs.pubsub.subscribe(
+    rootDid_,
+    secureChannelMessage(rootDid_, ipfsId)
+  )
 
-    app.ports.gotSecureChannelMessage.send({
-      ...decodedJson,
-      from,
-      timestamp: new Date().now()
-    })
-
-  }, {
-    timeout: 30000
-
-  }).then(_ => {
-    app.ports.secureChannelOpened.send(null)
-
-  }).catch(_ => {
-    app.ports.secureChannelTimeout.send(null)
-
-  })
+  if (maybeUsername) {
+    pingInterval = setInterval(
+      () => ipfs.pubsub.publish(rootDid_, "PING"),
+      500
+    )
+  }
 }
 
 
-async function publishOnSecureChannel(maybeUsername, dataWithPlaceholders) {
+function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, data }) {
+  const string = new TextDecoder().decode(data)
+
+  if (from === ipfsId) {
+    return
+
+  } else if (string === "PING") {
+    ipfs.pubsub.publish(rootDid_, "PONG")
+
+  } else if (string === "PONG") {
+    clearInterval(pingInterval)
+    app.ports.secureChannelOpened.send(null)
+
+  } else {
+    try {
+      const decodedJson = JSON.parse(string)
+
+      app.ports.gotSecureChannelMessage.send({
+        ...decodedJson,
+        from,
+        timestamp: Date.now(),
+      })
+    } catch (_) {
+      // Invalid JSON
+      // Ignore message
+    }
+
+  }
+}}
+
+
+async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
   const payloadToSign = dataWithPlaceholders.signature
     ? { ...dataWithPlaceholders }
     : {}

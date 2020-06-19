@@ -21,7 +21,7 @@ gotUsernameInput input =
 linkAccount : Context -> Manager
 linkAccount context model =
     return
-        { model | page = Page.LinkAccount { context | requestOtherDevice = True } }
+        { model | page = Page.LinkAccount { context | waitingForDevices = True } }
         (Ports.openSecureChannel <| Just context.username)
 
 

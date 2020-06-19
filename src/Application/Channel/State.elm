@@ -16,11 +16,15 @@ gotMessage : Json.Value -> Manager
 gotMessage json model =
     case model.page of
         Page.LinkAccount context ->
-            context.exchange
-                |> Maybe.map (Linking.proceed (Just context.username) json)
-                |> Maybe.map (Return.map (\e -> { context | exchange = Just e }))
-                |> Maybe.map (Return.map (\c -> { model | page = Page.LinkAccount c }))
-                |> Maybe.withDefault (Return.singleton model)
+            case ( context.waitingForDevices, context.exchange ) of
+                ( False, Just exchange ) ->
+                    exchange
+                        |> Linking.proceed (Just context.username) json
+                        |> Return.map (\e -> { context | exchange = Just e })
+                        |> Return.map (\c -> { model | page = Page.LinkAccount c })
+
+                _ ->
+                    Return.singleton model
 
         _ ->
             Return.singleton model
@@ -30,9 +34,13 @@ opened : Manager
 opened model =
     case model.page of
         Page.LinkAccount context ->
+            let
+                newContext =
+                    { context | waitingForDevices = False }
+            in
             Linking.nonceGenerator
                 |> Random.pair Linking.nonceGenerator
-                |> Random.generate (StartLinkingExchange { context | requestOtherDevice = False })
+                |> Random.generate (StartLinkingExchange newContext)
                 |> return model
 
         _ ->
