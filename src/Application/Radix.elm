@@ -86,7 +86,6 @@ type Msg
       -----------------------------------------
     | GotSecureChannelMessage Json.Value
     | SecureChannelOpened
-    | SecureChannelTimeout
 
 
 type alias Manager =

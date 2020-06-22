@@ -14,6 +14,7 @@ Certain steps of this are encrypted.
 
 import Json.Decode
 import Json.Encode
+import Maybe.Extra as Maybe
 import Ports
 import Random
 import Return exposing (return)
@@ -32,51 +33,131 @@ type alias Exchange =
 
 
 type Side
-    = Inquirer InquiryStep
-    | Authoriser
+    = Inquirer Step
+    | Authoriser Step
+
+
+type Step
+    = EstablishConnection
+    | ConstructUcan
+
+
+
+-- 🏔
+
+
+placeholder =
+    "PLACEHOLDER"
+
+
+placeholderJson =
+    Json.Encode.null
 
 
 
 -- 🛠
 
 
+{-| Take the next step in the exchange.
+
+Flow:
+Authoriser EstablishConnection → Inquirer EstablishConnection → Authoriser …
+
+-}
 proceed : Maybe String -> Json.Decode.Value -> Exchange -> ( Exchange, Cmd msg )
 proceed maybeUsername json exchange =
-    -- TODO
-    return exchange Cmd.none
+    case exchange.side of
+        -----------------------------------------
+        -- Inquirer
+        -----------------------------------------
+        Inquirer EstablishConnection ->
+            json
+                |> Json.Decode.decodeValue establishingResponseDecoder
+                |> Result.mapError Json.Decode.errorToString
+                |> Result.andThen
+                    (\resp ->
+                        if Just resp.nonceRandom == exchange.nonceRandom then
+                            Ok resp
+
+                        else
+                            Err "Security violation, nonceRandom values don't match"
+                    )
+                |> Result.andThen
+                    (\resp ->
+                        case ( exchange.nonceRandom, exchange.nonceUser ) of
+                            ( Just r, Just u ) ->
+                                { did = placeholder
+                                , nonceRandom = r
+                                , nonceUser = u
+                                , signature = placeholder
+                                }
+                                    |> Tuple.pair resp
+                                    |> Ok
+
+                            _ ->
+                                Err "One of the nonces is missing"
+                    )
+                |> Result.map
+                    (\( resp, inquiry ) ->
+                        inquiry
+                            |> encodeUcanInquiry
+                            |> Tuple.pair maybeUsername
+                            |> Ports.publishOnSecureChannel
+                            |> return
+                                { exchange
+                                    | didOtherSide = Just resp.did
+                                    , side = Inquirer EstablishConnection
+                                }
+                    )
+                |> Result.withDefault (Return.singleton exchange)
+
+        Inquirer ConstructUcan ->
+            Return.singleton exchange
+
+        -----------------------------------------
+        -- Authoriser
+        -----------------------------------------
+        Authoriser EstablishConnection ->
+            if Maybe.isNothing exchange.nonceRandom then
+                json
+                    |> Json.Decode.decodeValue
+                        establishingInquiryDecoder
+                    |> Result.map
+                        (\inquiry ->
+                            { did = placeholder
+                            , nonceRandom = inquiry.nonceRandom
+                            }
+                                |> encodeEstablishingResponse
+                                |> Tuple.pair maybeUsername
+                                |> Ports.publishOnSecureChannel
+                                |> return
+                                    { didOtherSide = Just inquiry.did
+                                    , nonceRandom = Just inquiry.nonceRandom
+                                    , nonceUser = Nothing
+                                    , side = Authoriser ConstructUcan
+                                    }
+                        )
+                    |> Result.withDefault
+                        (Return.singleton exchange)
+
+            else
+                Return.singleton exchange
+
+        Authoriser ConstructUcan ->
+            Return.singleton exchange
 
 
 
 -- INQUIRER
 
 
-type InquiryStep
-    = EstablishConnection
-    | ConstructUcan
-
-
-type alias Inquiry =
-    -- We're using () as a placeholder here,
-    -- will be filled in by the javascript side later.
-    { did : ()
-    , nonceRandom : String
-    , nonceUser : String
-
-    --
-    , signature : ()
-    }
-
-
 inquire : String -> ( String, String ) -> ( Exchange, Cmd msg )
 inquire username ( nonceRandom, nonceUser ) =
-    { did = ()
+    { did = placeholder
     , nonceRandom = nonceRandom
-    , nonceUser = nonceUser
-
-    --
-    , signature = ()
+    , signature = placeholder
     }
-        |> encodeInquiry
+        |> encodeEstablishingInquiry
         |> Tuple.pair (Just username)
         |> Ports.publishOnSecureChannel
         |> return
@@ -87,18 +168,82 @@ inquire username ( nonceRandom, nonceUser ) =
             }
 
 
-encodeInquiry : Inquiry -> Json.Encode.Value
-encodeInquiry inquiry =
+
+-- INQUIRER  ▒▒  ESTABLISHING
+
+
+type alias EstablishingInquiry =
+    { did : String
+    , nonceRandom : String
+    , signature : String
+    }
+
+
+encodeEstablishingInquiry : EstablishingInquiry -> Json.Encode.Value
+encodeEstablishingInquiry inquiry =
     Json.Encode.object
-        [ ( "did", Json.Encode.null )
+        [ ( "did", placeholderJson )
         , ( "nonceRandom", Json.Encode.string inquiry.nonceRandom )
-        , ( "nonceUser", Json.Encode.string inquiry.nonceUser )
-        , ( "signature", Json.Encode.null )
+        , ( "signature", placeholderJson )
         ]
 
 
+establishingInquiryDecoder : Json.Decode.Decoder EstablishingInquiry
+establishingInquiryDecoder =
+    Json.Decode.map3
+        EstablishingInquiry
+        (Json.Decode.field "did" Json.Decode.string)
+        (Json.Decode.field "nonceRandom" Json.Decode.string)
+        (Json.Decode.field "signature" Json.Decode.string)
 
--- AUTHORIZER
+
+
+-- INQUIRER  ▒▒  UCAN
+
+
+type alias UcanInquiry =
+    { did : String
+    , nonceRandom : String
+    , nonceUser : String
+    , signature : String
+    }
+
+
+encodeUcanInquiry : UcanInquiry -> Json.Encode.Value
+encodeUcanInquiry inquiry =
+    Json.Encode.object
+        [ ( "did", placeholderJson )
+        , ( "nonceRandom", Json.Encode.string inquiry.nonceRandom )
+        , ( "nonceUser", Json.Encode.string inquiry.nonceUser )
+        , ( "signature", placeholderJson )
+        ]
+
+
+ucanInquiryDecoder : Json.Decode.Decoder UcanInquiry
+ucanInquiryDecoder =
+    Json.Decode.map4
+        UcanInquiry
+        (Json.Decode.field "did" Json.Decode.string)
+        (Json.Decode.field "nonceRandom" Json.Decode.string)
+        (Json.Decode.field "nonceUser" Json.Decode.string)
+        (Json.Decode.field "signature" Json.Decode.string)
+
+
+
+-- AUTHORISER
+
+
+initialAuthoriserExchange : Exchange
+initialAuthoriserExchange =
+    { didOtherSide = Nothing
+    , nonceRandom = Nothing
+    , nonceUser = Nothing
+    , side = Authoriser EstablishConnection
+    }
+
+
+
+-- AUTHORISER  ▒▒  ESTABLISHING
 
 
 type alias EstablishingResponse =
@@ -107,9 +252,43 @@ type alias EstablishingResponse =
     }
 
 
+encodeEstablishingResponse : EstablishingResponse -> Json.Encode.Value
+encodeEstablishingResponse resp =
+    Json.Encode.object
+        [ ( "did", placeholderJson )
+        , ( "nonceRandom", Json.Encode.string resp.nonceRandom )
+        ]
+
+
+establishingResponseDecoder : Json.Decode.Decoder EstablishingResponse
+establishingResponseDecoder =
+    Json.Decode.map2
+        EstablishingResponse
+        (Json.Decode.field "did" Json.Decode.string)
+        (Json.Decode.field "nonceRandom" Json.Decode.string)
+
+
+
+-- AUTHORISER  ▒▒  UCAN
+
+
 type alias UcanResponse =
     { ucan : String
     }
+
+
+encodeUcanResponse : UcanResponse -> Json.Encode.Value
+encodeUcanResponse resp =
+    Json.Encode.object
+        [ ( "ucan", placeholderJson )
+        ]
+
+
+ucanResponseDecoder : Json.Decode.Decoder UcanResponse
+ucanResponseDecoder =
+    Json.Decode.map
+        UcanResponse
+        (Json.Decode.field "ucan" Json.Decode.string)
 
 
 

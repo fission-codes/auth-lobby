@@ -183,6 +183,8 @@ async function openSecureChannel(maybeUsername) {
 function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, data }) {
   const string = new TextDecoder().decode(data)
 
+  if (from !== ipfsId) console.log("Got", string)
+
   if (from === ipfsId) {
     return
 
@@ -195,34 +197,45 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
 
   } else {
     try {
-      const decodedJson = JSON.parse(string)
-
-      app.ports.gotSecureChannelMessage.send({
-        ...decodedJson,
-        from,
-        timestamp: Date.now(),
-      })
-    } catch (_) {
-      // Invalid JSON
-      // Ignore message
+      gotSecureChannelMessage(from, string)
+    } catch (err) {
+      console.error(err)
+      gotSecureChannelMessage(from, decrypt(string, rootDid_))
     }
 
   }
 }}
 
 
-async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
-  const payloadToSign = dataWithPlaceholders.signature
-    ? { ...dataWithPlaceholders }
-    : {}
+  function gotSecureChannelMessage(from, string) {
+    const decodedJson = JSON.parse(string)
 
-  delete payloadToSign.signature
+    app.ports.gotSecureChannelMessage.send({
+      ...decodedJson,
+      from,
+      timestamp: Date.now(),
+    })
+  }
+
+
+async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
+  let ks
+
+  // Payload to sign
+  const payloadToSign = dataWithPlaceholders.signature !== undefined
+    ? { ...dataWithPlaceholders }
+    : null
+
+  if (payloadToSign) {
+    delete payloadToSign.signature
+    ks = await sdk.keystore.get()
+  }
 
   // Replace placeholders
   const data = {
     ...dataWithPlaceholders,
-    did: dataWithPlaceholders.did ? await sdk.core.did() : undefined,
-    signature: dataWithPlaceholders.signature ? await ks.sign(payloadToSign) : undefined,
+    did: dataWithPlaceholders.did !== undefined ? await sdk.core.did() : undefined,
+    signature: payloadToSign ? await ks.sign(payloadToSign) : undefined
   }
 
   // Publish message
@@ -230,4 +243,94 @@ async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
     await rootDid(maybeUsername),
     JSON.stringify(data)
   )
+}
+
+
+async function publishEncryptedOnSecureChannel([ maybeUsername, passphrase, dataWithPlaceholders ]) {
+  const data = {
+    ...dataWithPlaceholders,
+    did: dataWithPlaceholders.did !== undefined ? await sdk.core.did() : undefined
+  }
+
+  // Publish message
+  await ipfs.pubsub.publish(
+    await rootDid(maybeUsername),
+    encrypt(JSON.stringify(data), passphrase)
+  )
+}
+
+
+function encrypt(data, passphrase) {
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const key = keyFromPassphrase(passphrase)
+
+  return crypto.subtle.encrypt(
+    {
+      name: "AES-GCM",
+      iv: iv,
+      tagLength: 128
+    },
+    key,
+    new TextEncoder().encode(string)
+
+  ).then(buf => {
+    const iv_b64 = btoa(new TextDecoder().decode(iv))
+    const buf_b64 = btoa(new TextDecoder().decode(buf))
+    return iv_b64 + buf_b64
+
+  })
+}
+
+
+function decrypt(string, passphrase) {
+  const key = keyFromPassphrase(passphrase)
+
+  const iv_b64 = string.substring(0, 16)
+  const buf_b64 = string.substring(16)
+
+  const iv = new TextEncoder().encode(atob(iv_b64))
+  const buf = new TextEncoder().encode(atob(buf_b64))
+
+  return crypto.subtle.decrypt(
+    {
+      name: "AES-GCM",
+      iv: iv,
+      tagLength: 128
+    },
+    key,
+    buf
+
+  ).then(
+    new TextDecoder().decode
+
+  )
+}
+
+
+function keyFromPassphrase(passphrase) {
+  return crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(passphrase),
+    {
+      name: "PBKDF2"
+    },
+    false,
+    [ "deriveKey" ]
+
+  ).then(baseKey => crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: new TextEncoder().encode("fission"),
+      iterations: 10000,
+      hash: "SHA-512"
+    },
+    baseKey,
+    {
+      name: "AES-GCM",
+      length: 256
+    },
+    false,
+    [ "encrypt", "decrypt" ]
+
+  ))
 }

@@ -182,9 +182,6 @@ update msg =
         SecureChannelOpened ->
             Channel.opened
 
-        SecureChannelTimeout ->
-            Channel.timeout
-
 
 
 -- 📰
@@ -202,7 +199,6 @@ subscriptions _ =
         -----------------
         , Ports.gotSecureChannelMessage GotSecureChannelMessage
         , Ports.secureChannelOpened (\_ -> SecureChannelOpened)
-        , Ports.secureChannelTimeout (\_ -> SecureChannelTimeout)
         ]
 
 

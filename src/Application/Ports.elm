@@ -26,6 +26,9 @@ port openSecureChannel : Maybe String -> Cmd msg
 port publishOnSecureChannel : ( Maybe String, Json.Value ) -> Cmd msg
 
 
+port publishEncryptedOnSecureChannel : ( Maybe String, String, Json.Value ) -> Cmd msg
+
+
 
 -- 📰
 
@@ -50,6 +53,3 @@ port gotSecureChannelMessage : (Json.Value -> msg) -> Sub msg
 
 
 port secureChannelOpened : (() -> msg) -> Sub msg
-
-
-port secureChannelTimeout : (() -> msg) -> Sub msg
