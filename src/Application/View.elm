@@ -7,6 +7,7 @@ import Account.Linking.View
 import Authorisation.Performing.View
 import Authorisation.Suggest.View
 import Branding
+import Common
 import External.Context exposing (Context, defaultFailedState)
 import Html exposing (Html)
 import Html.Attributes as A
@@ -54,10 +55,20 @@ view model =
                     Page.SuggestAuthorisation ->
                         Authorisation.Suggest.View.view context model
 
-            _ ->
+            Loading ->
                 { defaultFailedState | required = True }
                     |> Failure
                     |> External.Context.note
+
+            NotAsked ->
+                case model.usedUsername of
+                    Just username ->
+                        authenticated username model
+
+                    Nothing ->
+                        { defaultFailedState | required = True }
+                            |> Failure
+                            |> External.Context.note
         ]
     ]
 
@@ -81,11 +92,7 @@ choose model =
         -----------------------------------------
         -- Message
         -----------------------------------------
-        , Html.div
-            [ T.max_w_lg
-            , T.mt_10
-            , T.mx_auto
-            ]
+        , S.messageBlock
             [ Html.text "It doesn't look like you've signed in on this device before."
             , Html.br [ T.hidden, T.sm__block ] []
             , Html.span [ T.sm__hidden ] [ Html.text " " ]
@@ -144,5 +151,29 @@ choose model =
                 , T.dark__bg_gray_200
                 ]
                 [ Html.text "Sign in" ]
+            ]
+        ]
+
+
+
+-- AUTHENTICATED
+
+
+authenticated : String -> Model -> Html Msg
+authenticated username model =
+    Html.div
+        [ T.text_center ]
+        [ Branding.logo { usedUsername = model.usedUsername }
+
+        --
+        , S.messageBlock
+            [ Html.text "Hi there "
+            , Html.strong [ T.font_semibold ] [ Html.text username ]
+            , Html.text " 👋"
+            , Html.br [] []
+            , Html.br [] []
+            , Html.em [] [ Html.text "Keep this window open if you want" ]
+            , Html.br [] []
+            , Html.em [] [ Html.text "to authenticate on another device." ]
             ]
         ]

@@ -128,3 +128,12 @@ textField attributes =
             , T.dark__border_gray_200
             ]
         |> Html.input
+
+
+messageBlock : List (Html msg) -> Html msg
+messageBlock =
+    Html.div
+        [ T.max_w_lg
+        , T.mt_10
+        , T.mx_auto
+        ]
