@@ -128,8 +128,8 @@ proceed maybeUsername json exchange =
                             , nonceRandom = inquiry.nonceRandom
                             }
                                 |> encodeEstablishingResponse
-                                |> Tuple.pair maybeUsername
-                                |> Ports.publishOnSecureChannel
+                                |> (\r -> ( maybeUsername, inquiry.did, r ))
+                                |> Ports.publishEncryptedOnSecureChannel
                                 |> return
                                     { didOtherSide = Just inquiry.did
                                     , nonceRandom = Just inquiry.nonceRandom

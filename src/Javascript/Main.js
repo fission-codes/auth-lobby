@@ -43,6 +43,7 @@ function ports() {
   app.ports.linkApp.subscribe(linkApp)
   app.ports.openSecureChannel.subscribe(openSecureChannel)
   app.ports.publishOnSecureChannel.subscribe(publishOnSecureChannel)
+  app.ports.publishEncryptedOnSecureChannel.subscribe(publishEncryptedOnSecureChannel)
 }
 
 
@@ -181,9 +182,13 @@ async function openSecureChannel(maybeUsername) {
 
 
 function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, data }) {
-  const string = new TextDecoder().decode(data)
+  const string = arrayBufferToString(data)
 
-  if (from !== ipfsId) console.log("Got", string)
+  if (from !== ipfsId) {
+    console.log("Got", string)
+  } else {
+    console.log("Sending", string)
+  }
 
   if (from === ipfsId) {
     return
@@ -198,9 +203,11 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
   } else {
     try {
       gotSecureChannelMessage(from, string)
-    } catch (err) {
-      console.error(err)
-      gotSecureChannelMessage(from, decrypt(string, rootDid_))
+    } catch (_) {
+      console.log("Trying to decrypt")
+      const decryptedString = await decrypt(string, rootDid_)
+      console.log("Decrypted", decryptedString)
+      gotSecureChannelMessage(from, decryptedString)
     }
 
   }
@@ -219,79 +226,77 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
 
 
 async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
-  let ks
-
-  // Payload to sign
-  const payloadToSign = dataWithPlaceholders.signature !== undefined
-    ? { ...dataWithPlaceholders }
-    : null
-
-  if (payloadToSign) {
-    delete payloadToSign.signature
-    ks = await sdk.keystore.get()
-  }
-
-  // Replace placeholders
-  const data = {
-    ...dataWithPlaceholders,
-    did: dataWithPlaceholders.did !== undefined ? await sdk.core.did() : undefined,
-    signature: payloadToSign ? await ks.sign(payloadToSign) : undefined
-  }
-
-  // Publish message
-  await ipfs.pubsub.publish(
+  ipfs.pubsub.publish(
     await rootDid(maybeUsername),
-    JSON.stringify(data)
+    await prepareData(dataWithPlaceholders)
   )
 }
 
 
 async function publishEncryptedOnSecureChannel([ maybeUsername, passphrase, dataWithPlaceholders ]) {
-  const data = {
-    ...dataWithPlaceholders,
-    did: dataWithPlaceholders.did !== undefined ? await sdk.core.did() : undefined
-  }
-
-  // Publish message
-  await ipfs.pubsub.publish(
+  ipfs.pubsub.publish(
     await rootDid(maybeUsername),
-    encrypt(JSON.stringify(data), passphrase)
+    await encrypt(await prepareData(dataWithPlaceholders), passphrase)
   )
 }
 
 
-function encrypt(data, passphrase) {
-  const iv = crypto.getRandomValues(new Uint8Array(12))
-  const key = keyFromPassphrase(passphrase)
+  async function prepareData(dataWithPlaceholders) {
+    let ks
 
-  return crypto.subtle.encrypt(
+    // Payload to sign
+    const payloadToSign = dataWithPlaceholders.signature !== undefined
+      ? { ...dataWithPlaceholders }
+      : null
+
+    if (payloadToSign) {
+      delete payloadToSign.signature
+      ks = await sdk.keystore.get()
+    }
+
+    // Replace placeholders
+    const data = {
+      ...dataWithPlaceholders,
+      did: dataWithPlaceholders.did !== undefined ? await sdk.core.did() : undefined,
+      signature: payloadToSign ? await ks.sign(payloadToSign) : undefined
+    }
+
+    // Return
+    return JSON.stringify(data)
+  }
+
+
+async function encrypt(string, passphrase) {
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const key = await keyFromPassphrase(passphrase)
+  const buf = await crypto.subtle.encrypt(
     {
       name: "AES-GCM",
       iv: iv,
       tagLength: 128
     },
     key,
-    new TextEncoder().encode(string)
+    stringToArrayBuffer(string)
+  )
 
-  ).then(buf => {
-    const iv_b64 = btoa(new TextDecoder().decode(iv))
-    const buf_b64 = btoa(new TextDecoder().decode(buf))
-    return iv_b64 + buf_b64
-
-  })
+  const iv_b64 = arrayBufferToBase64(iv)
+  const buf_b64 = arrayBufferToBase64(buf)
+  return iv_b64 + buf_b64
 }
 
 
-function decrypt(string, passphrase) {
-  const key = keyFromPassphrase(passphrase)
+async function decrypt(string, passphrase) {
+  const key = await keyFromPassphrase(passphrase)
 
   const iv_b64 = string.substring(0, 16)
   const buf_b64 = string.substring(16)
 
-  const iv = new TextEncoder().encode(atob(iv_b64))
-  const buf = new TextEncoder().encode(atob(buf_b64))
+  const iv = base64ToArrayBuffer(iv_b64)
+  const buf = base64ToArrayBuffer(buf_b64)
 
-  return crypto.subtle.decrypt(
+  console.log("here", key, buf)
+
+  const decryptedBuf = await crypto.subtle.decrypt(
     {
       name: "AES-GCM",
       iv: iv,
@@ -299,10 +304,10 @@ function decrypt(string, passphrase) {
     },
     key,
     buf
+  )
 
-  ).then(
-    new TextDecoder().decode
-
+  return arrayBufferToString(
+    decryptedBuf
   )
 }
 
@@ -310,7 +315,7 @@ function decrypt(string, passphrase) {
 function keyFromPassphrase(passphrase) {
   return crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(passphrase),
+    stringToArrayBuffer(passphrase),
     {
       name: "PBKDF2"
     },
@@ -320,7 +325,7 @@ function keyFromPassphrase(passphrase) {
   ).then(baseKey => crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: new TextEncoder().encode("fission"),
+      salt: stringToArrayBuffer("fission"),
       iterations: 10000,
       hash: "SHA-512"
     },
@@ -333,4 +338,33 @@ function keyFromPassphrase(passphrase) {
     [ "encrypt", "decrypt" ]
 
   ))
+}
+
+
+function arrayBufferToBase64(buf) {
+  return btoa(
+    Array
+      .from(new Uint8Array(buf))
+      .map(c => String.fromCharCode(c))
+      .join("")
+  )
+}
+
+
+function arrayBufferToString(buf) {
+  return new TextDecoder().decode(buf)
+}
+
+
+function base64ToArrayBuffer(b64) {
+  return new Uint8Array(
+    atob(b64)
+      .split("")
+      .map(c => c.charCodeAt(0))
+  ).buffer
+}
+
+
+function stringToArrayBuffer(str) {
+  return new TextEncoder().encode(str).buffer
 }
