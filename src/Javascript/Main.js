@@ -184,12 +184,6 @@ async function openSecureChannel(maybeUsername) {
 function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, data }) {
   const string = arrayBufferToString(data)
 
-  if (from !== ipfsId) {
-    console.log("Got", string)
-  } else {
-    console.log("Sending", string)
-  }
-
   if (from === ipfsId) {
     return
 
@@ -201,13 +195,13 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
     app.ports.secureChannelOpened.send(null)
 
   } else {
-    try {
+    if (string[0] === "{") {
       gotSecureChannelMessage(from, string)
-    } catch (_) {
-      console.log("Trying to decrypt")
-      const decryptedString = await decrypt(string, rootDid_)
-      console.log("Decrypted", decryptedString)
+
+    } else {
+      const decryptedString = await decrypt(string, await sdk.core.did())
       gotSecureChannelMessage(from, decryptedString)
+
     }
 
   }
@@ -267,8 +261,9 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, passphrase, data
 
 
 async function encrypt(string, passphrase) {
-  const iv = crypto.getRandomValues(new Uint8Array(12))
   const key = await keyFromPassphrase(passphrase)
+
+  const iv = crypto.getRandomValues(new Uint8Array(12)).buffer
   const buf = await crypto.subtle.encrypt(
     {
       name: "AES-GCM",
@@ -281,6 +276,7 @@ async function encrypt(string, passphrase) {
 
   const iv_b64 = arrayBufferToBase64(iv)
   const buf_b64 = arrayBufferToBase64(buf)
+
   return iv_b64 + buf_b64
 }
 
@@ -293,8 +289,6 @@ async function decrypt(string, passphrase) {
 
   const iv = base64ToArrayBuffer(iv_b64)
   const buf = base64ToArrayBuffer(buf_b64)
-
-  console.log("here", key, buf)
 
   const decryptedBuf = await crypto.subtle.decrypt(
     {
