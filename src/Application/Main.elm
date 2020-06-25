@@ -2,9 +2,12 @@ module Main exposing (main)
 
 import Account.Creation.Context
 import Account.Creation.State as Creation
+import Account.Linking.Context
+import Account.Linking.State as Linking
 import Authorisation.State as Authorisation
 import Browser
 import Browser.Navigation as Nav
+import Channel.State as Channel
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
 import External.Context
@@ -24,7 +27,8 @@ import View
 
 
 type alias Flags =
-    { usedUsername : Maybe String
+    { dataRootDomain : String
+    , usedUsername : Maybe String
     }
 
 
@@ -60,13 +64,14 @@ init flags url navKey =
                         Page.CreateAccount Account.Creation.Context.default
 
                     Success (Just False) ->
-                        Page.LinkAccount
+                        Page.LinkAccount Account.Linking.Context.default
 
                     _ ->
                         Page.Choose
     in
-    Return.singleton
-        { externalContext = externalContext
+    return
+        { dataRootDomain = flags.dataRootDomain
+        , externalContext = externalContext
         , navKey = navKey
         , page = page
         , url = url
@@ -82,6 +87,14 @@ init flags url navKey =
         -----------------------------------------
         , reCreateAccount = RemoteData.NotAsked
         }
+        -- If authenticated, subscribe to the pubsub channel.
+        (case flags.usedUsername of
+            Just _ ->
+                Ports.openSecureChannel Nothing
+
+            Nothing ->
+                Cmd.none
+        )
 
 
 
@@ -137,6 +150,24 @@ update msg =
             Debouncer.update update Debouncing.usernameAvailability.updateConfig a
 
         -----------------------------------------
+        -- Linking
+        -----------------------------------------
+        GotLinked a ->
+            Linking.gotLinked a
+
+        GotLinkUsernameInput a ->
+            Linking.gotUsernameInput a
+
+        LinkAccount a ->
+            Linking.linkAccount a
+
+        SendLinkingUcan a ->
+            Linking.sendUcan a
+
+        StartLinkingExchange a b ->
+            Linking.startExchange a b
+
+        -----------------------------------------
         -- Routing
         -----------------------------------------
         GoToPage a ->
@@ -148,6 +179,18 @@ update msg =
         UrlRequested a ->
             Routing.urlRequested a
 
+        -----------------------------------------
+        -- Secure Channel
+        -----------------------------------------
+        GotInvalidRootDid ->
+            Channel.gotInvalidRootDid
+
+        GotSecureChannelMessage a ->
+            Channel.gotMessage a
+
+        SecureChannelOpened ->
+            Channel.opened
+
 
 
 -- 📰
@@ -158,8 +201,15 @@ subscriptions _ =
     Sub.batch
         [ Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
+        , Ports.gotLinked GotLinked
         , Ports.gotUcanForApplication GotUcanForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
+
+        -- Secure Channel
+        -----------------
+        , Ports.gotInvalidRootDid (\_ -> GotInvalidRootDid)
+        , Ports.gotSecureChannelMessage GotSecureChannelMessage
+        , Ports.secureChannelOpened (\_ -> SecureChannelOpened)
         ]
 
 
@@ -183,7 +233,7 @@ title model =
         Page.CreateAccount _ ->
             "Create account"
 
-        Page.LinkAccount ->
+        Page.LinkAccount _ ->
             "Sign in"
 
         Page.SuggestAuthorisation ->

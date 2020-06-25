@@ -33,7 +33,17 @@ view context model =
                 [ Html.text context.redirectTo.host
                 , Html.text (Maybe.unwrap "" (String.fromInt >> (++) ":") context.redirectTo.port_)
                 ]
-            , Html.text " access to your entire file system for a month?"
+
+            -- Resource
+            -----------
+            , Html.text " access to "
+            , Html.text "your entire filesystem"
+
+            -- Duration
+            -----------
+            , Html.text " for a "
+            , Html.text "month"
+            , Html.text "?"
             ]
 
         --
@@ -54,7 +64,7 @@ view context model =
                 ------------
                 , T.dark__bg_purple_shade
                 ]
-                [ dialogButtonIcon FeatherIcons.check
+                [ S.buttonIcon FeatherIcons.check
                 , Html.text "Yes"
                 ]
 
@@ -72,13 +82,8 @@ view context model =
                 ------------
                 , T.dark__bg_gray_200
                 ]
-                [ dialogButtonIcon FeatherIcons.x
+                [ S.buttonIcon FeatherIcons.x
                 , Html.text "No"
                 ]
             ]
         ]
-
-
-dialogButtonIcon : FeatherIcons.Icon -> Html Msg
-dialogButtonIcon icon =
-    Icons.wrap [ T.mr_2 ] (FeatherIcons.withSize 16 icon)

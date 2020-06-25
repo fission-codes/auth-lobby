@@ -1,6 +1,8 @@
 module Styling exposing (..)
 
+import FeatherIcons
 import Html exposing (Html)
+import Icons
 import Tailwind as T
 
 
@@ -47,6 +49,11 @@ iconSize =
 button : Node msg
 button =
     buttonWithNode Html.button
+
+
+buttonIcon : FeatherIcons.Icon -> Html msg
+buttonIcon icon =
+    Icons.wrap [ T.mr_2 ] (FeatherIcons.withSize 16 icon)
 
 
 buttonLink : Node msg
@@ -99,6 +106,18 @@ label attributes =
             , T.dark__text_gray_300
             ]
         |> Html.label
+
+
+messageBlock : Node msg
+messageBlock attributes =
+    attributes
+        |> List.append
+            [ T.max_w_lg
+            , T.mt_10
+            , T.mx_auto
+            , T.text_center
+            ]
+        |> Html.div
 
 
 textField : Node msg

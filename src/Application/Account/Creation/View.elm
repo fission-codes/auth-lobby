@@ -1,6 +1,7 @@
 module Account.Creation.View exposing (..)
 
 import Account.Creation.Context exposing (..)
+import Account.Linking.Context as LinkingContext
 import Branding
 import Common exposing (ifThenElse)
 import External.Context
@@ -58,7 +59,6 @@ formWithToppings maybeError context model =
     Html.div
         []
         [ Branding.logo { usedUsername = model.usedUsername }
-        , External.Context.note model.externalContext
         , form maybeError context
         ]
 
@@ -153,7 +153,10 @@ form maybeError context =
             Nothing ->
                 [ Html.text "Can I sign in instead?" ]
                     |> Html.span
-                        [ E.onClick (GoToPage Page.LinkAccount)
+                        [ LinkingContext.default
+                            |> Page.LinkAccount
+                            |> GoToPage
+                            |> E.onClick
 
                         --
                         , T.italic
