@@ -173,8 +173,10 @@ authenticated username model =
         --
         , S.messageBlock
             []
-            [ Html.text "Hi there "
-            , Html.strong [ T.font_semibold ] [ Html.text username ]
+            [ Html.text "Hi "
+            , Html.strong
+                [ T.inline_block, T.font_semibold, T.mx_px ]
+                [ Html.text username ]
             , Html.text " 👋"
             , Html.br [] []
             , Html.br [] []

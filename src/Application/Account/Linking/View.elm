@@ -170,20 +170,30 @@ numberDisplay number =
                     [ T.border_2
                     , T.border_gray_600
                     , T.mr_2
-                    , T.px_4
-                    , T.rounded
+                    , T.rounded_md
+                    , T.w_16
 
                     --
                     , T.last__mr_0
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__border_darkness_above
                     ]
                     [ Html.text (String.fromChar n)
                     ]
             )
         |> Html.div
             [ T.flex
+            , T.font_display
+            , T.font_thin
             , T.justify_center
             , T.mt_8
             , T.not_italic
             , T.text_5xl
             , T.text_gray_200
+
+            -- Dark mode
+            ------------
+            , T.dark__text_gray_400
             ]
