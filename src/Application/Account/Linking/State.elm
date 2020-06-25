@@ -12,6 +12,12 @@ import Return exposing (return)
 -- 📣
 
 
+cancel : Manager
+cancel model =
+    -- TODO: Publish message on channel that link has been cancelled
+    Return.singleton { model | page = Page.SuggestAuthorisation }
+
+
 gotLinked : { username : String } -> Manager
 gotLinked { username } model =
     Return.singleton

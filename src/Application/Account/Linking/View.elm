@@ -85,9 +85,12 @@ view context model =
                                 , Html.text "Approve"
                                 ]
 
-                            -- TODO: Clear exchange, disconnect
+                            --
                             , S.button
-                                [ T.bg_gray_400
+                                [ E.onClick CancelLink
+
+                                --
+                                , T.bg_gray_400
                                 , T.flex
                                 , T.items_center
                                 , T.ml_3
@@ -97,7 +100,7 @@ view context model =
                                 , T.dark__bg_gray_200
                                 ]
                                 [ S.buttonIcon FeatherIcons.x
-                                , Html.text "Deny"
+                                , Html.text "Cancel"
                                 ]
                             ]
                         ]

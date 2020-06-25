@@ -152,6 +152,9 @@ update msg =
         -----------------------------------------
         -- Linking
         -----------------------------------------
+        CancelLink ->
+            Linking.cancel
+
         GotLinked a ->
             Linking.gotLinked a
 

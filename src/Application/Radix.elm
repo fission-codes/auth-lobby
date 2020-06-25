@@ -73,6 +73,7 @@ type Msg
       -----------------------------------------
       -- Linking
       -----------------------------------------
+    | CancelLink
     | GotLinked { username : String }
     | GotLinkUsernameInput String
     | LinkAccount Linking.Context
