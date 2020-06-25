@@ -40,8 +40,8 @@ async function bootElm() {
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
   app.ports.createAccount.subscribe(createAccount)
-  app.ports.linkedDevice.subscribe(linkedDevice)
   app.ports.linkApp.subscribe(linkApp)
+  app.ports.linkedDevice.subscribe(linkedDevice)
   app.ports.openSecureChannel.subscribe(openSecureChannel)
   app.ports.publishOnSecureChannel.subscribe(publishOnSecureChannel)
   app.ports.publishEncryptedOnSecureChannel.subscribe(publishEncryptedOnSecureChannel)
@@ -107,17 +107,6 @@ async function rootDid(maybeUsername) {
 }
 
 
-/**
- * You got linked 🎢
- */
-function linkedDevice({ ucan, username }) {
-  localStorage.setItem("ucan", ucan)
-  localStorage.setItem("usedUsername", username)
-
-  app.ports.gotLinked.send({ username })
-}
-
-
 // CREATE
 // ------
 
@@ -165,6 +154,17 @@ async function linkApp({ did }) {
   app.ports.gotUcanForApplication.send(
     { ucan }
   )
+}
+
+
+/**
+ * You got linked 🎢
+ */
+function linkedDevice({ ucan, username }) {
+  localStorage.setItem("ucan", ucan)
+  localStorage.setItem("usedUsername", username)
+
+  app.ports.gotLinked.send({ username })
 }
 
 
@@ -249,8 +249,9 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
       ucan: plaUcan
         ? await sdk.core.ucan({
             audience: didKeyOtherSide,
-            issuer: await rootDid(maybeUsername),
-            lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 // one year
+            issuer: await sdk.core.did(),
+            lifetimeInSeconds: 60 * 60 * 24 * 30 * 12, // one year
+            proof: localStorage.getItem("ucan", ucan)
           })
         : undefined
     }

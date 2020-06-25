@@ -13,10 +13,10 @@ port checkIfUsernameIsAvailable : String -> Cmd msg
 port createAccount : { did : String, email : String, username : String } -> Cmd msg
 
 
-port linkedDevice : { ucan : String, username : String } -> Cmd msg
-
-
 port linkApp : { did : String } -> Cmd msg
+
+
+port linkedDevice : { ucan : String, username : String } -> Cmd msg
 
 
 
