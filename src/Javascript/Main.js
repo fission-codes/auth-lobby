@@ -251,7 +251,7 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
             audience: didKeyOtherSide,
             issuer: await sdk.core.did(),
             lifetimeInSeconds: 60 * 60 * 24 * 30 * 12, // one year
-            proof: localStorage.getItem("ucan", ucan)
+            proof: localStorage.getItem("ucan")
           })
         : undefined
     }
