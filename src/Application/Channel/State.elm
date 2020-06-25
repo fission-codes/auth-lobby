@@ -13,6 +13,25 @@ import Return exposing (return)
 -- 📣
 
 
+gotInvalidRootDid : Manager
+gotInvalidRootDid model =
+    case model.page of
+        -----------------------------------------
+        -- Link Account Page
+        -----------------------------------------
+        Page.LinkAccount context ->
+            { context | waitingForDevices = False }
+                |> Page.LinkAccount
+                |> (\page -> { model | page = page })
+                |> Return.singleton
+
+        -----------------------------------------
+        -- *
+        -----------------------------------------
+        _ ->
+            Return.singleton model
+
+
 gotMessage : Json.Value -> Manager
 gotMessage json model =
     case model.page of
@@ -23,7 +42,7 @@ gotMessage json model =
             case context.exchange of
                 Just exchange ->
                     let
-                        username =
+                        maybeUsername =
                             case exchange.side of
                                 LinkingExchange.Inquirer _ ->
                                     Just context.username
@@ -32,7 +51,7 @@ gotMessage json model =
                                     model.usedUsername
                     in
                     exchange
-                        |> LinkingExchange.proceed username json
+                        |> LinkingExchange.proceed maybeUsername json
                         |> Return.map (\e -> { context | exchange = Just e })
                         |> Return.map (\c -> { model | page = Page.LinkAccount c })
 

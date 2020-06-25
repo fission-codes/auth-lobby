@@ -152,11 +152,17 @@ update msg =
         -----------------------------------------
         -- Linking
         -----------------------------------------
+        GotLinked a ->
+            Linking.gotLinked a
+
         GotLinkUsernameInput a ->
             Linking.gotUsernameInput a
 
         LinkAccount a ->
             Linking.linkAccount a
+
+        SendLinkingUcan a ->
+            Linking.sendUcan a
 
         StartLinkingExchange a b ->
             Linking.startExchange a b
@@ -176,6 +182,9 @@ update msg =
         -----------------------------------------
         -- Secure Channel
         -----------------------------------------
+        GotInvalidRootDid ->
+            Channel.gotInvalidRootDid
+
         GotSecureChannelMessage a ->
             Channel.gotMessage a
 
@@ -192,11 +201,13 @@ subscriptions _ =
     Sub.batch
         [ Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
+        , Ports.gotLinked GotLinked
         , Ports.gotUcanForApplication GotUcanForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
 
         -- Secure Channel
         -----------------
+        , Ports.gotInvalidRootDid (\_ -> GotInvalidRootDid)
         , Ports.gotSecureChannelMessage GotSecureChannelMessage
         , Ports.secureChannelOpened (\_ -> SecureChannelOpened)
         ]

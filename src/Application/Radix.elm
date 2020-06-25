@@ -9,6 +9,7 @@ A root or point of origin.
 
 import Account.Creation.Context as Creation
 import Account.Linking.Context as Linking
+import Account.Linking.Exchange as Linking
 import Browser
 import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
@@ -72,8 +73,10 @@ type Msg
       -----------------------------------------
       -- Linking
       -----------------------------------------
+    | GotLinked { username : String }
     | GotLinkUsernameInput String
     | LinkAccount Linking.Context
+    | SendLinkingUcan Linking.Exchange
     | StartLinkingExchange Linking.Context ( String, String )
       -----------------------------------------
       -- Routing
@@ -84,6 +87,7 @@ type Msg
       -----------------------------------------
       -- Secure Channel
       -----------------------------------------
+    | GotInvalidRootDid
     | GotSecureChannelMessage Json.Value
     | SecureChannelOpened
 

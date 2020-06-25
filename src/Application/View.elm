@@ -63,7 +63,12 @@ view model =
             NotAsked ->
                 case model.usedUsername of
                     Just username ->
-                        authenticated username model
+                        case model.page of
+                            Page.LinkAccount a ->
+                                Account.Linking.View.view a model
+
+                            _ ->
+                                authenticated username model
 
                     Nothing ->
                         { defaultFailedState | required = True }
@@ -81,7 +86,6 @@ choose : Model -> Html Msg
 choose model =
     Html.div
         [ T.text_gray_300
-        , T.text_center
 
         -- Dark mode
         ------------
@@ -93,6 +97,7 @@ choose model =
         -- Message
         -----------------------------------------
         , S.messageBlock
+            []
             [ Html.text "It doesn't look like you've signed in on this device before."
             , Html.br [ T.hidden, T.sm__block ] []
             , Html.span [ T.sm__hidden ] [ Html.text " " ]
@@ -167,6 +172,7 @@ authenticated username model =
 
         --
         , S.messageBlock
+            []
             [ Html.text "Hi there "
             , Html.strong [ T.font_semibold ] [ Html.text username ]
             , Html.text " 👋"

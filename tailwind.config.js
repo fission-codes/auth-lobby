@@ -74,11 +74,20 @@ export default {
       },
 
       screens: {
-        dark: { raw: '(prefers-color-scheme: dark)' }
+        dark: { raw: "(prefers-color-scheme: dark)" }
       },
 
     },
 
+  },
+
+
+  /////////////////////////////////////////
+  // VARIANTS /////////////////////////////
+  /////////////////////////////////////////
+
+  variants: {
+    margin: [ "responsive", "last" ]
   },
 
 

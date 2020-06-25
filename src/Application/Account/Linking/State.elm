@@ -1,7 +1,7 @@
 module Account.Linking.State exposing (..)
 
 import Account.Linking.Context as Context exposing (Context)
-import Account.Linking.Exchange as Exchange
+import Account.Linking.Exchange as Exchange exposing (Exchange)
 import Page
 import Ports
 import Radix exposing (..)
@@ -10,6 +10,15 @@ import Return exposing (return)
 
 
 -- 📣
+
+
+gotLinked : { username : String } -> Manager
+gotLinked { username } model =
+    Return.singleton
+        { model
+            | page = Page.SuggestAuthorisation
+            , usedUsername = Just username
+        }
 
 
 gotUsernameInput : String -> Manager
@@ -23,6 +32,20 @@ linkAccount context model =
     return
         { model | page = Page.LinkAccount { context | waitingForDevices = True } }
         (Ports.openSecureChannel <| Just context.username)
+
+
+sendUcan : Exchange -> Manager
+sendUcan exchange model =
+    case exchange.didOtherSide of
+        Just didOtherSide ->
+            Exchange.ucanResponse
+                |> Exchange.encodeUcanResponse
+                |> (\r -> ( model.usedUsername, didOtherSide, r ))
+                |> Ports.publishEncryptedOnSecureChannel
+                |> return { model | page = Page.SuggestAuthorisation }
+
+        Nothing ->
+            Return.singleton model
 
 
 startExchange : Context -> ( String, String ) -> Manager

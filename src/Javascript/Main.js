@@ -40,6 +40,7 @@ async function bootElm() {
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
   app.ports.createAccount.subscribe(createAccount)
+  app.ports.linkedDevice.subscribe(linkedDevice)
   app.ports.linkApp.subscribe(linkApp)
   app.ports.openSecureChannel.subscribe(openSecureChannel)
   app.ports.publishOnSecureChannel.subscribe(publishOnSecureChannel)
@@ -55,7 +56,14 @@ async function bootIpfs() {
     config: {
       Addresses: {
         Swarm: [
-          "/ip4/0.0.0.0/tcp/9090/ws/p2p-webrtc-star/",
+          // https://wrtc-star1.par.dwebops.pub/
+          // https://wrtc-star2.sjc.dwebops.pub/
+
+          // "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
+
+          "/ip4/127.0.0.1/tcp/9090/ws/p2p-webrtc-star/",
+          // "/ip4/127.0.0.1/tcp/0"
+
           // "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
         ]
       }
@@ -99,6 +107,17 @@ async function rootDid(maybeUsername) {
 }
 
 
+/**
+ * You got linked 🎢
+ */
+function linkedDevice({ ucan, username }) {
+  localStorage.setItem("ucan", ucan)
+  localStorage.setItem("usedUsername", username)
+
+  app.ports.gotLinked.send({ username })
+}
+
+
 // CREATE
 // ------
 
@@ -137,7 +156,7 @@ async function createAccount(args) {
 // ----
 
 async function linkApp({ did }) {
-  const ucan = await core.ucan({
+  const ucan = await sdk.core.ucan({
     audience: did,
     issuer: await rootDid(),
     lifetimeInSeconds: 60 * 60 * 24 * 30 // one month,
@@ -167,6 +186,11 @@ async function openSecureChannel(maybeUsername) {
   const rootDid_ = await rootDid(maybeUsername)
   const ipfsId = (await ipfs.id()).id
 
+  if (!rootDid_) {
+    app.ports.gotInvalidRootDid.send(null)
+    return
+  }
+
   await ipfs.pubsub.subscribe(
     rootDid_,
     secureChannelMessage(rootDid_, ipfsId)
@@ -181,8 +205,76 @@ async function openSecureChannel(maybeUsername) {
 }
 
 
+async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
+  ipfs.pubsub.publish(
+    await rootDid(maybeUsername),
+    await prepareData(dataWithPlaceholders)
+  )
+}
+
+
+async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide, dataWithPlaceholders ]) {
+  ipfs.pubsub.publish(
+    await rootDid(maybeUsername),
+    await encrypt(
+      await prepareData(
+        dataWithPlaceholders,
+        maybeUsername,
+        didKeyOtherSide
+      ),
+      didKeyOtherSide
+    )
+  )
+}
+
+
+  async function prepareData(dataWithPlaceholders, maybeUsername, didKeyOtherSide) {
+    let ks
+
+    // Placeholders
+    let plaDid        = dataWithPlaceholders.did !== undefined
+    let plaSignature  = dataWithPlaceholders.signature !== undefined
+    let plaUcan       = dataWithPlaceholders.ucan !== undefined
+
+    // Payload
+    const payload = {
+      ...dataWithPlaceholders,
+
+      // DID
+      did: plaDid
+        ? await sdk.core.did()
+        : undefined,
+
+      // UCAN
+      ucan: plaUcan
+        ? await sdk.core.ucan({
+            audience: didKeyOtherSide,
+            issuer: await rootDid(maybeUsername),
+            lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 // one year
+          })
+        : undefined
+    }
+
+    // Load keystore if needed
+    if (plaSignature) {
+      delete payload.signature
+      ks = await sdk.keystore.get()
+    }
+
+    // Put signature in place if needed
+    const data = {
+      ...payload,
+
+      signature: plaSignature ? await ks.sign(payload) : undefined,
+    }
+
+    // Return
+    return JSON.stringify(data)
+  }
+
+
 function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, data }) {
-  const string = arrayBufferToString(data)
+  const string = data.toString()
 
   if (from === ipfsId) {
     return
@@ -197,11 +289,9 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
   } else {
     if (string[0] === "{") {
       gotSecureChannelMessage(from, string)
-
     } else {
       const decryptedString = await decrypt(string, await sdk.core.did())
       gotSecureChannelMessage(from, decryptedString)
-
     }
 
   }
@@ -209,56 +299,23 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
 
 
   function gotSecureChannelMessage(from, string) {
-    const decodedJson = JSON.parse(string)
+    const obj = JSON.parse(string)
+
+    if (obj.did && obj.signature) {
+      // TODO: Confirm signature
+    }
 
     app.ports.gotSecureChannelMessage.send({
-      ...decodedJson,
+      ...obj,
       from,
       timestamp: Date.now(),
     })
   }
 
 
-async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
-  ipfs.pubsub.publish(
-    await rootDid(maybeUsername),
-    await prepareData(dataWithPlaceholders)
-  )
-}
 
-
-async function publishEncryptedOnSecureChannel([ maybeUsername, passphrase, dataWithPlaceholders ]) {
-  ipfs.pubsub.publish(
-    await rootDid(maybeUsername),
-    await encrypt(await prepareData(dataWithPlaceholders), passphrase)
-  )
-}
-
-
-  async function prepareData(dataWithPlaceholders) {
-    let ks
-
-    // Payload to sign
-    const payloadToSign = dataWithPlaceholders.signature !== undefined
-      ? { ...dataWithPlaceholders }
-      : null
-
-    if (payloadToSign) {
-      delete payloadToSign.signature
-      ks = await sdk.keystore.get()
-    }
-
-    // Replace placeholders
-    const data = {
-      ...dataWithPlaceholders,
-      did: dataWithPlaceholders.did !== undefined ? await sdk.core.did() : undefined,
-      signature: payloadToSign ? await ks.sign(payloadToSign) : undefined
-    }
-
-    // Return
-    return JSON.stringify(data)
-  }
-
+// CRYPTO
+// ------
 
 async function encrypt(string, passphrase) {
   const key = await keyFromPassphrase(passphrase)

@@ -64,7 +64,7 @@ view context model =
                 ------------
                 , T.dark__bg_purple_shade
                 ]
-                [ dialogButtonIcon FeatherIcons.check
+                [ S.buttonIcon FeatherIcons.check
                 , Html.text "Yes"
                 ]
 
@@ -82,13 +82,8 @@ view context model =
                 ------------
                 , T.dark__bg_gray_200
                 ]
-                [ dialogButtonIcon FeatherIcons.x
+                [ S.buttonIcon FeatherIcons.x
                 , Html.text "No"
                 ]
             ]
         ]
-
-
-dialogButtonIcon : FeatherIcons.Icon -> Html Msg
-dialogButtonIcon icon =
-    Icons.wrap [ T.mr_2 ] (FeatherIcons.withSize 16 icon)

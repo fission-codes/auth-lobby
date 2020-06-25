@@ -63,6 +63,10 @@ placeholderJson =
 Flow:
 Authoriser EstablishConnection → Inquirer EstablishConnection → Authoriser …
 
+TODO:
+Instead of silently ignoring JSON decoding errors,
+show an error message or something.
+
 -}
 proceed : Maybe String -> Json.Decode.Value -> Exchange -> ( Exchange, Cmd msg )
 proceed maybeUsername json exchange =
@@ -106,13 +110,23 @@ proceed maybeUsername json exchange =
                             |> return
                                 { exchange
                                     | didOtherSide = Just resp.did
-                                    , side = Inquirer EstablishConnection
+                                    , side = Inquirer ConstructUcan
                                 }
                     )
-                |> Result.withDefault (Return.singleton exchange)
+                |> Result.withDefault
+                    (Return.singleton exchange)
 
         Inquirer ConstructUcan ->
-            Return.singleton exchange
+            let
+                username =
+                    Maybe.withDefault "" maybeUsername
+            in
+            json
+                |> Json.Decode.decodeValue ucanResponseDecoder
+                |> Result.mapError Json.Decode.errorToString
+                |> Result.map (\{ ucan } -> Ports.linkedDevice { ucan = ucan, username = username })
+                |> Result.withDefault Cmd.none
+                |> return exchange
 
         -----------------------------------------
         -- Authoriser
@@ -144,7 +158,23 @@ proceed maybeUsername json exchange =
                 Return.singleton exchange
 
         Authoriser ConstructUcan ->
-            Return.singleton exchange
+            json
+                |> Json.Decode.decodeValue ucanInquiryDecoder
+                |> Result.mapError Json.Decode.errorToString
+                |> Result.andThen
+                    (\inquiry ->
+                        if Just inquiry.nonceRandom == exchange.nonceRandom then
+                            Ok inquiry
+
+                        else
+                            Err "nonceRandom doesn't match"
+                    )
+                |> Result.map
+                    (\inquiry ->
+                        { exchange | nonceUser = Just inquiry.nonceUser }
+                    )
+                |> Result.withDefault exchange
+                |> Return.singleton
 
 
 
@@ -289,6 +319,11 @@ ucanResponseDecoder =
     Json.Decode.map
         UcanResponse
         (Json.Decode.field "ucan" Json.Decode.string)
+
+
+ucanResponse : UcanResponse
+ucanResponse =
+    { ucan = placeholder }
 
 
 
