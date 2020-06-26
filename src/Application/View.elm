@@ -186,7 +186,7 @@ authenticated username model =
                 -- Dark mode
                 ------------
                 , T.dark__bg_darkness_above
-                , T.dark__text_gray_400
+                , T.dark__text_purple_tint
                 ]
                 [ Html.span
                     [ T.opacity_90 ]
