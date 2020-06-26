@@ -59,12 +59,10 @@ async function bootIpfs() {
           // https://wrtc-star1.par.dwebops.pub/
           // https://wrtc-star2.sjc.dwebops.pub/
 
-          // "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
+          "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
 
-          "/ip4/127.0.0.1/tcp/9090/ws/p2p-webrtc-star/",
+          // "/ip4/127.0.0.1/tcp/9090/ws/p2p-webrtc-star/",
           // "/ip4/127.0.0.1/tcp/0"
-
-          // "/dns4/node.fission.systems/tcp/4003/wss/ipfs/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
         ]
       }
     }
