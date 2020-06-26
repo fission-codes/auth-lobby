@@ -43,11 +43,11 @@ logo { usedUsername } =
         -----------------------------------------
         , Html.div
             [ A.style "font-size" "11px"
-            , A.style "padding" "3px 4px 2px 5px"
+            , A.style "padding" "4px 4px 2px 5px"
 
             --
             , T.absolute
-            , T.bg_pink
+            , T.bg_purple
             , T.font_display
             , T.font_medium
             , T.hidden

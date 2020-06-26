@@ -173,12 +173,35 @@ authenticated username model =
         --
         , S.messageBlock
             []
-            [ Html.text "Hi "
-            , Html.strong
-                [ T.inline_block, T.font_semibold, T.mx_px ]
-                [ Html.text username ]
-            , Html.text " 👋"
-            , Html.br [] []
+            [ Html.div
+                [ T.bg_purple_tint
+                , T.border_t
+                , T.border_transparent
+                , T.inline_block
+                , T.mb_6
+                , T.p_5
+                , T.rounded_md
+                , T.text_purple_shade
+
+                -- Dark mode
+                ------------
+                , T.dark__bg_darkness_above
+                , T.dark__text_gray_400
+                ]
+                [ Html.span
+                    [ T.opacity_90 ]
+                    [ Html.text "Authenticated as " ]
+                , Html.span
+                    [ T.inline_block
+                    , T.mx_px
+                    , T.text_purple
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__text_gray_700
+                    ]
+                    [ Html.text username ]
+                ]
             , Html.br [] []
             , Html.em [] [ Html.text "Keep this window open if you want" ]
             , Html.br [] []
