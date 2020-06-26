@@ -49,6 +49,9 @@ view model =
                     Page.LinkAccount a ->
                         Account.Linking.View.view a model
 
+                    Page.Note a ->
+                        note a model
+
                     Page.PerformingAuthorisation ->
                         Authorisation.Performing.View.view model
 
@@ -66,6 +69,9 @@ view model =
                         case model.page of
                             Page.LinkAccount a ->
                                 Account.Linking.View.view a model
+
+                            Page.Note a ->
+                                note a model
 
                             _ ->
                                 authenticated username model
@@ -207,4 +213,24 @@ authenticated username model =
             , Html.br [] []
             , Html.em [] [ Html.text "to authenticate on another device." ]
             ]
+        ]
+
+
+
+-- NOTE
+
+
+note : String -> Model -> Html Msg
+note text model =
+    Html.div
+        [ T.text_center ]
+        [ Branding.logo { usedUsername = model.usedUsername }
+
+        --
+        , S.messageBlock
+            [ T.italic ]
+            (text
+                |> String.split "\n"
+                |> List.map (\t -> Html.div [] [ Html.text t ])
+            )
         ]

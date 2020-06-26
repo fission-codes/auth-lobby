@@ -63,7 +63,7 @@ sendUcan exchange model =
                 |> Exchange.encodeUcanResponse
                 |> (\r -> ( model.usedUsername, didOtherSide, r ))
                 |> Ports.publishEncryptedOnSecureChannel
-                |> return { model | page = Page.SuggestAuthorisation }
+                |> return { model | page = Page.Note "Device was successfully linked!\nYou can close this window now." }
 
         Nothing ->
             Return.singleton model

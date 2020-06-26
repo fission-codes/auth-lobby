@@ -240,6 +240,9 @@ title model =
         Page.LinkAccount _ ->
             "Sign in"
 
+        Page.Note _ ->
+            "Fission"
+
         Page.SuggestAuthorisation ->
             "Authorise"
 
