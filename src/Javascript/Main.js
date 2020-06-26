@@ -229,6 +229,11 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
   async function prepareData(dataWithPlaceholders, maybeUsername, didKeyOtherSide) {
     let ks
 
+    // Check
+    if (typeof dataWithPlaceholders === "string") {
+      return dataWithPlaceholders
+    }
+
     // Placeholders
     let plaDid        = dataWithPlaceholders.did !== undefined
     let plaSignature  = dataWithPlaceholders.signature !== undefined
@@ -278,6 +283,10 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
   if (from === ipfsId) {
     return
 
+  } else if (string === "CANCEL") {
+    ipfs.pubsub.unsubscribe(rootDid_)
+    app.ports.cancelLink.send(null)
+
   } else if (string === "PING") {
     ipfs.pubsub.publish(rootDid_, "PONG")
 
@@ -285,13 +294,12 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
     clearInterval(pingInterval)
     app.ports.secureChannelOpened.send(null)
 
+  } else if (string[0] === "{") {
+    gotSecureChannelMessage(from, string)
+
   } else {
-    if (string[0] === "{") {
-      gotSecureChannelMessage(from, string)
-    } else {
-      const decryptedString = await decrypt(string, await sdk.core.did())
-      gotSecureChannelMessage(from, decryptedString)
-    }
+    const decryptedString = await decrypt(string, await sdk.core.did())
+    gotSecureChannelMessage(from, decryptedString)
 
   }
 }}

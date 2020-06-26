@@ -7,6 +7,7 @@ import Html exposing (Html, text)
 import Icons
 import Maybe.Extra as Maybe
 import RemoteData exposing (RemoteData(..))
+import Styling as S
 import Tailwind as T
 import Url exposing (Url)
 import Url.Builder
@@ -152,20 +153,20 @@ note remoteData =
 
         Failure { invalidRedirectTo, required } ->
             if invalidRedirectTo then
-                warning
+                S.warning
                     [ text "You provided an invalid"
                     , semibold " redirectTo "
                     , text "parameter, make sure it's a valid url."
                     ]
 
             else if required then
-                warning
+                S.warning
                     [ text "I'm missing some query parameters. You'll need the parameters "
                     , queryParams
                     ]
 
             else
-                warning
+                S.warning
                     [ text "You provided some query params, but they didn't check out."
                     , text " Maybe you're missing one?"
                     , text " The correct ones are "
@@ -202,29 +203,6 @@ semibold t =
         , T.underline_thick
         ]
         [ text t ]
-
-
-warning : List (Html msg) -> Html msg
-warning nodes =
-    Html.div
-        [ T.flex
-        , T.items_center
-        , T.max_w_sm
-        , T.mt_8
-        , T.mx_auto
-        , T.neg_mb_3
-        , T.text_red
-        , T.text_sm
-        ]
-        [ FeatherIcons.alertTriangle
-            |> FeatherIcons.withSize 18
-            |> Icons.wrap [ T.flex_shrink_0 ]
-
-        --
-        , Html.div
-            [ T.ml_2, T.pl_px ]
-            nodes
-        ]
 
 
 

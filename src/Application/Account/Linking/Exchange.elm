@@ -26,6 +26,7 @@ import Return exposing (return)
 
 type alias Exchange =
     { didOtherSide : Maybe String
+    , error : Maybe String
     , nonceRandom : Maybe String
     , nonceUser : Maybe String
     , side : Side
@@ -46,6 +47,10 @@ type Step
 -- 🏔
 
 
+cancelMessage =
+    "CANCEL"
+
+
 placeholder =
     "PLACEHOLDER"
 
@@ -62,10 +67,6 @@ placeholderJson =
 
 Flow:
 Authoriser EstablishConnection → Inquirer EstablishConnection → Authoriser …
-
-TODO:
-Instead of silently ignoring JSON decoding errors,
-show an error message or something.
 
 -}
 proceed : Maybe String -> Json.Decode.Value -> Exchange -> ( Exchange, Cmd msg )
@@ -113,8 +114,7 @@ proceed maybeUsername json exchange =
                                     , side = Inquirer ConstructUcan
                                 }
                     )
-                |> Result.withDefault
-                    (Return.singleton exchange)
+                |> handleJsonResult exchange
 
         Inquirer ConstructUcan ->
             let
@@ -125,8 +125,8 @@ proceed maybeUsername json exchange =
                 |> Json.Decode.decodeValue ucanResponseDecoder
                 |> Result.mapError Json.Decode.errorToString
                 |> Result.map (\{ ucan } -> Ports.linkedDevice { ucan = ucan, username = username })
-                |> Result.withDefault Cmd.none
-                |> return exchange
+                |> Result.map (Tuple.pair exchange)
+                |> handleJsonResult exchange
 
         -----------------------------------------
         -- Authoriser
@@ -136,6 +136,7 @@ proceed maybeUsername json exchange =
                 json
                     |> Json.Decode.decodeValue
                         establishingInquiryDecoder
+                    |> Result.mapError Json.Decode.errorToString
                     |> Result.map
                         (\inquiry ->
                             { did = placeholder
@@ -146,13 +147,13 @@ proceed maybeUsername json exchange =
                                 |> Ports.publishEncryptedOnSecureChannel
                                 |> return
                                     { didOtherSide = Just inquiry.did
+                                    , error = Nothing
                                     , nonceRandom = Just inquiry.nonceRandom
                                     , nonceUser = Nothing
                                     , side = Authoriser ConstructUcan
                                     }
                         )
-                    |> Result.withDefault
-                        (Return.singleton exchange)
+                    |> handleJsonResult exchange
 
             else
                 Return.singleton exchange
@@ -171,10 +172,9 @@ proceed maybeUsername json exchange =
                     )
                 |> Result.map
                     (\inquiry ->
-                        { exchange | nonceUser = Just inquiry.nonceUser }
+                        Return.singleton { exchange | nonceUser = Just inquiry.nonceUser }
                     )
-                |> Result.withDefault exchange
-                |> Return.singleton
+                |> handleJsonResult exchange
 
 
 
@@ -192,6 +192,7 @@ inquire username ( nonceRandom, nonceUser ) =
         |> Ports.publishOnSecureChannel
         |> return
             { didOtherSide = Nothing
+            , error = Nothing
             , nonceRandom = Just nonceRandom
             , nonceUser = Just nonceUser
             , side = Inquirer EstablishConnection
@@ -266,6 +267,7 @@ ucanInquiryDecoder =
 initialAuthoriserExchange : Exchange
 initialAuthoriserExchange =
     { didOtherSide = Nothing
+    , error = Nothing
     , nonceRandom = Nothing
     , nonceUser = Nothing
     , side = Authoriser EstablishConnection
@@ -328,6 +330,16 @@ ucanResponse =
 
 
 -- ⚗️
+
+
+handleJsonResult : Exchange -> Result String ( Exchange, Cmd msg ) -> ( Exchange, Cmd msg )
+handleJsonResult exchange result =
+    case result of
+        Ok r ->
+            r
+
+        Err e ->
+            Return.singleton { exchange | error = Just e }
 
 
 nonceGenerator : Random.Generator String

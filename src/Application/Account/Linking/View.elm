@@ -30,84 +30,101 @@ view context model =
                 [ Html.text "Open this website on your other device to authenticate this one." ]
 
           else
-            case Maybe.map (\e -> Tuple.pair e.side e) context.exchange of
-                Just ( Inquirer _, exchange ) ->
-                    S.messageBlock
-                        [ T.italic ]
-                        [ Html.text "Confirm these are the numbers shown on your other device."
-
-                        --
-                        , case exchange.nonceUser of
-                            Just nonceUser ->
-                                numberDisplay nonceUser
-
-                            Nothing ->
-                                Html.text ""
-                        ]
-
-                Just ( Authoriser EstablishConnection, _ ) ->
-                    S.messageBlock
-                        [ T.italic ]
-                        [ Html.text "Negotiating with your other device." ]
-
-                Just ( Authoriser ConstructUcan, exchange ) ->
-                    S.messageBlock
-                        []
-                        [ Html.text "Do these numbers match the ones shown on your other device?"
-
-                        --
-                        , case exchange.nonceUser of
-                            Just nonceUser ->
-                                numberDisplay nonceUser
-
-                            Nothing ->
-                                Html.text ""
-
-                        --
-                        , Html.div
-                            [ T.flex
-                            , T.justify_center
-                            , T.mt_10
-                            ]
-                            [ S.button
-                                [ E.onClick (SendLinkingUcan exchange)
-
-                                --
-                                , T.bg_gray_200
-                                , T.flex
-                                , T.items_center
-
-                                -- Dark mode
-                                ------------
-                                , T.dark__bg_purple_shade
-                                ]
-                                [ S.buttonIcon FeatherIcons.check
-                                , Html.text "Approve"
-                                ]
-
-                            --
-                            , S.button
-                                [ E.onClick CancelLink
-
-                                --
-                                , T.bg_gray_400
-                                , T.flex
-                                , T.items_center
-                                , T.ml_3
-
-                                -- Dark mode
-                                ------------
-                                , T.dark__bg_gray_200
-                                ]
-                                [ S.buttonIcon FeatherIcons.x
-                                , Html.text "Cancel"
-                                ]
-                            ]
+            case Maybe.andThen .error context.exchange of
+                Just err ->
+                    S.warning
+                        [ Html.em [] [ Html.text "Got an error during the exchange:" ]
+                        , Html.br [] []
+                        , Html.text err
                         ]
 
                 Nothing ->
-                    form context
+                    exchangeView context model
         ]
+
+
+
+-- EXCHANGE
+
+
+exchangeView context model =
+    case Maybe.map (\e -> Tuple.pair e.side e) context.exchange of
+        Just ( Inquirer _, exchange ) ->
+            S.messageBlock
+                [ T.italic ]
+                [ Html.text "Confirm these are the numbers shown on your other device."
+
+                --
+                , case exchange.nonceUser of
+                    Just nonceUser ->
+                        numberDisplay nonceUser
+
+                    Nothing ->
+                        Html.text ""
+                ]
+
+        Just ( Authoriser EstablishConnection, _ ) ->
+            S.messageBlock
+                [ T.italic ]
+                [ Html.text "Negotiating with your other device." ]
+
+        Just ( Authoriser ConstructUcan, exchange ) ->
+            S.messageBlock
+                []
+                [ Html.text "Do these numbers match the ones shown on your other device?"
+
+                --
+                , case exchange.nonceUser of
+                    Just nonceUser ->
+                        numberDisplay nonceUser
+
+                    Nothing ->
+                        Html.text ""
+
+                --
+                , Html.div
+                    [ T.flex
+                    , T.justify_center
+                    , T.mt_10
+                    ]
+                    [ S.button
+                        [ E.onClick (SendLinkingUcan exchange)
+
+                        --
+                        , T.bg_gray_200
+                        , T.flex
+                        , T.items_center
+
+                        -- Dark mode
+                        ------------
+                        , T.dark__bg_purple_shade
+                        ]
+                        [ S.buttonIcon FeatherIcons.check
+                        , Html.text "Approve"
+                        ]
+
+                    --
+                    , S.button
+                        [ E.onClick CancelLink
+
+                        --
+                        , T.bg_gray_400
+                        , T.flex
+                        , T.items_center
+                        , T.ml_3
+
+                        -- Dark mode
+                        ------------
+                        , T.dark__bg_gray_200
+                        ]
+                        [ S.buttonIcon FeatherIcons.x
+                        , Html.text "Cancel"
+                        ]
+                    ]
+                ]
+
+        Nothing ->
+            form context
 
 
 

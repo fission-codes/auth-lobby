@@ -2,6 +2,7 @@ module Account.Linking.State exposing (..)
 
 import Account.Linking.Context as Context exposing (Context)
 import Account.Linking.Exchange as Exchange exposing (Exchange)
+import Json.Encode
 import Page
 import Ports
 import Radix exposing (..)
@@ -14,8 +15,22 @@ import Return exposing (return)
 
 cancel : Manager
 cancel model =
-    -- TODO: Publish message on channel that link has been cancelled
-    Return.singleton { model | page = Page.SuggestAuthorisation }
+    case model.page of
+        Page.LinkAccount context ->
+            case Maybe.map .side context.exchange of
+                Just (Exchange.Inquirer _) ->
+                    Return.singleton { model | page = Page.Choose }
+
+                Just (Exchange.Authoriser _) ->
+                    ( Nothing, Json.Encode.string Exchange.cancelMessage )
+                        |> Ports.publishOnSecureChannel
+                        |> return { model | page = Page.SuggestAuthorisation }
+
+                Nothing ->
+                    Return.singleton model
+
+        _ ->
+            Return.singleton model
 
 
 gotLinked : { username : String } -> Manager

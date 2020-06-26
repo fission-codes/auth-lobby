@@ -202,7 +202,8 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ Ports.gotCreateAccountFailure GotCreateAccountFailure
+        [ Ports.cancelLink (\_ -> CancelLink)
+        , Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotLinked GotLinked
         , Ports.gotUcanForApplication GotUcanForApplication

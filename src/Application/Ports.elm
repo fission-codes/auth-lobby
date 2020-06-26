@@ -36,6 +36,9 @@ port publishEncryptedOnSecureChannel : ( Maybe String, String, Json.Value ) -> C
 -- 📰
 
 
+port cancelLink : (() -> msg) -> Sub msg
+
+
 port gotCreateAccountFailure : (String -> msg) -> Sub msg
 
 

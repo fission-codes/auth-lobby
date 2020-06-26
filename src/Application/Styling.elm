@@ -147,3 +147,27 @@ textField attributes =
             , T.dark__border_gray_200
             ]
         |> Html.input
+
+
+warning : List (Html msg) -> Html msg
+warning nodes =
+    Html.div
+        [ T.break_all
+        , T.flex
+        , T.items_center
+        , T.max_w_sm
+        , T.mt_8
+        , T.mx_auto
+        , T.neg_mb_3
+        , T.text_red
+        , T.text_sm
+        ]
+        [ FeatherIcons.alertTriangle
+            |> FeatherIcons.withSize 18
+            |> Icons.wrap [ T.flex_shrink_0 ]
+
+        --
+        , Html.div
+            [ T.ml_2, T.pl_px ]
+            nodes
+        ]
