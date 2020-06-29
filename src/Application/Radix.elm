@@ -91,6 +91,10 @@ type Msg
     | GotInvalidRootDid
     | GotSecureChannelMessage Json.Value
     | SecureChannelOpened
+      -----------------------------------------
+      -- 🧿 Other things
+      -----------------------------------------
+    | CopyToClipboard String
 
 
 type alias Manager =

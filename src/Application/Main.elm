@@ -12,6 +12,7 @@ import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
 import External.Context
 import Maybe.Extra as Maybe
+import Other.State as Other
 import Page
 import Ports
 import Radix exposing (Model, Msg(..))
@@ -193,6 +194,12 @@ update msg =
 
         SecureChannelOpened ->
             Channel.opened
+
+        -----------------------------------------
+        -- 🧿 Other things
+        -----------------------------------------
+        CopyToClipboard a ->
+            Other.copyToClipboard a
 
 
 

@@ -39,6 +39,7 @@ async function bootElm() {
 
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
+  app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.createAccount.subscribe(createAccount)
   app.ports.linkApp.subscribe(linkApp)
   app.ports.linkedDevice.subscribe(linkedDevice)
@@ -322,7 +323,6 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
   }
 
 
-
 // CRYPTO
 // ------
 
@@ -427,4 +427,13 @@ function base64ToArrayBuffer(b64) {
 
 function stringToArrayBuffer(str) {
   return new TextEncoder().encode(str).buffer
+}
+
+
+
+// OTHER
+// =====
+
+function copyToClipboard(text) {
+  copyTextToClipboard(text)
 }

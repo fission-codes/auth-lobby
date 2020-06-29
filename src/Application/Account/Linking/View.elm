@@ -11,6 +11,7 @@ import Html.Events as E
 import Radix exposing (Model, Msg(..))
 import Styling as S
 import Tailwind as T
+import Url
 
 
 
@@ -25,9 +26,50 @@ view context model =
 
         --
         , if context.waitingForDevices then
+            let
+                url =
+                    model.url
+                        |> (\u -> { u | query = Nothing })
+                        |> Url.toString
+                        |> (\s ->
+                                if String.endsWith "/" s then
+                                    String.dropRight 1 s
+
+                                else
+                                    s
+                           )
+            in
             S.messageBlock
                 [ T.italic ]
-                [ Html.text "Open this website on your other device to authenticate this one." ]
+                [ Html.text "Open this website on your other device to authenticate this one."
+
+                --
+                , Html.div
+                    [ A.title "Click to copy"
+                    , E.onClick (CopyToClipboard url)
+
+                    --
+                    , T.border_2
+                    , T.border_dashed
+                    , T.border_gray_500
+                    , T.cursor_pointer
+                    , T.inline_flex
+                    , T.items_center
+                    , T.mt_6
+                    , T.opacity_80
+                    , T.p_5
+                    , T.rounded_md
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__border_gray_200
+                    ]
+                    [ S.buttonIcon FeatherIcons.scissors
+
+                    --
+                    , Html.text url
+                    ]
+                ]
 
           else
             case Maybe.andThen .error context.exchange of

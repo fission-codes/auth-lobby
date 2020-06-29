@@ -47,6 +47,7 @@ src_dir  := "./src"
 	echo "🦕  Downloading dependencies"
 	pnpm install
 	mkdir -p web_modules
+	curl https://wzrd.in/debug-standalone/copy-text-to-clipboard -o web_modules/copy-text-to-clipboard.js
 	curl https://unpkg.com/ipfs@0.46.0/dist/index.min.js -o web_modules/ipfs.min.js
 
 
