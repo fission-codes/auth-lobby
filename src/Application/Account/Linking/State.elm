@@ -50,9 +50,18 @@ gotUsernameInput input =
 
 linkAccount : Context -> Manager
 linkAccount context model =
-    return
-        { model | page = Page.LinkAccount { context | waitingForDevices = True } }
-        (Ports.openSecureChannel <| Just context.username)
+    case String.trim context.username of
+        "" ->
+            Return.singleton model
+
+        username ->
+            let
+                newContext =
+                    { context | username = username, waitingForDevices = True }
+            in
+            return
+                { model | page = Page.LinkAccount newContext }
+                (Ports.openSecureChannel <| Just username)
 
 
 sendUcan : Exchange -> Manager
