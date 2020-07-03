@@ -70,7 +70,7 @@ gotCreateAccountSuccess model =
                 _ ->
                     Nothing
     in
-    Return.singleton
+    return
         { model
             | page =
                 case model.externalContext of
@@ -84,6 +84,15 @@ gotCreateAccountSuccess model =
             , reCreateAccount = Success ()
             , usedUsername = maybeUsername
         }
+        -- If authenticated, subscribe to the pubsub channel.
+        -- But only if we're not redirecting elsewhere.
+        (case model.externalContext of
+            NotAsked ->
+                Ports.openSecureChannel Nothing
+
+            _ ->
+                Cmd.none
+        )
 
 
 gotCreateEmailInput : String -> Manager
