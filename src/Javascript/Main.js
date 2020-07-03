@@ -6,8 +6,8 @@
 
 const sdk = fissionSdk
 
-const API_ENDPOINT = "https://runfission.net"
-const DATA_ROOT_DOMAIN = "fissionuser.net"
+const API_ENDPOINT = undefined // "https://runfission.net"
+const DATA_ROOT_DOMAIN = "fission.name"
 
 let app
 let ipfs

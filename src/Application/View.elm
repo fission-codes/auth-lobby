@@ -77,9 +77,23 @@ view model =
                                 authenticated username model
 
                     Nothing ->
-                        { defaultFailedState | required = True }
-                            |> Failure
-                            |> External.Context.note
+                        case model.page of
+                            Page.Choose ->
+                                choose model
+
+                            Page.CreateAccount a ->
+                                Account.Creation.View.view a model
+
+                            Page.LinkAccount a ->
+                                Account.Linking.View.view a model
+
+                            Page.Note a ->
+                                note a model
+
+                            _ ->
+                                { defaultFailedState | required = True }
+                                    |> Failure
+                                    |> External.Context.note
         ]
     ]
 

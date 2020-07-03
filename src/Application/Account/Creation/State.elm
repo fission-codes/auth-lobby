@@ -72,7 +72,15 @@ gotCreateAccountSuccess model =
     in
     Return.singleton
         { model
-            | page = Page.SuggestAuthorisation
+            | page =
+                case model.externalContext of
+                    NotAsked ->
+                        Page.Choose
+
+                    _ ->
+                        Page.SuggestAuthorisation
+
+            --
             , reCreateAccount = Success ()
             , usedUsername = maybeUsername
         }

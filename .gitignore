@@ -4,3 +4,5 @@
 /package-lock.json
 /src/Library/Tailwind.elm
 /web_modules
+
+.fission.yaml
