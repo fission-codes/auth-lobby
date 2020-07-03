@@ -162,6 +162,9 @@ update msg =
         GotLinkUsernameInput a ->
             Linking.gotUsernameInput a
 
+        GotLinkExchangeError a ->
+            Linking.gotExchangeError a
+
         LinkAccount a ->
             Linking.linkAccount a
 
@@ -213,6 +216,7 @@ subscriptions _ =
         , Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotLinked GotLinked
+        , Ports.gotLinkExchangeError GotLinkExchangeError
         , Ports.gotUcanForApplication GotUcanForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
 

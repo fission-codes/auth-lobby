@@ -75,6 +75,7 @@ type Msg
       -----------------------------------------
     | CancelLink
     | GotLinked { username : String }
+    | GotLinkExchangeError String
     | GotLinkUsernameInput String
     | LinkAccount Linking.Context
     | SendLinkingUcan Linking.Exchange

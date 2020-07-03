@@ -97,11 +97,11 @@ async function rootDid(maybeUsername) {
   if (rootDidCache) {
     null
   } else if (maybeUsername) {
-    rootDidCache = await sdk.dns.lookupTxtRecord(`_did.${maybeUsername}.${DATA_ROOT_DOMAIN}`)
+    rootDidCache = await sdk.did.root(maybeUsername, DATA_ROOT_DOMAIN)
   } else if (ucan = localStorage.getItem("ucan")) {
-    rootDidCache = sdk.core.ucanRootIssuer(ucan)
+    rootDidCache = sdk.ucan.rootIssuer(ucan)
   } else {
-    rootDidCache = await sdk.core.did()
+    rootDidCache = await sdk.did.local()
   }
 
   return rootDidCache
@@ -146,7 +146,7 @@ async function createAccount(args) {
 // ----
 
 async function linkApp({ did }) {
-  const ucan = await sdk.core.ucan({
+  const ucan = await sdk.ucan.build({
     audience: did,
     issuer: await rootDid(),
     lifetimeInSeconds: 60 * 60 * 24 * 30 // one month,
@@ -248,14 +248,14 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
 
       // DID
       did: plaDid
-        ? await sdk.core.did()
+        ? await sdk.did.local()
         : undefined,
 
       // UCAN
       ucan: plaUcan
-        ? await sdk.core.ucan({
+        ? await sdk.ucan.build({
             audience: didKeyOtherSide,
-            issuer: await sdk.core.did(),
+            issuer: await sdk.did.local(),
             lifetimeInSeconds: 60 * 60 * 24 * 30 * 12, // one year
             proof: localStorage.getItem("ucan")
           })
@@ -272,7 +272,9 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
     const data = {
       ...payload,
 
-      signature: plaSignature ? await ks.sign(payload) : undefined,
+      signature: plaSignature
+        ? await ks.sign( JSON.stringify(payload) )
+        : undefined,
     }
 
     // Return
@@ -298,21 +300,31 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
     app.ports.secureChannelOpened.send(null)
 
   } else if (string[0] === "{") {
-    gotSecureChannelMessage(from, string)
+    await gotSecureChannelMessage(from, string)
 
   } else {
-    const decryptedString = await decrypt(string, await sdk.core.did())
-    gotSecureChannelMessage(from, decryptedString)
+    const decryptedString = await decrypt(string, await sdk.did.local())
+    await gotSecureChannelMessage(from, decryptedString)
 
   }
 }}
 
 
-  function gotSecureChannelMessage(from, string) {
+  async function gotSecureChannelMessage(from, string) {
     const obj = JSON.parse(string)
 
     if (obj.did && obj.signature) {
-      // TODO: Confirm signature
+      const objWithoutSignature = { ...obj, signature: undefined }
+      const hasValidSignature = await sdk.did.verifySignedData({
+        data: JSON.stringify(objWithoutSignature),
+        did: obj.did,
+        signature: obj.signature
+      })
+
+      if (!hasValidSignature) {
+        app.ports.gotLinkExchangeError.send("Received a message with an invalid signature.")
+        return
+      }
     }
 
     app.ports.gotSecureChannelMessage.send({

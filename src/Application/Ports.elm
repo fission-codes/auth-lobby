@@ -51,6 +51,9 @@ port gotCreateAccountSuccess : (() -> msg) -> Sub msg
 port gotLinked : ({ username : String } -> msg) -> Sub msg
 
 
+port gotLinkExchangeError : (String -> msg) -> Sub msg
+
+
 port gotUcanForApplication : ({ ucan : String } -> msg) -> Sub msg
 
 

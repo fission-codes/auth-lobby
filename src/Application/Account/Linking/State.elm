@@ -33,6 +33,25 @@ cancel model =
             Return.singleton model
 
 
+gotExchangeError : String -> Manager
+gotExchangeError error model =
+    let
+        context =
+            case model.page of
+                Page.LinkAccount c ->
+                    c
+
+                _ ->
+                    Context.default
+    in
+    context.exchange
+        |> Maybe.withDefault Exchange.initialAuthoriserExchange
+        |> (\e -> { e | error = Just error })
+        |> (\e -> { context | exchange = Just e })
+        |> (\c -> { model | page = Page.LinkAccount c })
+        |> Return.singleton
+
+
 gotLinked : { username : String } -> Manager
 gotLinked { username } model =
     Return.singleton
