@@ -48,7 +48,7 @@ src_dir  := "./src"
 	pnpm install
 	mkdir -p web_modules
 	curl https://wzrd.in/debug-standalone/copy-text-to-clipboard -o web_modules/copy-text-to-clipboard.js
-	curl https://unpkg.com/ipfs@0.46.0/dist/index.min.js -o web_modules/ipfs.min.js
+	curl https://unpkg.com/ipfs@0.47.0/dist/index.min.js -o web_modules/ipfs.min.js
 
 
 @js:
@@ -73,7 +73,6 @@ src_dir  := "./src"
 	echo "⛰  Copying some more static files"
 	cp -r {{src_dir}}/Static/Favicons/ {{dist_dir}}
 	cp -r {{src_dir}}/Static/Manifests/ {{dist_dir}}
-
 
 
 

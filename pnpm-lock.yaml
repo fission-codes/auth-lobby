@@ -277,19 +277,19 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-N9oWFcegS0sFr9oh1oz2d7Npos6vNoWW9HvtCg5N1KRFpUhaAhvTv5Y58g880fZaEYSNm3qDz8SU1UrGvp+n7A==
-  /cids/0.8.0:
+  /cids/0.8.3:
     dependencies:
       buffer: 5.6.0
       class-is: 1.1.0
-      multibase: 0.7.0
-      multicodec: 1.0.1
-      multihashes: 0.4.19
+      multibase: 1.0.1
+      multicodec: 1.0.3
+      multihashes: 1.0.1
     dev: false
     engines:
       node: '>=4.0.0'
       npm: '>=3.0.0'
     resolution:
-      integrity: sha512-HdKURxtSOnww3H28CJU2TauIklEBsOn+ouGl2EOnSfVCVkH6+sWTj7to2D/BmuWvwzEy2+ZIKdcIwsXHJBQVew==
+      integrity: sha512-yoXTbV3llpm+EBGWKeL9xKtksPE/s6DPoDSY4fn8I8TEW1zehWXPSB0pwAXVDlLaOlrw+sNynj995uD9abmPhA==
   /class-is/1.1.0:
     dev: false
     resolution:
@@ -432,10 +432,10 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-2zg/uCt/qVyfAPHHSBLCHsvyUQ8Ajw+Mv2LX+Tr6TV5oUFTYsljJId+TSkyRrMZEhbQtq587Ef5mblR12kTLIQ==
-  /err-code/2.0.0:
+  /err-code/2.0.3:
     dev: false
     resolution:
-      integrity: sha512-MsMOijQ4v0xlmrz1fc7lyPEy7jFhoNF7EVaRSP7mPzs20LaFOwG6qNjGRy3Ie85n9DARlcUnB1zbsBv5sJrIvw==
+      integrity: sha512-2bmlRpNKBxT/CRmPOlyISQpNj+qSeYvcym/uT0Jx2bMOlKLtSy1ZmLuVxSEKKyor/N5yhvp/ZiG1oE3DEYMSFA==
   /error-ex/1.3.2:
     dependencies:
       is-arrayish: 0.2.1
@@ -631,11 +631,11 @@ packages:
   /ipld-dag-pb/0.18.5:
     dependencies:
       buffer: 5.6.0
-      cids: 0.8.0
+      cids: 0.8.3
       class-is: 1.1.0
-      multicodec: 1.0.1
-      multihashing-async: 0.8.1
-      protons: 1.2.0
+      multicodec: 1.0.3
+      multihashing-async: 0.8.2
+      protons: 1.2.1
       stable: 0.1.8
     dev: false
     engines:
@@ -877,42 +877,48 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==
-  /multibase/0.7.0:
+  /multibase/1.0.1:
     dependencies:
       base-x: 3.0.8
       buffer: 5.6.0
     dev: false
+    engines:
+      node: '>=10.0.0'
+      npm: '>=6.0.0'
     resolution:
-      integrity: sha512-TW8q03O0f6PNFTQDvh3xxH03c8CjGaaYrjkl9UQPG6rz53TQzzxJVCIWVjzcbN/Q5Y53Zd0IBQBMVktVgNx4Fg==
-  /multicodec/1.0.1:
+      integrity: sha512-KcCxpBVY8fdVKu4dJMAahq4F/2Z/9xqEjIiR7PiMe7LRGeorFn2NLmicN6nLBCqQvft6MG2Lc9X5P0IdyvnxEw==
+  /multicodec/1.0.3:
     dependencies:
       buffer: 5.6.0
       varint: 5.0.0
     dev: false
     resolution:
-      integrity: sha512-yrrU/K8zHyAH2B0slNVeq3AiwluflHpgQ3TAzwNJcuO2AoPyXgBT2EDkdbP1D8B/yFOY+S2hDYmFlI1vhVFkQw==
-  /multihashes/0.4.19:
+      integrity: sha512-8G4JKbHWSe/39Xx2uiI+/b/S6mGgimzwEN4TOCokFUIfofg1T8eHny88ht9eWImD2dng+EEQRsApXxA5ubhU4g==
+  /multihashes/1.0.1:
     dependencies:
       buffer: 5.6.0
-      multibase: 0.7.0
+      multibase: 1.0.1
       varint: 5.0.0
     dev: false
+    engines:
+      node: '>=10.0.0'
+      npm: '>=6.0.0'
     resolution:
-      integrity: sha512-ej74GAfA20imjj00RO5h34aY3pGUFyzn9FJZFWwdeUHlHTkKmv90FrNpvYT4jYf1XXCy5O/5EjVnxTaESgOM6A==
-  /multihashing-async/0.8.1:
+      integrity: sha512-S27Tepg4i8atNiFaU5ZOm3+gl3KQlUanLs/jWcBxQHFttgq+5x1OgbQmf2d8axJ/48zYGBd/wT9d723USMFduw==
+  /multihashing-async/0.8.2:
     dependencies:
       blakejs: 1.1.0
       buffer: 5.6.0
-      err-code: 2.0.0
+      err-code: 2.0.3
       js-sha3: 0.8.0
-      multihashes: 0.4.19
+      multihashes: 1.0.1
       murmurhash3js-revisited: 3.0.0
     dev: false
     engines:
       node: '>=10.0.0'
       npm: '>=6.0.0'
     resolution:
-      integrity: sha512-qu3eIXHebc9a4OU4n/60BdZLFpX+/dGBs3DbzXCxX1aU0rFF19KQAiGl+sRL9wvKIJdeF2+w16RRJrpyTHpkkA==
+      integrity: sha512-2lKa1autuCy8x7KIEj9aVNbAb3aIMRFYIwN7mq/zD4pxgNIVgGlm+f6GKY4880EOF2Y3GktHYssRy7TAJQ2DyQ==
   /murmurhash3js-revisited/3.0.0:
     dev: false
     engines:
@@ -1161,7 +1167,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-G/2kcamPF2S49W5yaMGdIpkG6+5wZF0fzBteLKgEHjbNzqjZQ85aAs1iJGto31EJaSTkNvHs5IXuHSaTLWBAiA==
-  /protons/1.2.0:
+  /protons/1.2.1:
     dependencies:
       buffer: 5.6.0
       protocol-buffers-schema: 3.4.0
@@ -1169,7 +1175,7 @@ packages:
       varint: 5.0.0
     dev: false
     resolution:
-      integrity: sha512-V6wwlbbgZ6qtqd1zRSk7HqvwkoadmeNntUlqd1On9vHyC1tPI6H8GJotfup+9hG2FsDQK+MctaLrSouyunfxNg==
+      integrity: sha512-2oqDyc/SN+tNcJf8XxrXhYL7sQn2/OMl8mSdD7NVGsWjMEmAbks4eDVnCyf0vAoRbBWyWTEXWk4D8XfuKVl3zg==
   /purgecss/2.2.1:
     dependencies:
       commander: 5.1.0

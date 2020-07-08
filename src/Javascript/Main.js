@@ -6,8 +6,11 @@
 
 const sdk = fissionSdk
 
-const API_ENDPOINT = undefined // "https://runfission.net"
-const DATA_ROOT_DOMAIN = "fission.name"
+const API_ENDPOINT = "https://runfission.net"
+const DATA_ROOT_DOMAIN = "fissionuser.net"
+
+const RELAY = "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
+const SIGNALING_ADDR = "/dns4/frozen-wave-01607.herokuapp.com/tcp/443/wss/p2p-webrtc-star/"
 
 let app
 let ipfs
@@ -55,22 +58,41 @@ function ports() {
 async function bootIpfs() {
   ipfs = await Ipfs.create({
     config: {
+      Bootstrap: [
+        RELAY
+      ],
       Addresses: {
         Swarm: [
-          // https://wrtc-star1.par.dwebops.pub/
-          // https://wrtc-star2.sjc.dwebops.pub/
-          // "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
-
-          // Our server
-          "/dns4/frozen-wave-01607.herokuapp.com/tcp/443/wss/p2p-webrtc-star/",
-
-          // "/ip4/127.0.0.1/tcp/9090/ws/p2p-webrtc-star/",
-          // "/ip4/127.0.0.1/tcp/0"
+          SIGNALING_ADDR
         ]
       }
+    },
+    preload: {
+      enabled: false,
+      addresses: []
+    },
+    relay: {
+      enabled: true,
+      hop: {
+        enabled: true,
+        active: true
+      }
+    },
+    init: {
+      repo: "ipfs-" + Date.now(),
+      repoAutoMigrate: true
     }
   })
 
+  ipfs.libp2p.connectionManager.on("peer:connect", (connection) => {
+    console.log("Connected to peer", connection.remotePeer._idB58String)
+  })
+
+  ipfs.libp2p.connectionManager.on("peer:disconnect", (connection) => {
+    console.log("Disconnected from peer", connection.remotePeer._idB58String)
+  })
+
+  window.i = ipfs
   await sdk.ipfs.setIpfs(ipfs)
 }
 
@@ -103,6 +125,8 @@ async function rootDid(maybeUsername) {
   } else {
     rootDidCache = await sdk.did.local()
   }
+
+  console.log("Root DID", rootDidCache)
 
   return rootDidCache
 }
@@ -202,7 +226,31 @@ async function openSecureChannel(maybeUsername) {
       () => ipfs.pubsub.publish(rootDid_, "PING"),
       500
     )
+
+  } else {
+    // tryManualPeerConnection()
+    // pingInterval = setInterval(tryManualPeerConnection, 5000)
+
   }
+}
+
+
+async function tryManualPeerConnection() {
+  const addrs = (await ipfs.swarm.addrs())
+    .filter(a => a.addrs[0].toString().startsWith(SIGNALING_ADDR))
+    .map(a => a.id)
+
+  addrs.forEach(a => {
+    console.log(`${RELAY}/p2p-circuit/p2p/${a}`)
+    try {
+      ipfs.swarm.connect(
+        `${RELAY}/p2p-circuit/p2p/${a}`,
+        { timeout: 5000 }
+      )
+    } catch (err) {
+      console.error(err)
+    }
+  })
 }
 
 
@@ -286,6 +334,15 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
   const string = data.toString()
 
   if (from === ipfsId) {
+    console.log("Sent", string)
+  } else {
+    console.log("Received", string)
+  }
+
+  if (from === ipfsId) {
+    // if (string === "CANCEL") {
+    //   pingInterval = setInterval(tryManualPeerConnection, 5000)
+    // }
     return
 
   } else if (string === "CANCEL") {
