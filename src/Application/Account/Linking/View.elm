@@ -41,7 +41,9 @@ view context model =
             in
             S.messageBlock
                 [ T.italic ]
-                [ Html.text "Open this website on your other device to authenticate this one."
+                [ Html.div
+                    []
+                    [ Html.text "Open this website on your other device to authenticate this one." ]
 
                 --
                 , Html.div
