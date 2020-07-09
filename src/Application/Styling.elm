@@ -2,6 +2,7 @@ module Styling exposing (..)
 
 import FeatherIcons
 import Html exposing (Html)
+import Html.Attributes as A
 import Icons
 import Tailwind as T
 
@@ -124,7 +125,10 @@ textField : Node msg
 textField attributes =
     attributes
         |> List.append
-            [ T.appearance_none
+            [ A.attribute "autocapitalize" "off"
+
+            --
+            , T.appearance_none
             , T.bg_transparent
             , T.border_2
             , T.border_gray_500
