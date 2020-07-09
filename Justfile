@@ -9,7 +9,7 @@ node_bin 					:= "./node_modules/.bin"
 src_dir  					:= "./src"
 
 default_config 		:= "config/default.json"
-
+production_config := "config/production.json"
 
 
 # Tasks
@@ -68,7 +68,7 @@ default_config 		:= "config/default.json"
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
-@production-build: clean css-large production-elm css-small html js images static (apply-config "config/production.json")
+@production-build: clean css-large production-elm css-small html js images static (apply-config production_config)
 	echo "⚙️  Minifying Javascript Files"
 	{{node_bin}}/terser-dir \
 		{{dist_dir}} \
