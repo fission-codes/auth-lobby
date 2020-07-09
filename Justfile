@@ -8,6 +8,8 @@ dist_dir := "./build"
 node_bin := "./node_modules/.bin"
 src_dir  := "./src"
 
+default_config := "config/default.json"
+
 
 
 # Tasks
@@ -20,11 +22,18 @@ src_dir  := "./src"
 # ---
 
 
+@apply-config config=default_config:
+	echo "🎛  Apply config `{{config}}`"
+	{{node_bin}}/mustache {{config}} {{dist_dir}}/index.html > {{dist_dir}}/index.applied.html
+	rm {{dist_dir}}/index.html
+	mv {{dist_dir}}/index.applied.html {{dist_dir}}/index.html
+
+
 @clean:
 	rm -rf {{dist_dir}}
 
 
-@dev-build: clean css-large elm html js images static
+@dev-build: clean css-large elm html js images static apply-config
 
 
 @dev-server:
@@ -54,11 +63,12 @@ src_dir  := "./src"
 @js:
 	echo "📄  Copying JS files"
 	cp -r web_modules {{dist_dir}}
-	cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
+	# cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
+	cp ../ts-sdk/dist/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
-@production-build: clean css-large production-elm css-small html js images static
+@production-build: clean css-large production-elm css-small html js images static (apply-config "config/production.json")
 	echo "⚙️  Minifying Javascript Files"
 	{{node_bin}}/terser-dir \
 		{{dist_dir}} \

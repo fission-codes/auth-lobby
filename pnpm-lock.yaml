@@ -3,6 +3,7 @@ dependencies:
   fission-sdk: 0.9.1
 devDependencies:
   elm-tailwind-css: 0.1.1
+  mustache: 4.0.1
   tailwindcss: 1.4.6
   tailwindcss-animations: 2.0.0
   terser-dir: 1.0.7
@@ -925,6 +926,13 @@ packages:
       node: '>=8.0.0'
     resolution:
       integrity: sha512-/sF3ee6zvScXMb1XFJ8gDsSnY+X8PbOyjIuBhtgis10W2Jx4ZjIhikUCIF9c4gpJxVnQIsPAFrSwTCuAjicP6g==
+  /mustache/4.0.1:
+    dev: true
+    engines:
+      npm: '>=1.4.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-yL5VE97+OXn4+Er3THSmTdCFCtx5hHWzrolvH+JObZnUYwuaG7XV+Ch4fR2cIrcYI0tFHxS7iyFYl14bW8y2sA==
   /node-emoji/1.10.0:
     dependencies:
       lodash.toarray: 4.4.0
@@ -1503,6 +1511,7 @@ specifiers:
   elm-tailwind-css: ^0.1.1
   fission-kit: fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472
   fission-sdk: 0.9.1
+  mustache: ^4.0.1
   tailwindcss: ^1.4.6
   tailwindcss-animations: ^2.0.0
   terser-dir: ^1.0.7

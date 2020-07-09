@@ -6,12 +6,6 @@
 
 const sdk = fissionSdk
 
-const API_ENDPOINT = "https://runfission.net"
-const DATA_ROOT_DOMAIN = "fissionuser.net"
-
-const RELAY = "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
-const SIGNALING_ADDR = "/dns4/frozen-wave-01607.herokuapp.com/tcp/443/wss/p2p-webrtc-star/"
-
 let app
 let ipfs
 
@@ -79,7 +73,7 @@ async function bootIpfs() {
       }
     },
     init: {
-      repo: "ipfs-" + Date.now(),
+      repo: "ipfs-1594230086171",
       repoAutoMigrate: true
     }
   })

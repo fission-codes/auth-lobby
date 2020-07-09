@@ -46,4 +46,8 @@ just dev-build
 # Build, serve & watch
 # (requires watchexec & devd)
 just
+
+# Production build
+# (see Justfile for details)
+just production-build
 ```
