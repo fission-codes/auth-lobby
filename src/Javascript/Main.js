@@ -328,12 +328,6 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
   const string = data.toString()
 
   if (from === ipfsId) {
-    console.log("Sent", string)
-  } else {
-    console.log("Received", string)
-  }
-
-  if (from === ipfsId) {
     // if (string === "CANCEL") {
     //   pingInterval = setInterval(tryManualPeerConnection, 5000)
     // }
