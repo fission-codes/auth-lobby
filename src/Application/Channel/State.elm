@@ -20,7 +20,7 @@ gotInvalidRootDid model =
         -- Link Account Page
         -----------------------------------------
         Page.LinkAccount context ->
-            { context | waitingForDevices = False }
+            { context | note = Just "Can't find this user", waitingForDevices = False }
                 |> Page.LinkAccount
                 |> (\page -> { model | page = page })
                 |> Return.singleton

@@ -36,6 +36,7 @@ async function bootElm() {
 
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
+  app.ports.closeSecureChannel.subscribe(closeSecureChannel)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.createAccount.subscribe(createAccount)
   app.ports.linkApp.subscribe(linkApp)
@@ -95,7 +96,7 @@ async function bootIpfs() {
 // ACCOUNT
 // =======
 
-let rootDidCache
+const rootDidCache = {}
 
 /**
  * Get the root DID for a user.
@@ -108,21 +109,23 @@ let rootDidCache
  * is to link this domain/device to another one.
  */
 async function rootDid(maybeUsername) {
-  let ucan
+  let ucan, x, y
 
-  if (rootDidCache) {
-    null
-  } else if (maybeUsername) {
-    rootDidCache = await sdk.did.root(maybeUsername, DATA_ROOT_DOMAIN)
+  if (maybeUsername) {
+    x = maybeUsername
+    y = rootDidCache[x] || (await sdk.did.root(x, DATA_ROOT_DOMAIN))
+
   } else if (ucan = localStorage.getItem("ucan")) {
-    rootDidCache = sdk.ucan.rootIssuer(ucan)
+    x = "ucan"
+    y = rootDidCache[x] || sdk.ucan.rootIssuer(ucan)
+
   } else {
-    rootDidCache = await sdk.did.local()
+    x = "local"
+    y = rootDidCache[x] || (await sdk.did.local())
+
   }
 
-  console.log("Root DID", rootDidCache)
-
-  return rootDidCache
+  return y
 }
 
 
@@ -194,6 +197,12 @@ function linkedDevice({ ucan, username }) {
 let pingInterval
 
 
+async function closeSecureChannel() {
+  console.log("Closing secure channel")
+  await ipfs.pubsub.unsubscribe()
+}
+
+
 /**
  * Tries to subscribe to a pubsub channel
  * with the root DID as the topic.
@@ -202,13 +211,15 @@ let pingInterval
  * otherwise the `secureChannelTimeout` port will called.
  */
 async function openSecureChannel(maybeUsername) {
-  const rootDid_ = await rootDid(maybeUsername)
-  const ipfsId = (await ipfs.id()).id
+  const rootDid_ = await rootDid(maybeUsername).catch(_ => null)
+  const ipfsId = await ipfs.id().then(a => a.id)
 
   if (!rootDid_) {
     app.ports.gotInvalidRootDid.send(null)
     return
   }
+
+  console.log("Opening secure channel", rootDid_)
 
   await ipfs.pubsub.subscribe(
     rootDid_,
@@ -326,6 +337,12 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
 
 function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, data }) {
   const string = data.toString()
+
+  if (from === ipfsId) {
+    console.log("Sending", string)
+  } else {
+    console.log("Receiving", string)
+  }
 
   if (from === ipfsId) {
     // if (string === "CANCEL") {

@@ -153,6 +153,27 @@ textField attributes =
         |> Html.input
 
 
+usernameBlock : Node msg
+usernameBlock attributes =
+    attributes
+        |> List.append
+            [ T.bg_purple_tint
+            , T.border_t
+            , T.border_transparent
+            , T.inline_block
+            , T.mb_6
+            , T.p_5
+            , T.rounded_md
+            , T.text_purple_shade
+
+            -- Dark mode
+            ------------
+            , T.dark__bg_darkness_above
+            , T.dark__text_purple_tint
+            ]
+        |> Html.div
+
+
 warning : List (Html msg) -> Html msg
 warning nodes =
     Html.div

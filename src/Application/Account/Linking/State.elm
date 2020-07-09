@@ -64,7 +64,7 @@ gotLinked { username } model =
 gotUsernameInput : String -> Manager
 gotUsernameInput input =
     adjustContext
-        (\c -> { c | username = input })
+        (\c -> { c | note = Nothing, username = input })
 
 
 linkAccount : Context -> Manager

@@ -3,6 +3,7 @@ module Routing exposing (..)
 import Browser
 import Browser.Navigation as Nav
 import Page exposing (Page)
+import Ports
 import Radix
 import Return exposing (return)
 import Url exposing (Url)
@@ -14,7 +15,17 @@ import Url exposing (Url)
 
 goToPage : Page -> Radix.Manager
 goToPage page model =
-    Return.singleton { model | page = page }
+    return
+        { model | page = page }
+        (case model.page of
+            Page.LinkAccount _ ->
+                -- When moving away from the link-account page,
+                -- make sure to close the secure channel.
+                Ports.closeSecureChannel ()
+
+            _ ->
+                Cmd.none
+        )
 
 
 urlChanged : Url -> Radix.Manager

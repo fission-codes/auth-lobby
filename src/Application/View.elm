@@ -193,21 +193,8 @@ authenticated username model =
         --
         , S.messageBlock
             []
-            [ Html.div
-                [ T.bg_purple_tint
-                , T.border_t
-                , T.border_transparent
-                , T.inline_block
-                , T.mb_6
-                , T.p_5
-                , T.rounded_md
-                , T.text_purple_shade
-
-                -- Dark mode
-                ------------
-                , T.dark__bg_darkness_above
-                , T.dark__text_purple_tint
-                ]
+            [ S.usernameBlock
+                []
                 [ Html.span
                     [ T.opacity_90 ]
                     [ Html.text "Authenticated as " ]

@@ -8,6 +8,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Icons
 import Radix exposing (Model, Msg(..))
 import Styling as S
 import Tailwind as T
@@ -70,6 +71,20 @@ view context model =
 
                     --
                     , Html.text url
+                    ]
+
+                --
+                , Html.div
+                    [ T.mt_6
+                    , T.not_italic
+                    , T.opacity_75
+                    , T.text_gray_400
+                    , T.text_xs
+                    ]
+                    [ Html.text "Authenticating with "
+                    , Html.span
+                        [ T.border_b, T.border_gray_600 ]
+                        [ Html.text context.username ]
                     ]
                 ]
 
@@ -217,6 +232,26 @@ form context =
             , T.dark__bg_purple_shade
             ]
             [ Html.text "Link account" ]
+
+        --
+        , case context.note of
+            Just note ->
+                Html.div
+                    [ T.flex
+                    , T.items_center
+                    , T.justify_center
+                    , T.mt_3
+                    , T.text_center
+                    , T.text_sm
+                    ]
+                    [ Icons.wrap
+                        [ T.mr_1, T.pr_px ]
+                        (FeatherIcons.withSize 15 FeatherIcons.alertTriangle)
+                    , Html.span [ T.italic ] [ Html.text note ]
+                    ]
+
+            Nothing ->
+                Html.text ""
         ]
 
 

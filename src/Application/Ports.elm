@@ -26,6 +26,9 @@ port linkedDevice : { ucan : String, username : String } -> Cmd msg
 -- 📣  ▒▒  SECURE CHANNEL
 
 
+port closeSecureChannel : () -> Cmd msg
+
+
 port openSecureChannel : Maybe String -> Cmd msg
 
 

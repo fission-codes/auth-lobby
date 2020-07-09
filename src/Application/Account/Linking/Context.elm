@@ -9,6 +9,7 @@ import Account.Linking.Exchange exposing (Exchange)
 
 type alias Context =
     { exchange : Maybe Exchange
+    , note : Maybe String
     , username : String
     , waitingForDevices : Bool
     }
@@ -21,6 +22,7 @@ type alias Context =
 default : Context
 default =
     { exchange = Nothing
+    , note = Nothing
     , username = ""
     , waitingForDevices = False
     }
