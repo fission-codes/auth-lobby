@@ -34,6 +34,8 @@ production_config := "config/production.json"
 
 
 @dev-build: clean css-large elm html js images static apply-config
+	# TEMP
+	{{node_bin}}/webpack {{src_dir}}/Javascript/Main.js -o {{dist_dir}}/index.js --mode development
 
 
 @dev-server:
@@ -57,7 +59,7 @@ production_config := "config/production.json"
 	pnpm install
 	mkdir -p web_modules
 	curl https://wzrd.in/debug-standalone/copy-text-to-clipboard -o web_modules/copy-text-to-clipboard.js
-	curl https://unpkg.com/ipfs@0.47.0/dist/index.min.js -o web_modules/ipfs.min.js
+	# curl https://unpkg.com/ipfs@0.47.0/dist/index.min.js -o web_modules/ipfs.min.js
 
 
 @js:
@@ -65,7 +67,7 @@ production_config := "config/production.json"
 	cp -r web_modules {{dist_dir}}
 	# cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp ../ts-sdk/dist/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
-	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
+	# cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
 @production-build: clean css-large production-elm css-small html js images static (apply-config production_config)
@@ -77,6 +79,9 @@ production_config := "config/production.json"
 		--pseparator ", " \
 		--output {{dist_dir}} \
 		-- --compress --mangle
+
+	# TEMP
+	{{node_bin}}/webpack {{src_dir}}/Javascript/Main.js -o {{dist_dir}}/index.js --mode production
 
 
 @static:

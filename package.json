@@ -3,13 +3,16 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472",
-    "fission-sdk": "0.9.1"
+    "fission-sdk": "0.9.1",
+    "ipfs": "^0.47.0"
   },
   "devDependencies": {
     "elm-tailwind-css": "^0.1.1",
     "mustache": "^4.0.1",
     "tailwindcss": "^1.4.6",
     "tailwindcss-animations": "^2.0.0",
-    "terser-dir": "^1.0.7"
+    "terser-dir": "^1.0.7",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   }
 }

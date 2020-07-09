@@ -4,6 +4,8 @@
 
 */
 
+import Ipfs from "ipfs"
+
 const sdk = fissionSdk
 
 let app
