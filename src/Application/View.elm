@@ -30,7 +30,7 @@ view model =
         [ T.flex
         , T.items_center
         , T.justify_center
-        , T.min_h_screen
+        , T.min_h_screen_alt
         , T.px_4
         , T.w_screen
         ]

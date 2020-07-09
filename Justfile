@@ -4,11 +4,11 @@ export NODE_OPTIONS := "--no-warnings"
 # Variables
 # ---------
 
-dist_dir := "./build"
-node_bin := "./node_modules/.bin"
-src_dir  := "./src"
+dist_dir 					:= "./build"
+node_bin 					:= "./node_modules/.bin"
+src_dir  					:= "./src"
 
-default_config := "config/default.json"
+default_config 		:= "config/default.json"
 
 
 
@@ -39,7 +39,7 @@ default_config := "config/default.json"
 @dev-server:
 	echo "🤵  Putting up a server for ya"
 	echo "http://localhost:8001"
-	devd --quiet build --port=8001
+	devd --quiet build --port=8001 --all
 
 
 @html:

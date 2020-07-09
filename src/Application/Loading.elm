@@ -29,7 +29,7 @@ screen additionalNodes =
     Html.div
         [ T.flex
         , T.flex_col
-        , T.min_h_screen
+        , T.min_h_screen_alt
         ]
         [ Html.div
             [ T.flex

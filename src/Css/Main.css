@@ -7,6 +7,7 @@
 
 body {
   @apply font-body min-h-screen text-gray-100;
+  min-height: -webkit-fill-available;
   text-rendering: optimizeLegibility;
 }
 
@@ -21,6 +22,11 @@ body {
 
 /* Utilities
    ========= */
+
+.min-h-screen-alt {
+  @apply min-h-screen;
+  min-height: -webkit-fill-available;
+}
 
 .underline-thick {
   text-decoration-thickness: 2px;
