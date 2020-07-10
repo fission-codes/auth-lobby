@@ -114,7 +114,11 @@ main_css := src_dir + "/Css/Main.css"
 	NODE_ENV=production pnpx etc {{main_css}} \
 		--config tailwind.config.js \
 		--output {{dist_css}} \
-		--purge-content {{dist_elm}}
+		--purge-content {{dist_elm}} \
+		--purge-whitelist="left-1/2" \
+		--purge-whitelist="top-1/2" \
+		--purge-whitelist="-translate-x-1/2" \
+		--purge-whitelist="-translate-y-1/2"
 	echo ""
 
 
