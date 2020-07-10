@@ -23,7 +23,7 @@ production_config := "config/production.json"
 
 
 @apply-config config=default_config:
-	echo "🎛  Apply config `{{config}}`"
+	echo "🎛  Apply config \`{{config}}\`"
 	{{node_bin}}/mustache {{config}} {{dist_dir}}/index.html > {{dist_dir}}/index.applied.html
 	rm {{dist_dir}}/index.html
 	mv {{dist_dir}}/index.applied.html {{dist_dir}}/index.html
