@@ -28,6 +28,11 @@ body {
   min-height: -webkit-fill-available;
 }
 
+
+.number-display { max-width: 88vw }
+.number-display > div { padding-top: 2px }
+
+
 .underline-thick {
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;

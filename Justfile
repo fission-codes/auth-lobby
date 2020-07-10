@@ -158,4 +158,4 @@ main_elm := src_dir + "/Application/Main.elm"
 
 
 @watch-html:
-	watchexec -p -w src -e html -- just html
+	watchexec -p -w src -e html -- just html apply-config

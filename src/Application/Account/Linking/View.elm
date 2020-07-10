@@ -269,8 +269,9 @@ numberDisplay number =
                     [ T.border_2
                     , T.border_gray_600
                     , T.mr_2
+                    , T.pt_px
                     , T.rounded_md
-                    , T.w_16
+                    , T.w_12
 
                     --
                     , T.last__mr_0
@@ -278,6 +279,10 @@ numberDisplay number =
                     -- Dark mode
                     ------------
                     , T.dark__border_darkness_above
+
+                    -- Responsive
+                    -------------
+                    , T.sm__w_16
                     ]
                     [ Html.text (String.fromChar n)
                     ]
@@ -287,12 +292,20 @@ numberDisplay number =
             , T.font_display
             , T.font_thin
             , T.justify_center
+            , T.leading_normal
             , T.mt_8
+            , T.mx_auto
+            , T.number_display
+            , T.pt_1
             , T.not_italic
-            , T.text_5xl
+            , T.text_4xl
             , T.text_gray_200
 
             -- Dark mode
             ------------
             , T.dark__text_gray_400
+
+            -- Responsive
+            -------------
+            , T.sm__text_5xl
             ]
