@@ -20,12 +20,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,700;1,400;1,700&family=Work+Sans:wght@200;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="stylesheet.css" />
 
-  <!-- Javascript -->
-  <script defer src="web_modules/copy-text-to-clipboard.js"></script>
-  <script defer src="web_modules/fission-sdk.js"></script>
-  <!-- <script defer src="web_modules/ipfs.min.js"></script> -->
-  <script defer src="elm.js"></script>
+</head>
+<body>
 
+  <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+    <img src="images/loader-gray.svg" class="animation-spin" />
+  </div>
+
+
+  <!-- Javascript -->
   <script>
     const API_ENDPOINT = "{{{API_ENDPOINT}}}"
     const DATA_ROOT_DOMAIN = "{{{DATA_ROOT_DOMAIN}}}"
@@ -34,9 +37,10 @@
     const SIGNALING_ADDR = "{{{SIGNALING_ADDR}}}"
   </script>
 
-</head>
-<body>
-
+  <script defer src="web_modules/copy-text-to-clipboard.js"></script>
+  <script defer src="web_modules/fission-sdk.js"></script>
+  <!-- <script defer src="web_modules/ipfs.min.js"></script> -->
+  <script defer src="elm.js"></script>
   <script defer src="index.js"></script>
 
 </body>

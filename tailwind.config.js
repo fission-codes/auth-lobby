@@ -42,6 +42,16 @@ export default {
       mono: [ kit.fonts.mono, ...defaultTheme.fontFamily.mono ],
     },
 
+    // Inset
+    // -----
+
+    inset: {
+      "auto": "auto",
+      "0": 0,
+      "1/2": "50%",
+      "full": "100%"
+    },
+
     // Opacity
     // -------
 

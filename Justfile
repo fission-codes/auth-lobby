@@ -34,8 +34,6 @@ production_config := "config/production.json"
 
 
 @dev-build: clean css-large elm html js images static apply-config
-	# TEMP
-	{{node_bin}}/webpack {{src_dir}}/Javascript/Main.js -o {{dist_dir}}/index.js --mode development
 
 
 @dev-server:
@@ -52,6 +50,7 @@ production_config := "config/production.json"
 @images:
 	echo "🌄  Copying images"
 	cp -r node_modules/fission-kit/images/ {{dist_dir}}/images/
+	cp -r {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
 @install-deps:
@@ -68,6 +67,9 @@ production_config := "config/production.json"
 	# cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp ../ts-sdk/dist/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	# cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
+
+	# TEMP
+	{{node_bin}}/webpack {{src_dir}}/Javascript/Main.js -o {{dist_dir}}/index.js --mode development
 
 
 @production-build: clean css-large production-elm css-small html js images static (apply-config production_config)
