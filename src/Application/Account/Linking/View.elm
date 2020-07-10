@@ -111,7 +111,7 @@ exchangeView context model =
         Just ( Inquirer _, exchange ) ->
             S.messageBlock
                 [ T.italic ]
-                [ Html.text "Confirm these are the numbers shown on your other device."
+                [ Html.text "Do these numbers match the ones shown on your other device?"
 
                 --
                 , case exchange.nonceUser of
@@ -130,7 +130,7 @@ exchangeView context model =
         Just ( Authoriser ConstructUcan, exchange ) ->
             S.messageBlock
                 []
-                [ Html.text "Do these numbers match the ones shown on your other device?"
+                [ Html.text "Confirm these are the numbers shown on your other device."
 
                 --
                 , case exchange.nonceUser of
