@@ -169,10 +169,15 @@ async function createAccount(args) {
 // ----
 
 async function linkApp({ did }) {
+  const proof = localStorage.getItem("ucan")
+    ? localStorage.getItem("ucan")
+    : undefined
+
   const ucan = await sdk.ucan.build({
     audience: did,
-    issuer: await rootDid(),
-    lifetimeInSeconds: 60 * 60 * 24 * 30 // one month,
+    issuer: await sdk.did.local(),
+    lifetimeInSeconds: 60 * 60 * 24 * 30, // one month
+    proof
   })
 
   app.ports.gotUcanForApplication.send(
