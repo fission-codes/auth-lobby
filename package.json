@@ -7,7 +7,7 @@
     "ipfs": "^0.47.0"
   },
   "devDependencies": {
-    "elm-tailwind-css": "^0.1.1",
+    "elm-tailwind-css": "^0.2.0",
     "mustache": "^4.0.1",
     "tailwindcss": "^1.4.6",
     "tailwindcss-animations": "^2.0.0",

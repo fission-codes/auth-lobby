@@ -3,7 +3,7 @@ dependencies:
   fission-sdk: 0.9.1
   ipfs: 0.47.0
 devDependencies:
-  elm-tailwind-css: 0.1.1
+  elm-tailwind-css: 0.2.0
   mustache: 4.0.1
   tailwindcss: 1.4.6
   tailwindcss-animations: 2.0.0
@@ -41,13 +41,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-BFlgP2SoLO9HJX9WBwN67gHWMBhDX/eDz64Jajd6mR/UAUzqrNMm99d4qHnVaKscAElZoFiPv+JpR/Siud5lXw==
-  /@fullhuman/postcss-purgecss/2.2.0:
+  /@fullhuman/postcss-purgecss/2.3.0:
     dependencies:
-      postcss: 7.0.28
-      purgecss: 2.2.1
+      postcss: 7.0.32
+      purgecss: 2.3.0
     dev: true
     resolution:
-      integrity: sha512-q4zYAn8L9olA5uneaLhxkHRBoug9dnAqytbdX9R5dbzSORobhYr1yGR2JN3Q1UMd5RB0apm1NvJekHaymal/BQ==
+      integrity: sha512-qnKm5dIOyPGJ70kPZ5jiz0I9foVOic0j+cOzNDoo8KoCf6HjicIZ99UfO2OmE7vCYSKAAepEwJtNzpiiZAh9xw==
   /@hapi/accept/3.2.4:
     dependencies:
       '@hapi/boom': 7.4.11
@@ -984,21 +984,19 @@ packages:
       node: '>=8.0.0'
     resolution:
       integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==
-  /autoprefixer/9.7.6:
+  /autoprefixer/9.8.5:
     dependencies:
       browserslist: 4.12.0
-      caniuse-lite: 1.0.30001055
-      chalk: 2.4.2
+      caniuse-lite: 1.0.30001099
+      colorette: 1.2.1
       normalize-range: 0.1.2
       num2fraction: 1.2.2
-      postcss: 7.0.30
+      postcss: 7.0.32
       postcss-value-parser: 4.1.0
     dev: true
-    engines:
-      node: '>=6.0.0'
     hasBin: true
     resolution:
-      integrity: sha512-F7cYpbN7uVVhACZTeeIeealwdGM6wMtfWARVLTy5xmKtgVdBNJvbDRoCK3YO1orcs7gv/KwYlb3iXwu9Ug9BkQ==
+      integrity: sha512-C2p5KkumJlsTHoNv9w31NrBRgXhf6eCMteJuHZi2xhkgC+5Vm40MEtCKPhc0qdgAOhox0YPy1SQHTAky05UoKg==
   /backo2/1.0.2:
     dev: false
     resolution:
@@ -1299,7 +1297,7 @@ packages:
       integrity: sha512-Z942RysHXmJrhqk88FmKBVq/v5tqmSkDz7p54G/MGyjMnCFFnC79XWNbg+Vta8W6Wb2qtSZTSxIGkJrRpCFEiA==
   /browserslist/4.12.0:
     dependencies:
-      caniuse-lite: 1.0.30001055
+      caniuse-lite: 1.0.30001099
       electron-to-chromium: 1.3.435
       node-releases: 1.1.55
       pkg-up: 2.0.0
@@ -1453,10 +1451,10 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-8KMDF1Vz2gzOq54ONPJS65IvTUaB1cHJ2DMM7MbPmLZljDH1qpzzLsWdiN9pHh6qvkRVDTi/07+eNGch/oLU4w==
-  /caniuse-lite/1.0.30001055:
+  /caniuse-lite/1.0.30001099:
     dev: true
     resolution:
-      integrity: sha512-MbwsBmKrBSKIWldfdIagO5OJWZclpJtS4h0Jrk/4HFrXJxTdVdH23Fd+xCiHriVGvYcWyW8mR/CPsYajlH8Iuw==
+      integrity: sha512-sdS9A+sQTk7wKoeuZBN/YMAHVztUfVnjDi4/UV3sDE8xoh7YR12hKW+pIdB3oqKGwr9XaFL2ovfzt9w8eUI5CA==
   /chai-checkmark/1.0.1:
     dev: false
     resolution:
@@ -1492,20 +1490,10 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==
-  /chalk/4.0.0:
-    dependencies:
-      ansi-styles: 4.2.1
-      supports-color: 7.1.0
-    dev: true
-    engines:
-      node: '>=10'
-    resolution:
-      integrity: sha512-N9oWFcegS0sFr9oh1oz2d7Npos6vNoWW9HvtCg5N1KRFpUhaAhvTv5Y58g880fZaEYSNm3qDz8SU1UrGvp+n7A==
   /chalk/4.1.0:
     dependencies:
       ansi-styles: 4.2.1
       supports-color: 7.1.0
-    dev: false
     engines:
       node: '>=10'
     resolution:
@@ -1701,6 +1689,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-vXTJhHebByxZn3lDvDJYw4lR5+uB3vuoHsuYA5AKuxRVn5wzzIfQKGLBmgdVRHKTJYeK5rvJcHnrd0Li49CFpg==
+  /colorette/1.2.1:
+    dev: true
+    resolution:
+      integrity: sha512-puCDz0CzydiSYOrnXpz/PKd69zRrribezjtE9yd4zvytoRc8+RY/KJPvtPFKZS3E3wP6neGyMe0vOTlHO5L3Pw==
   /combined-stream/1.0.8:
     dependencies:
       delayed-stream: 1.0.0
@@ -2226,21 +2218,21 @@ packages:
       minimalistic-crypto-utils: 1.0.1
     resolution:
       integrity: sha512-IMqzv5wNQf+E6aHeIqATs0tOLeOTwj1QKbRcS3jBbYkl5oLAserA8yJTT7/VyHUYG91PRmPyeQDObKLPpeS4dw==
-  /elm-tailwind-css/0.1.1:
+  /elm-tailwind-css/0.2.0:
     dependencies:
-      '@fullhuman/postcss-purgecss': 2.2.0
-      autoprefixer: 9.7.6
+      '@fullhuman/postcss-purgecss': 2.3.0
+      autoprefixer: 9.8.5
       meow: 7.0.1
-      postcss: 7.0.30
-      postcss-csso: 4.0.0_postcss@7.0.30
-      postcss-elm-tailwind: 0.9.0
+      postcss: 7.0.32
+      postcss-csso: 4.0.0_postcss@7.0.32
+      postcss-elm-tailwind: 0.10.0
       tailwindcss: 1.4.6
     dev: true
     engines:
       node: '>=14'
     hasBin: true
     resolution:
-      integrity: sha512-2zg/uCt/qVyfAPHHSBLCHsvyUQ8Ajw+Mv2LX+Tr6TV5oUFTYsljJId+TSkyRrMZEhbQtq587Ef5mblR12kTLIQ==
+      integrity: sha512-RFgT068kAsKilOvDLWJMYrHR3UNeNgsjTtqZScOCvHic7ZCfP/zbGP96v7tFBWaWL8TR0b1VtIG1Z8qDe1Ap8w==
   /emoji-regex/7.0.3:
     resolution:
       integrity: sha512-CwBLREIQ7LvYFB0WyRvwhq5N5qPhc6PMjD6bYggFlI5YyDgl+0vxq5VHbMOFqLg7hfWzmu8T5Z1QofhmTIhItA==
@@ -5021,10 +5013,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-JMS/zWsvuji/0FlNsRedjptlZWE=
-  /lodash/4.17.15:
-    dev: true
-    resolution:
-      integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /lodash/4.17.19:
     resolution:
       integrity: sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
@@ -5199,7 +5187,7 @@ packages:
       camelcase-keys: 6.2.2
       decamelize-keys: 1.1.0
       hard-rejection: 2.1.0
-      minimist-options: 4.0.2
+      minimist-options: 4.1.0
       normalize-package-data: 2.5.0
       read-pkg-up: 7.0.1
       redent: 3.0.0
@@ -5327,15 +5315,6 @@ packages:
       brace-expansion: 1.1.11
     resolution:
       integrity: sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==
-  /minimist-options/4.0.2:
-    dependencies:
-      arrify: 1.0.1
-      is-plain-obj: 1.1.0
-    dev: true
-    engines:
-      node: '>= 6'
-    resolution:
-      integrity: sha512-seq4hpWkYSUh1y7NXxzucwAN9yVlBc3Upgdjz8vLCP97jG8kaOmzYrVH/m7tQ1NYD1wdtZbSLfdy4zFmRWuc/w==
   /minimist-options/4.1.0:
     dependencies:
       arrify: 1.0.1
@@ -6219,10 +6198,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-AerA/jta9xoqbAL+q7jB/vfgDqs=
-  /postcss-csso/4.0.0_postcss@7.0.30:
+  /postcss-csso/4.0.0_postcss@7.0.32:
     dependencies:
       csso: 4.0.3
-      postcss: 7.0.30
+      postcss: 7.0.32
     dev: true
     engines:
       node: '>=8.0.0'
@@ -6230,14 +6209,14 @@ packages:
       postcss: '>=6.0.0 <8.0.0'
     resolution:
       integrity: sha512-Yh9Ug0w3+T/LZIh1vGJQY8+hE13yFRHpINoAmgOhvu9lBmG1jyHkAprGHEHlGjWODJzB4DCNBVBb6Cs0QEoglQ==
-  /postcss-elm-tailwind/0.9.0:
+  /postcss-elm-tailwind/0.10.0:
     dependencies:
-      postcss: 7.0.30
+      postcss: 7.0.32
     dev: true
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-C4f/ovvgKR92+GZoV/CCGQVaeaiRsFDUoFo98f9slVXitdHt6dmxOQQSYjUoeWgnitWDA0VWiMxXvo4jkgMdjA==
+      integrity: sha512-IKcaDkLwTz9Xhb1hJ6fdLZAPg2QNu7OhC1spw6gsgaAve87vBBgBpCkokPKdjd6WPwFnmslzr6POv28JHizSjQ==
   /postcss-functions/3.0.0:
     dependencies:
       glob: 7.1.6
@@ -6250,13 +6229,13 @@ packages:
   /postcss-js/2.0.3:
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 7.0.30
+      postcss: 7.0.32
     dev: true
     resolution:
       integrity: sha512-zS59pAk3deu6dVHyrGqmC3oDXBdNdajk4k1RyxeVXCrcEDBUBHoIhE4QTsmhxgzXxsaqFDAkUZfmMa5f/N/79w==
   /postcss-nested/4.2.1:
     dependencies:
-      postcss: 7.0.30
+      postcss: 7.0.32
       postcss-selector-parser: 6.0.2
     dev: true
     resolution:
@@ -6289,7 +6268,7 @@ packages:
       node: '>=4.0.0'
     resolution:
       integrity: sha512-soOk1h6J3VMTZtVeVpv15/Hpdl2cBLX3CAw4TAbkpTJiNPk9YP/zWcD1ND+xEtvyuuvKzbxliTOIyvkSeSJ6ag==
-  /postcss/7.0.28:
+  /postcss/7.0.32:
     dependencies:
       chalk: 2.4.2
       source-map: 0.6.1
@@ -6298,17 +6277,7 @@ packages:
     engines:
       node: '>=6.0.0'
     resolution:
-      integrity: sha512-YU6nVhyWIsVtlNlnAj1fHTsUKW5qxm3KEgzq2Jj6KTEFOTK8QWR12eIDvrlWhiSTK8WIBFTBhOJV4DY6dUuEbw==
-  /postcss/7.0.30:
-    dependencies:
-      chalk: 2.4.2
-      source-map: 0.6.1
-      supports-color: 6.1.0
-    dev: true
-    engines:
-      node: '>=6.0.0'
-    resolution:
-      integrity: sha512-nu/0m+NtIzoubO+xdAlwZl/u5S5vi/y6BCsoL8D+8IxsD3XvBS8X4YEADNIVXKVuQvduiucnRv+vPIqj56EGMQ==
+      integrity: sha512-03eXong5NLnNCD05xscnGKGDZ98CyzoqPSMjOe6SuoQY7Z2hIj0Ld1g/O/UQRuOle2aRtiIRDg9tDcTGAkLfKw==
   /prepend-http/2.0.0:
     dev: false
     engines:
@@ -6490,16 +6459,16 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-hEJH0s8PXLY/cdXh66tNEQGndDrIKNqNC5xmrysZy3i5C3oEoLna7YAOad+7u125+zH1HNXUmGEkrhb3c2VriA==
-  /purgecss/2.2.1:
+  /purgecss/2.3.0:
     dependencies:
       commander: 5.1.0
       glob: 7.1.6
-      postcss: 7.0.28
+      postcss: 7.0.32
       postcss-selector-parser: 6.0.2
     dev: true
     hasBin: true
     resolution:
-      integrity: sha512-wngRSLW1dpNr8kr3TL9nTJMyTFI5BiRiaUUEys5M1CA4zEHLF25fRHoshEeDqmhstaNTOddmpYM34zRrUtEGbQ==
+      integrity: sha512-BE5CROfVGsx2XIhxGuZAT7rTH9lLeQx/6M0P7DTXQH4IUc3BBzs9JUzt4yzGf3JrH9enkeq6YJBe9CTtkm1WmQ==
   /pushdata-bitcoin/1.0.1:
     dependencies:
       bitcoin-ops: 1.4.1
@@ -7369,18 +7338,18 @@ packages:
       integrity: sha512-YLdhPiQeDtpnqWd0J70rvy08MDbsq+BBLrzMmPR1Pe6MJDFYDuk4CYGI14GVgj7xRBGkByzp/rAfBcUWD7zpng==
   /tailwindcss/1.4.6:
     dependencies:
-      '@fullhuman/postcss-purgecss': 2.2.0
-      autoprefixer: 9.7.6
+      '@fullhuman/postcss-purgecss': 2.3.0
+      autoprefixer: 9.8.5
       browserslist: 4.12.0
       bytes: 3.1.0
-      chalk: 4.0.0
+      chalk: 4.1.0
       color: 3.1.2
       detective: 5.2.0
       fs-extra: 8.1.0
-      lodash: 4.17.15
+      lodash: 4.17.19
       node-emoji: 1.10.0
       normalize.css: 8.0.1
-      postcss: 7.0.30
+      postcss: 7.0.32
       postcss-functions: 3.0.0
       postcss-js: 2.0.3
       postcss-nested: 4.2.1
@@ -8133,7 +8102,7 @@ packages:
       tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/6a20e9af963dd000903b1c6e64f9fbb2102ba472'
     version: 0.2.0
 specifiers:
-  elm-tailwind-css: ^0.1.1
+  elm-tailwind-css: ^0.2.0
   fission-kit: fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472
   fission-sdk: 0.9.1
   ipfs: ^0.47.0
