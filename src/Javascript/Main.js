@@ -147,7 +147,10 @@ async function checkIfUsernameIsAvailable(username) {
 
 
 async function createAccount(args) {
-  const { success } = await sdk.lobby.createAccount(args, { apiEndpoint: API_ENDPOINT })
+  const { success } = await sdk.lobby.createAccount(
+    { email: args.email, username: args.username },
+    { apiEndpoint: API_ENDPOINT }
+  )
 
   if (success) {
     localStorage.setItem("usedUsername", args.username)
