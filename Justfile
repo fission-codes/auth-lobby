@@ -116,6 +116,7 @@ main_css := src_dir + "/Css/Main.css"
 		--output {{dist_css}} \
 		--purge-content={{dist_elm}} \
 		--purge-content={{dist_dir}}/index.html \
+		--purge-whitelist="html" \
 		--purge-whitelist="left-1/2" \
 		--purge-whitelist="top-1/2" \
 		--purge-whitelist="-translate-x-1/2" \
