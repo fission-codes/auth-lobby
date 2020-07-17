@@ -4,8 +4,6 @@
 
 */
 
-import Ipfs from "ipfs"
-
 const sdk = fissionSdk
 
 let app
@@ -53,7 +51,7 @@ function ports() {
 // ----
 
 async function bootIpfs() {
-  ipfs = await Ipfs.create({
+  sdk.setup.ipfs({
     config: {
       Bootstrap: [
         RELAY
@@ -76,10 +74,12 @@ async function bootIpfs() {
       }
     },
     init: {
-      repo: "ipfs-1594230086171",
+      repo: "ipfs-1594230086172",
       repoAutoMigrate: true
     }
   })
+
+  ipfs = await sdk.ipfs.get()
 
   ipfs.libp2p.connectionManager.on("peer:connect", (connection) => {
     console.log("Connected to peer", connection.remotePeer._idB58String)
@@ -90,7 +90,6 @@ async function bootIpfs() {
   })
 
   window.i = ipfs
-  await sdk.ipfs.setIpfs(ipfs)
 }
 
 
