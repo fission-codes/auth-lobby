@@ -9,6 +9,7 @@ node_bin 					:= "./node_modules/.bin"
 src_dir  					:= "./src"
 
 default_config 		:= "config/default.json"
+staging_config 		:= "config/default.json"
 production_config := "config/production.json"
 
 
@@ -67,7 +68,8 @@ production_config := "config/production.json"
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 
 
-@production-build: clean css-large production-elm css-small html js images static (apply-config production_config)
+
+@minify-js:
 	echo "⚙️  Minifying Javascript Files"
 	{{node_bin}}/terser-dir \
 		{{dist_dir}} \
@@ -76,6 +78,13 @@ production_config := "config/production.json"
 		--pseparator ", " \
 		--output {{dist_dir}} \
 		-- --compress --mangle
+
+
+@production-build: clean css-large production-elm css-small html js images static minify-js (apply-config production_config)
+
+
+
+@staging-build: clean css-large production-elm css-small html js images static minify-js (apply-config staging_config)
 
 
 @static:
