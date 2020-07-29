@@ -5,9 +5,14 @@
 @tailwind utilities;
 
 
+html {
+  height: -webkit-fill-available;
+}
+
+
 body {
-  @apply font-body min-h-screen text-gray-100;
-  min-height: -webkit-fill-available;
+  @apply font-body h-screen text-gray-100;
+  height: -webkit-fill-available;
   text-rendering: optimizeLegibility;
 }
 
