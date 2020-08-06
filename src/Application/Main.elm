@@ -220,8 +220,9 @@ subscriptions _ =
         , Ports.gotUcanForApplication GotUcanForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
 
+        -----------------------------------------
         -- Secure Channel
-        -----------------
+        -----------------------------------------
         , Ports.gotInvalidRootDid (\_ -> GotInvalidRootDid)
         , Ports.gotSecureChannelMessage GotSecureChannelMessage
         , Ports.secureChannelOpened (\_ -> SecureChannelOpened)

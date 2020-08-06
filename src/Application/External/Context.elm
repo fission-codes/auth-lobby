@@ -2,11 +2,14 @@ module External.Context exposing (..)
 
 import Browser.Navigation as Nav
 import Common exposing (ifThenElse)
+import Dict exposing (Dict)
 import FeatherIcons
 import Html exposing (Html, text)
 import Icons
+import Json.Decode
 import Maybe.Extra as Maybe
 import RemoteData exposing (RemoteData(..))
+import Result.Extra as Result
 import Styling as S
 import Tailwind as T
 import Url exposing (Url)
@@ -21,19 +24,27 @@ import Url.Parser.Query as Query
 
 type alias Context =
     { did : String
+    , lifetimeInSeconds : Int
     , newUser : Maybe Bool
     , redirectTo : Url
+    , resource : Resource
     }
 
 
 type alias FailedState =
     { invalidRedirectTo : Bool
+    , invalidResource : Bool
     , required : Bool
     }
 
 
 type alias ParsedContext =
     RemoteData FailedState Context
+
+
+type Resource
+    = Everything
+    | Resources (Dict String String)
 
 
 
@@ -43,6 +54,7 @@ type alias ParsedContext =
 defaultFailedState : FailedState
 defaultFailedState =
     { invalidRedirectTo = False
+    , invalidResource = False
     , required = False
     }
 
@@ -61,17 +73,33 @@ extractFromUrl url =
     in
     case maybeContext of
         Just c ->
-            case c.redirectTo of
-                Just redirectTo ->
+            let
+                decodedResource =
+                    if c.resource == "*" then
+                        Ok Everything
+
+                    else
+                        c.resource
+                            |> Json.Decode.decodeString resourceDecoder
+                            |> Result.map Resources
+            in
+            case ( c.redirectTo, decodedResource ) of
+                ( Just redirectTo, Ok resource ) ->
                     Success
                         { did = c.did
+                        , lifetimeInSeconds = c.lifetimeInSeconds
                         , newUser = c.newUser
+                        , resource = resource
                         , redirectTo = redirectTo
                         }
 
-                Nothing ->
+                ( Nothing, _ ) ->
                     Failure
                         { defaultFailedState | invalidRedirectTo = True }
+
+                ( _, Err _ ) ->
+                    Failure
+                        { defaultFailedState | invalidResource = True }
 
         Nothing ->
             case url.query of
@@ -151,12 +179,19 @@ note remoteData =
         Loading ->
             text ""
 
-        Failure { invalidRedirectTo, required } ->
+        Failure { invalidRedirectTo, invalidResource, required } ->
             if invalidRedirectTo then
                 S.warning
                     [ text "You provided an invalid"
                     , semibold " redirectTo "
                     , text "parameter, make sure it's a valid url."
+                    ]
+
+            else if invalidResource then
+                S.warning
+                    [ text "You provided an invalid"
+                    , semibold " resource "
+                    , text "parameter, make sure it's a valid object encoded as a json string (eg. `{\"resource\":\"name\"}`)."
                     ]
 
             else if required then
@@ -210,18 +245,27 @@ semibold t =
 
 
 queryStringParser =
-    Query.map3
-        (\n ->
+    Query.map5
+        (\lif new res ->
             Maybe.map2
-                (\d r ->
-                    { did = d
-                    , newUser = Maybe.map (String.toLower >> (==) "t") n
-                    , redirectTo = Url.fromString r
+                (\did red ->
+                    { did = did
+                    , lifetimeInSeconds = Maybe.withDefault (60 * 60 * 24 * 30) lif
+                    , newUser = Maybe.map (String.toLower >> (==) "t") new
+                    , redirectTo = Url.fromString red
+                    , resource = Maybe.withDefault "*" res
                     }
                 )
         )
         -- Optional
+        (Query.int "lifetimeInSeconds")
         (Query.string "newUser")
+        (Query.string "resource")
         -- Required
         (Query.string "did")
         (Query.string "redirectTo")
+
+
+resourceDecoder : Json.Decode.Decoder (Dict String String)
+resourceDecoder =
+    Json.Decode.dict Json.Decode.string

@@ -12,6 +12,9 @@ import Radix exposing (..)
 import RemoteData exposing (RemoteData(..))
 import Styling as S
 import Tailwind as T
+import Time
+import Time.Distance
+import Time.Distance.I18n
 
 
 
@@ -36,13 +39,19 @@ view context model =
 
             -- Resource
             -----------
-            , Html.text " access to "
-            , Html.text "your entire filesystem"
+            -- TODO
+            , Html.text " access"
 
+            -- , Html.text "your entire filesystem"
             -- Duration
             -----------
-            , Html.text " for a "
-            , Html.text "month"
+            , Html.text " for "
+            , Html.text <|
+                Time.Distance.inWordsWithConfig
+                    { withAffix = False }
+                    Time.Distance.I18n.en
+                    (Time.millisToPosix 0)
+                    (Time.millisToPosix <| context.lifetimeInSeconds * 1000)
             , Html.text "?"
             ]
 
