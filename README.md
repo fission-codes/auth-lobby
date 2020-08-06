@@ -50,5 +50,5 @@ just
 just production-build
 
 # Use a different config
-just config=local
+just config=production
 ```

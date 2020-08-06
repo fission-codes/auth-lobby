@@ -1,7 +1,0 @@
-{
-  "API_ENDPOINT": "https://localhost:8001",
-  "DATA_ROOT_DOMAIN": "fissionuser.net",
-
-  "RELAY": "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw",
-  "SIGNALING_ADDR": "/dns4/frozen-wave-01607.herokuapp.com/tcp/443/wss/p2p-webrtc-star/"
-}
