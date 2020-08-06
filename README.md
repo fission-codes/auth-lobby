@@ -48,4 +48,7 @@ just
 # Production build
 # (see Justfile for details)
 just production-build
+
+# Use a different config
+just config=local
 ```

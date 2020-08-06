@@ -1,17 +1,13 @@
 export NODE_OPTIONS := "--no-warnings"
-set shell := ["zsh", "-c"]
 
 
 # Variables
 # ---------
 
+config						:= "default"
 dist_dir 					:= "./build"
 node_bin 					:= "./node_modules/.bin"
 src_dir  					:= "./src"
-
-default_config 		:= "config/default.json"
-staging_config 		:= "config/default.json"
-production_config := "config/production.json"
 
 
 # Tasks
@@ -24,9 +20,9 @@ production_config := "config/production.json"
 # ---
 
 
-@apply-config config=default_config:
-	echo "🎛  Apply config \`{{config}}\`"
-	{{node_bin}}/mustache {{config}} {{dist_dir}}/index.html > {{dist_dir}}/index.applied.html
+@apply-config:
+	echo "🎛  Applying config \`config/{{config}}.json\`"
+	{{node_bin}}/mustache config/{{config}}.json {{dist_dir}}/index.html > {{dist_dir}}/index.applied.html
 	rm {{dist_dir}}/index.html
 	mv {{dist_dir}}/index.applied.html {{dist_dir}}/index.html
 
@@ -37,6 +33,7 @@ production_config := "config/production.json"
 
 
 @dev-build: clean css-large elm html js images static apply-config
+	echo {{config}} &> /dev/null
 
 
 @dev-server:
@@ -79,10 +76,12 @@ production_config := "config/production.json"
 		-- --compress --mangle
 
 
-@production-build: clean css-large production-elm css-small html js images static minify-js (apply-config production_config)
+@production-build: clean css-large production-elm css-small html js images static minify-js
+	just config=production apply-config
 
 
-@staging-build: clean css-large production-elm css-small html js images static minify-js (apply-config staging_config)
+@staging-build: clean css-large production-elm css-small html js images static minify-js
+	just config=staging apply-config
 
 
 @static:
