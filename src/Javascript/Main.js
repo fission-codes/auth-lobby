@@ -13,6 +13,13 @@ let ipfs
 // 🚀
 
 
+sdk.setup.endpoints({
+  api: API_ENDPOINT,
+  lobby: location.origin,
+  user: DATA_ROOT_DOMAIN
+})
+
+
 bootIpfs().then(bootElm)
 
 
@@ -114,7 +121,7 @@ async function rootDid(maybeUsername) {
 
   if (maybeUsername) {
     x = maybeUsername
-    y = rootDidCache[x] || (await sdk.did.root(x, DATA_ROOT_DOMAIN))
+    y = rootDidCache[x] || (await sdk.did.root(x))
 
   } else if (ucan = localStorage.getItem("ucan")) {
     x = "ucan"

@@ -59,12 +59,12 @@ formWithToppings maybeError context model =
     Html.div
         []
         [ Branding.logo { usedUsername = model.usedUsername }
-        , form maybeError context
+        , form model.dataRootDomain maybeError context
         ]
 
 
-form : Maybe String -> Context -> Html Msg
-form maybeError context =
+form : String -> Maybe String -> Context -> Html Msg
+form dataRootDomain maybeError context =
     Html.form
         [ E.onSubmit (CreateAccount context)
 
@@ -107,7 +107,7 @@ form maybeError context =
             , T.w_full
             ]
             []
-        , usernameMessage context
+        , usernameMessage dataRootDomain context
 
         -- Sign Up
         ----------
@@ -173,8 +173,8 @@ form maybeError context =
         ]
 
 
-usernameMessage : Context -> Html Msg
-usernameMessage context =
+usernameMessage : String -> Context -> Html Msg
+usernameMessage dataRootDomain context =
     let
         username =
             String.trim context.username
@@ -238,6 +238,6 @@ usernameMessage context =
             Html.span
                 []
                 [ Html.span [ T.antialiased ] [ Html.text "Your personal Drive address will be " ]
-                , Html.strong [ T.break_all ] [ Html.text username, Html.text ".fission.name" ]
+                , Html.strong [ T.break_all ] [ Html.text username, Html.text ".", Html.text dataRootDomain ]
                 ]
         ]
