@@ -518,5 +518,6 @@ function stringToArrayBuffer(str) {
 // =====
 
 function copyToClipboard(text) {
-  copyTextToClipboard(text)
+  if (navigator.clipboard) navigator.clipboard.writeText(text)
+  else console.log(`Missing clipboard api, tried to copy: "${text}"`)
 }

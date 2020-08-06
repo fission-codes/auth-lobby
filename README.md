@@ -36,15 +36,13 @@ Possible cancellation reasons:
 
 ## Development
 
-* [Node v14+](https://nodejs.org/)
-* [PNPM](https://pnpm.js.org/)
+This project uses Nix to manage the project's environment. If you'd like to build this project without Nix, check out the dependencies in the `shell.nix` file (most are available through Homebrew as well).
 
 ```shell
+# Install javascript dependencies
 just install-deps
-just dev-build
 
-# Build, serve & watch
-# (requires watchexec & devd)
+# Build, serve, watch
 just
 
 # Production build

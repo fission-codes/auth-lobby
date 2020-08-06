@@ -1,4 +1,5 @@
 export NODE_OPTIONS := "--no-warnings"
+set shell := ["zsh", "-c"]
 
 
 # Variables
@@ -32,6 +33,7 @@ production_config := "config/production.json"
 
 @clean:
 	rm -rf {{dist_dir}}
+	mkdir -p {{dist_dir}}
 
 
 @dev-build: clean css-large elm html js images static apply-config
@@ -50,23 +52,20 @@ production_config := "config/production.json"
 
 @images:
 	echo "🌄  Copying images"
-	cp -r node_modules/fission-kit/images/ {{dist_dir}}/images/
-	cp -r {{src_dir}}/Static/Images/ {{dist_dir}}/images/
+	cp -RT node_modules/fission-kit/images/ {{dist_dir}}/images/
+	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
 @install-deps:
 	echo "🦕  Downloading dependencies"
 	pnpm install
-	mkdir -p web_modules
-	curl https://wzrd.in/debug-standalone/copy-text-to-clipboard -o web_modules/copy-text-to-clipboard.js
 
 
 @js:
 	echo "📄  Copying JS files"
-	cp -r web_modules {{dist_dir}}
+	mkdir -p {{dist_dir}}/web_modules
 	cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
-
 
 
 @minify-js:
@@ -83,14 +82,13 @@ production_config := "config/production.json"
 @production-build: clean css-large production-elm css-small html js images static minify-js (apply-config production_config)
 
 
-
 @staging-build: clean css-large production-elm css-small html js images static minify-js (apply-config staging_config)
 
 
 @static:
 	echo "⛰  Copying some more static files"
-	cp -r {{src_dir}}/Static/Favicons/ {{dist_dir}}
-	cp -r {{src_dir}}/Static/Manifests/ {{dist_dir}}
+	cp -RT {{src_dir}}/Static/Favicons/ {{dist_dir}}/
+	cp -RT {{src_dir}}/Static/Manifests/ {{dist_dir}}/
 
 
 

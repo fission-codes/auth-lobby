@@ -1,5 +1,4 @@
 import * as kit from "fission-kit"
-import animations from "tailwindcss-animations"
 import defaultTheme from "tailwindcss/defaultTheme.js"
 
 
@@ -10,16 +9,6 @@ export default {
   /////////////////////////////////////////
 
   theme: {
-
-    // Animations
-    // ----------
-
-    animations: {
-      "spin": {
-        from: { transform: "rotate(0deg)" },
-        to: { transform: "rotate(360deg)" },
-      },
-    },
 
     // Colors
     // ------
@@ -105,10 +94,6 @@ export default {
   // PLUGINS //////////////////////////////
   /////////////////////////////////////////
 
-  plugins: [
-
-    animations,
-
-  ]
+  plugins: []
 
 }
