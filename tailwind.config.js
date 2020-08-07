@@ -86,7 +86,11 @@ export default {
   /////////////////////////////////////////
 
   variants: {
-    margin: [ "responsive", "last" ]
+    borderColor: [ "first", "last", "responsive" ],
+    borderRadius: [ "first", "last", "responsive" ],
+    borderWidth: [ "first", "last", "responsive" ],
+    margin: [ "first",  "last", "responsive" ],
+    padding: [ "first",  "last", "responsive" ]
   },
 
 
