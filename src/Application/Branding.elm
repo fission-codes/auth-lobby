@@ -42,8 +42,8 @@ logo { usedUsername } =
         -- Auth tag
         -----------------------------------------
         , Html.div
-            [ A.style "font-size" "11px"
-            , A.style "padding" "4px 4px 2px 5px"
+            [ A.style "font-size" "10px"
+            , A.style "padding" "3px 4px 2px 5px"
 
             --
             , T.absolute

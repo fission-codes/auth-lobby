@@ -158,7 +158,7 @@ view context model =
 
                                 -- Dark mode
                                 ------------
-                                , T.dark__bg_darkness_above
+                                , T.dark__bg_darkness_below
                                 ]
                             )
             )
@@ -233,7 +233,6 @@ resourceItem additionalClasses nodes =
 
             -- Dark mode
             ------------
-            , T.dark__bg_darkness_above
             , T.dark__border_white
             , T.dark__border_opacity_025
             ]

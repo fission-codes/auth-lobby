@@ -11,7 +11,7 @@ html {
 
 
 body {
-  @apply font-body h-screen text-gray-100;
+  @apply bg-gray-700 font-body h-screen text-gray-100;
   height: -webkit-fill-available;
   text-rendering: optimizeLegibility;
 }
