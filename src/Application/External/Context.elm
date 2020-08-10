@@ -23,28 +23,25 @@ import Url.Parser.Query as Query
 
 
 type alias Context =
-    { did : String
+    { app : Maybe String
+    , did : String
     , lifetimeInSeconds : Int
     , newUser : Maybe Bool
+    , privatePaths : List String
+    , publicPaths : List String
     , redirectTo : Url
-    , resource : Resource
     }
 
 
 type alias FailedState =
     { invalidRedirectTo : Bool
-    , invalidResource : Bool
+    , missingResource : Bool
     , required : Bool
     }
 
 
 type alias ParsedContext =
     RemoteData FailedState Context
-
-
-type Resource
-    = Everything
-    | Resources (Dict String String)
 
 
 
@@ -54,7 +51,7 @@ type Resource
 defaultFailedState : FailedState
 defaultFailedState =
     { invalidRedirectTo = False
-    , invalidResource = False
+    , missingResource = False
     , required = False
     }
 
@@ -74,32 +71,31 @@ extractFromUrl url =
     case maybeContext of
         Just c ->
             let
-                decodedResource =
-                    if c.resource == "*" then
-                        Ok Everything
-
-                    else
-                        c.resource
-                            |> Json.Decode.decodeString resourceDecoder
-                            |> Result.map Resources
+                hasResource =
+                    Maybe.isJust c.app
+                        || not (List.isEmpty c.privatePaths)
+                        || not (List.isEmpty c.publicPaths)
             in
-            case ( c.redirectTo, decodedResource ) of
-                ( Just redirectTo, Ok resource ) ->
-                    Success
-                        { did = c.did
-                        , lifetimeInSeconds = c.lifetimeInSeconds
-                        , newUser = c.newUser
-                        , resource = resource
-                        , redirectTo = redirectTo
-                        }
+            if not hasResource then
+                Failure
+                    { defaultFailedState | missingResource = True }
 
-                ( Nothing, _ ) ->
-                    Failure
-                        { defaultFailedState | invalidRedirectTo = True }
+            else
+                case c.redirectTo of
+                    Just redirectTo ->
+                        Success
+                            { app = c.app
+                            , did = c.did
+                            , lifetimeInSeconds = c.lifetimeInSeconds
+                            , newUser = c.newUser
+                            , privatePaths = c.privatePaths
+                            , publicPaths = c.publicPaths
+                            , redirectTo = redirectTo
+                            }
 
-                ( _, Err _ ) ->
-                    Failure
-                        { defaultFailedState | invalidResource = True }
+                    Nothing ->
+                        Failure
+                            { defaultFailedState | invalidRedirectTo = True }
 
         Nothing ->
             case url.query of
@@ -179,19 +175,24 @@ note remoteData =
         Loading ->
             text ""
 
-        Failure { invalidRedirectTo, invalidResource, required } ->
-            if invalidRedirectTo then
+        Failure { invalidRedirectTo, missingResource, required } ->
+            if missingResource then
+                S.warning
+                    [ text "I'm missing a resource. "
+                    , text "I need one of the following:"
+                    , semibold "app"
+                    , text ", "
+                    , semibold "privatePath"
+                    , text " or "
+                    , semibold "publicPath"
+                    , text "."
+                    ]
+
+            else if invalidRedirectTo then
                 S.warning
                     [ text "You provided an invalid"
                     , semibold " redirectTo "
                     , text "parameter, make sure it's a valid url."
-                    ]
-
-            else if invalidResource then
-                S.warning
-                    [ text "You provided an invalid"
-                    , semibold " resource "
-                    , text "parameter, make sure it's a valid object encoded as a json string (eg. `{\"resource\":\"name\"}`)."
                     ]
 
             else if required then
@@ -231,7 +232,8 @@ queryParams =
 semibold : String -> Html msg
 semibold t =
     Html.span
-        [ T.font_semibold
+        [ T.antialiased
+        , T.font_bold
         , T.inline_block
         , T.mx_1
         , T.underline
@@ -245,27 +247,27 @@ semibold t =
 
 
 queryStringParser =
-    Query.map5
-        (\lif new res ->
+    Query.map7
+        (\app pri pub lif new ->
             Maybe.map2
                 (\did red ->
-                    { did = did
+                    { app = app
+                    , did = did
                     , lifetimeInSeconds = Maybe.withDefault (60 * 60 * 24 * 30) lif
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
+                    , privatePaths = pri
+                    , publicPaths = pub
                     , redirectTo = Url.fromString red
-                    , resource = Maybe.withDefault "*" res
                     }
                 )
         )
-        -- Optional
+        -- Optional, pt. 1
+        (Query.string "app")
+        (Query.custom "privatePath" identity)
+        (Query.custom "publicPath" identity)
+        -- Optional, pt. 2
         (Query.int "lifetimeInSeconds")
         (Query.string "newUser")
-        (Query.string "resource")
         -- Required
         (Query.string "did")
         (Query.string "redirectTo")
-
-
-resourceDecoder : Json.Decode.Decoder (Dict String String)
-resourceDecoder =
-    Json.Decode.dict Json.Decode.string

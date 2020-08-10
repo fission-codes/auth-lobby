@@ -16,7 +16,7 @@ port copyToClipboard : String -> Cmd msg
 port createAccount : { did : String, email : String, username : String } -> Cmd msg
 
 
-port linkApp : { did : String, lifetimeInSeconds : Int, resource : String } -> Cmd msg
+port linkApp : { did : String, lifetimeInSeconds : Int, resources : List ( String, String ) } -> Cmd msg
 
 
 port linkedDevice : { ucan : String, username : String } -> Cmd msg
