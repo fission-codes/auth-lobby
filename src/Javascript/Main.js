@@ -178,38 +178,26 @@ async function createAccount(args) {
 // ----
 
 async function linkApp({ did, lifetimeInSeconds, resources }) {
-  const [ ucan, _ ] = await (
-    resources.length
-      ? resources
-      : [ ["missing", "resource"] ]
-  )
-    .reduce(
-      async (acc, [key, value]) => {
-        const [ proof, issuer ] = await acc
+  const audience = did
+  const issuer = await sdk.did.local()
+  const proof = localStorage.getItem("ucan")
+      ? localStorage.getItem("ucan")
+      : undefined
 
-        return [
-          await sdk.ucan.build({
-            audience: did,
-            proof: await proof,
-            resource: { [key]: value },
-            issuer,
-            lifetimeInSeconds,
-          }),
-          did
-        ]
-      },
-      Promise.resolve([
-        // Initial proof
-        localStorage.getItem("ucan")
-            ? localStorage.getItem("ucan")
-            : undefined,
-        // Initial issuer
-        await sdk.did.local()
-      ])
-    )
+  const ucanPromises = resources.map(([key, value]) => {
+    return sdk.ucan.build({
+      resource: { [key]: value },
+      audience,
+      issuer,
+      proof,
+      lifetimeInSeconds
+    })
+  })
 
-  app.ports.gotUcanForApplication.send(
-    { ucan }
+  const ucans = await Promise.all(ucanPromises)
+
+  app.ports.gotUcansForApplication.send(
+    { ucans }
   )
 }
 

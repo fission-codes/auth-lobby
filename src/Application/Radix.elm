@@ -55,7 +55,7 @@ type Msg
       -----------------------------------------
     | AllowAuthorisation
     | DenyAuthorisation
-    | GotUcanForApplication { ucan : String }
+    | GotUcansForApplication { ucans : List String }
       -----------------------------------------
       -- Create
       -----------------------------------------

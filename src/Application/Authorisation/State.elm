@@ -71,15 +71,15 @@ deny model =
         |> return model
 
 
-gotUcanForApplication : { ucan : String } -> Manager
-gotUcanForApplication { ucan } model =
+gotUcansForApplication : { ucans : List String } -> Manager
+gotUcansForApplication { ucans } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
 
         redirection =
             { newUser = model.reCreateAccount == RemoteData.Success ()
-            , ucan = ucan
+            , ucans = ucans
             , username = username
             }
     in

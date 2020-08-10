@@ -41,9 +41,10 @@ https://auth.fission.codes
 
 🎒 _When redirecting back it'll add the query params:_
 
-* `newUser`, `t` or `f`, whether the user has just created an account or not
-* `ucan`, a token authorising the application to perform actions
-* `username`, the username that was chosen by the user
+* `newUser`, `t` or `f`, whether the user has just created an account or not.
+* `ucans`, a list of tokens authorising the application to perform actions.  
+  The tokens are separated by a comma, but make sure to decode the query parameter first.
+* `username`, the username that was chosen by the user.
 
 When the user decides to go back to the app for some reason (eg. not agreeing  
 with the authorisation), the query parameter `cancelled=reason` will be added.

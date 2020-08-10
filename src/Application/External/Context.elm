@@ -112,7 +112,7 @@ extractFromUrl url =
 redirectCommand :
     Result String
         { newUser : Bool
-        , ucan : String
+        , ucans : List String
         , username : String
         }
     -> ParsedContext
@@ -148,9 +148,9 @@ redirectCommand result remoteData =
                     |> Maybe.withDefault []
                     |> List.append
                         (case result of
-                            Ok { newUser, ucan, username } ->
+                            Ok { newUser, ucans, username } ->
                                 [ "newUser=" ++ ifThenElse newUser "t" "f"
-                                , "ucan=" ++ Url.percentEncode ucan
+                                , "ucans=" ++ Url.percentEncode (String.join "," ucans)
                                 , "username=" ++ Url.percentEncode username
                                 ]
 

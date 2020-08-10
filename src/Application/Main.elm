@@ -117,8 +117,8 @@ update msg =
         DenyAuthorisation ->
             Authorisation.deny
 
-        GotUcanForApplication a ->
-            Authorisation.gotUcanForApplication a
+        GotUcansForApplication a ->
+            Authorisation.gotUcansForApplication a
 
         -----------------------------------------
         -- Create
@@ -217,7 +217,7 @@ subscriptions _ =
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotLinked GotLinked
         , Ports.gotLinkExchangeError GotLinkExchangeError
-        , Ports.gotUcanForApplication GotUcanForApplication
+        , Ports.gotUcansForApplication GotUcansForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
 
         -----------------------------------------
