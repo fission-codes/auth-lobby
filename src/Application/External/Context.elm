@@ -180,7 +180,7 @@ note remoteData =
                 S.warning
                     [ text "I'm missing a resource. "
                     , text "I need one of the following:"
-                    , semibold "app"
+                    , semibold "appFolder"
                     , text ", "
                     , semibold "privatePath"
                     , text " or "
@@ -262,7 +262,7 @@ queryStringParser =
                 )
         )
         -- Optional, pt. 1
-        (Query.string "app")
+        (Query.string "appFolder")
         (Query.custom "privatePath" identity)
         (Query.custom "publicPath" identity)
         -- Optional, pt. 2
