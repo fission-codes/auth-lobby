@@ -76,26 +76,29 @@ extractFromUrl url =
                         || not (List.isEmpty c.privatePaths)
                         || not (List.isEmpty c.publicPaths)
             in
-            if not hasResource then
-                Failure
-                    { defaultFailedState | missingResource = True }
+            -- TODO:
+            -- Enable when SDK supports this.
+            --
+            -- if not hasResource then
+            --     Failure
+            --         { defaultFailedState | missingResource = True }
+            --
+            -- else
+            case c.redirectTo of
+                Just redirectTo ->
+                    Success
+                        { app = c.app
+                        , did = c.did
+                        , lifetimeInSeconds = c.lifetimeInSeconds
+                        , newUser = c.newUser
+                        , privatePaths = c.privatePaths
+                        , publicPaths = c.publicPaths
+                        , redirectTo = redirectTo
+                        }
 
-            else
-                case c.redirectTo of
-                    Just redirectTo ->
-                        Success
-                            { app = c.app
-                            , did = c.did
-                            , lifetimeInSeconds = c.lifetimeInSeconds
-                            , newUser = c.newUser
-                            , privatePaths = c.privatePaths
-                            , publicPaths = c.publicPaths
-                            , redirectTo = redirectTo
-                            }
-
-                    Nothing ->
-                        Failure
-                            { defaultFailedState | invalidRedirectTo = True }
+                Nothing ->
+                    Failure
+                        { defaultFailedState | invalidRedirectTo = True }
 
         Nothing ->
             case url.query of
