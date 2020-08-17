@@ -76,11 +76,11 @@ src_dir  					:= "./src"
 		-- --compress --mangle
 
 
-@production-build: clean css-large production-elm css-small html js images static minify-js
+@production-build: clean css-large production-elm html css-small js images static minify-js
 	just config=production apply-config
 
 
-@staging-build: clean css-large production-elm css-small html js images static minify-js
+@staging-build: clean css-large production-elm html css-small js images static minify-js
 	just config=staging apply-config
 
 
@@ -113,12 +113,7 @@ main_css := src_dir + "/Css/Main.css"
 		--config tailwind.config.js \
 		--output {{dist_css}} \
 		--purge-content={{dist_elm}} \
-		--purge-content={{dist_dir}}/index.html \
-		--purge-whitelist="html" \
-		--purge-whitelist="left-1/2" \
-		--purge-whitelist="top-1/2" \
-		--purge-whitelist="-translate-x-1/2" \
-		--purge-whitelist="-translate-y-1/2"
+		--purge-content={{dist_dir}}/index.html
 	echo ""
 
 
