@@ -58,7 +58,7 @@ function ports() {
 // ----
 
 async function bootIpfs() {
-  sdk.setup.ipfs({
+  ipfs = await Ipfs.create({
     config: {
       Bootstrap: [
         RELAY
@@ -86,7 +86,7 @@ async function bootIpfs() {
     }
   })
 
-  ipfs = await sdk.ipfs.get()
+  sdk.ipfs.set(ipfs)
 
   ipfs.libp2p.connectionManager.on("peer:connect", (connection) => {
     console.log("Connected to peer", connection.remotePeer._idB58String)
