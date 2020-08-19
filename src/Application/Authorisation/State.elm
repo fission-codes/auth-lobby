@@ -54,7 +54,7 @@ allow model =
             in
             ( model
             , Ports.linkApp
-                { did = context.did
+                { did = context.didWrite
                 , lifetimeInSeconds = context.lifetimeInSeconds
                 , resources = resources
                 }
@@ -71,14 +71,15 @@ deny model =
         |> return model
 
 
-gotUcansForApplication : { ucans : List String } -> Manager
-gotUcansForApplication { ucans } model =
+gotUcansForApplication : { readKey : String, ucans : List String } -> Manager
+gotUcansForApplication { readKey, ucans } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
 
         redirection =
             { newUser = model.reCreateAccount == RemoteData.Success ()
+            , readKey = readKey
             , ucans = ucans
             , username = username
             }

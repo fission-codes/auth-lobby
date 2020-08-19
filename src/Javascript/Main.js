@@ -27,7 +27,7 @@ bootIpfs().then(bootElm)
 // ---
 
 async function bootElm() {
-  const usedUsername = localStorage.getItem("usedUsername")
+  const usedUsername = await localforage.getItem("usedUsername")
 
   app = Elm.Main.init({
     flags: {
@@ -107,6 +107,18 @@ async function bootIpfs() {
 const rootDidCache = {}
 
 /**
+ * Get the read key (aka. AES key)
+ */
+async function myReadKey() {
+  const maybeReadKey = await localforage.getItem("readKey")
+  if (maybeReadKey) return maybeReadKey
+
+  const readKey = await sdk.keystore.genKeyStr()
+  await localforage.setItem("readKey", readKey)
+  return readKey
+}
+
+/**
  * Get the root DID for a user.
  *
  * That might be the DID of this domain/device,
@@ -123,7 +135,7 @@ async function rootDid(maybeUsername) {
     x = maybeUsername
     y = rootDidCache[x] || (await sdk.did.root(x))
 
-  } else if (ucan = localStorage.getItem("ucan")) {
+  } else if (ucan = await localforage.getItem("ucan")) {
     x = "ucan"
     y = rootDidCache[x] || sdk.ucan.rootIssuer(ucan)
 
@@ -134,6 +146,15 @@ async function rootDid(maybeUsername) {
   }
 
   return y
+}
+
+/**
+ * Remove all traces of the user.
+ */
+async function leave() {
+  await localforage.removeItem("readKey")
+  await localforage.removeItem("ucan")
+  await localforage.removeItem("usedUsername")
 }
 
 
@@ -159,7 +180,7 @@ async function createAccount(args) {
   )
 
   if (success) {
-    localStorage.setItem("usedUsername", args.username)
+    await localforage.setItem("usedUsername", args.username)
 
     app.ports.gotCreateAccountSuccess.send(
       null
@@ -180,24 +201,23 @@ async function createAccount(args) {
 async function linkApp({ did, lifetimeInSeconds, resources }) {
   const audience = did
   const issuer = await sdk.did.local()
-  const proof = localStorage.getItem("ucan")
-      ? localStorage.getItem("ucan")
-      : undefined
+  const proof = await localforage.getItem("ucan")
 
   const ucanPromises = resources.map(([key, value]) => {
     return sdk.ucan.build({
+      proof: proof ? proof : undefined,
       resource: { [key]: value },
       audience,
       issuer,
-      proof,
       lifetimeInSeconds
     })
   })
 
   const ucans = await Promise.all(ucanPromises)
+  const readKey = await myReadKey()
 
   app.ports.gotUcansForApplication.send(
-    { ucans }
+    { readKey, ucans }
   )
 }
 
@@ -205,9 +225,9 @@ async function linkApp({ did, lifetimeInSeconds, resources }) {
 /**
  * You got linked 🎢
  */
-function linkedDevice({ ucan, username }) {
-  localStorage.setItem("ucan", ucan)
-  localStorage.setItem("usedUsername", username)
+async function linkedDevice({ ucan, username }) {
+  await localforage.setItem("ucan", ucan)
+  await localforage.setItem("usedUsername", username)
 
   app.ports.gotLinked.send({ username })
 }
@@ -333,7 +353,7 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
             audience: didKeyOtherSide,
             issuer: await sdk.did.local(),
             lifetimeInSeconds: 60 * 60 * 24 * 30 * 12, // one year
-            proof: localStorage.getItem("ucan")
+            proof: await localforage.getItem("ucan")
           })
         : undefined
     }

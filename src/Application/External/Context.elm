@@ -24,7 +24,8 @@ import Url.Parser.Query as Query
 
 type alias Context =
     { app : Maybe String
-    , did : String
+    , didExchange : String
+    , didWrite : String
     , lifetimeInSeconds : Int
     , newUser : Maybe Bool
     , privatePaths : List String
@@ -85,7 +86,8 @@ extractFromUrl url =
                     Just redirectTo ->
                         Success
                             { app = c.app
-                            , did = c.did
+                            , didExchange = c.didExchange
+                            , didWrite = c.didWrite
                             , lifetimeInSeconds = c.lifetimeInSeconds
                             , newUser = c.newUser
                             , privatePaths = c.privatePaths
@@ -112,6 +114,7 @@ extractFromUrl url =
 redirectCommand :
     Result String
         { newUser : Bool
+        , readKey : String
         , ucans : List String
         , username : String
         }
@@ -148,8 +151,9 @@ redirectCommand result remoteData =
                     |> Maybe.withDefault []
                     |> List.append
                         (case result of
-                            Ok { newUser, ucans, username } ->
+                            Ok { newUser, readKey, ucans, username } ->
                                 [ "newUser=" ++ ifThenElse newUser "t" "f"
+                                , "readKey=" ++ Url.percentEncode readKey
                                 , "ucans=" ++ Url.percentEncode (String.join "," ucans)
                                 , "username=" ++ Url.percentEncode username
                                 ]
@@ -247,12 +251,13 @@ semibold t =
 
 
 queryStringParser =
-    Query.map7
+    Query.map8
         (\app pri pub lif new ->
-            Maybe.map2
-                (\did red ->
+            Maybe.map3
+                (\didExchange didWrite red ->
                     { app = app
-                    , did = did
+                    , didExchange = didExchange
+                    , didWrite = didWrite
                     , lifetimeInSeconds = Maybe.withDefault (60 * 60 * 24 * 30) lif
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
                     , privatePaths = pri
@@ -269,5 +274,6 @@ queryStringParser =
         (Query.int "lifetimeInSeconds")
         (Query.string "newUser")
         -- Required
-        (Query.string "did")
+        (Query.string "didExchange")
+        (Query.string "didWrite")
         (Query.string "redirectTo")

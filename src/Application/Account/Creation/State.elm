@@ -43,7 +43,7 @@ createAccount context model =
             Return.singleton model
 
         ( True, _ ) ->
-            { did = Maybe.unwrap "" .did (RemoteData.toMaybe model.externalContext)
+            { did = Maybe.unwrap "" .didWrite (RemoteData.toMaybe model.externalContext)
             , email = String.trim context.email
             , username = String.trim context.username
             }

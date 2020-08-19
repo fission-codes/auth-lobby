@@ -13,7 +13,8 @@ __UI for [auth.fission.codes](https://auth.fission.codes)__
 
 🔑 _For each of those, you have to pass the required query parameters:_
 
-* `did`, the did of the user on the domain you'll be redirect to
+* `didExchange`, the exchange-key did of the user on the domain you'll be redirect to
+* `didWrite`, the write-key did of the user on the domain you'll be redirect to
 * `redirectTo`, the url the user will redirected to
 
 After that, you need at least one of these resources:
@@ -42,6 +43,7 @@ https://auth.fission.codes
 🎒 _When redirecting back it'll add the query params:_
 
 * `newUser`, `t` or `f`, whether the user has just created an account or not.
+* `readKey`, the aes key to use with the user's file system (encrypted in url-safe base64)
 * `ucans`, a list of tokens authorising the application to perform actions.  
   The tokens are separated by a comma, but make sure to decode the query parameter first.
 * `username`, the username that was chosen by the user.
