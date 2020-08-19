@@ -26,21 +26,21 @@ allow model =
                         -----------------------------------------
                         |> Maybe.unwrap
                             identity
-                            ((\a -> "private/Apps/" ++ a ++ "/") >> Tuple.pair "wnfs" >> (::))
+                            ((\a -> "private/Apps/" ++ a ++ "/") >> addFilesystemPrefix >> (::))
                             context.app
                         -----------------------------------------
                         -- App Folder (Public)
                         -----------------------------------------
                         |> Maybe.unwrap
                             identity
-                            ((\a -> "public/Apps/" ++ a ++ "/") >> Tuple.pair "wnfs" >> (::))
+                            ((\a -> "public/Apps/" ++ a ++ "/") >> addFilesystemPrefix >> (::))
                             context.app
                         -----------------------------------------
                         -- Private paths
                         -----------------------------------------
                         |> List.prepend
                             (List.map
-                                (String.append "private/" >> Tuple.pair "wnfs")
+                                (String.append "private/" >> addFilesystemPrefix)
                                 context.privatePaths
                             )
                         -----------------------------------------
@@ -48,7 +48,7 @@ allow model =
                         -----------------------------------------
                         |> List.prepend
                             (List.map
-                                (String.append "public/" >> Tuple.pair "wnfs")
+                                (String.append "public/" >> addFilesystemPrefix)
                                 context.publicPaths
                             )
             in
@@ -87,3 +87,11 @@ gotUcansForApplication { readKey, ucans } model =
     model.externalContext
         |> External.redirectCommand (Ok redirection)
         |> return model
+
+
+
+-- ㊙️
+
+
+addFilesystemPrefix =
+    Tuple.pair "dnslink"
