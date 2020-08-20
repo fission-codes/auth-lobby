@@ -29,13 +29,6 @@ allow model =
                             ((\a -> "private/Apps/" ++ a ++ "/") >> addFilesystemPrefix >> (::))
                             context.app
                         -----------------------------------------
-                        -- App Folder (Public)
-                        -----------------------------------------
-                        |> Maybe.unwrap
-                            identity
-                            ((\a -> "public/Apps/" ++ a ++ "/") >> addFilesystemPrefix >> (::))
-                            context.app
-                        -----------------------------------------
                         -- Private paths
                         -----------------------------------------
                         |> List.prepend

@@ -32,9 +32,9 @@ https://auth.fission.codes
 & did=did:key:z13V3Sog2YaUKhd...
 & redirectTo=https://my.app/
 
-& appFolder=My App                     # `private/Apps/My App/` and `public/Apps/My App/`
-& privatePath=Documents/Invoices/      # `private/Documents/Invoices`
-& publicPath=Blog/Posts/               # `public/Blog/Posts/`
+& appFolder=Creator/My App              # `private/Apps/Creator/My App`
+& privatePath=Documents/Invoices        # `private/Documents/Invoices`
+& publicPath=Blog/Posts                 # `public/Blog/Posts`
 
 & lifetimeInSeconds=86400
 ```
