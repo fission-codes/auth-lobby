@@ -20,7 +20,7 @@ allow model =
         RemoteData.Success context ->
             let
                 host =
-                    Maybe.withDefault "" model.usedUsername ++ model.dataRootDomain
+                    Maybe.withDefault "" model.usedUsername ++ "." ++ model.dataRootDomain
 
                 addFsPrefix =
                     addFilesystemPrefix host
