@@ -26,7 +26,7 @@ allow model =
                         -----------------------------------------
                         |> Maybe.unwrap
                             identity
-                            ((\a -> "private/Apps/" ++ a ++ "/") >> addFilesystemPrefix >> (::))
+                            (String.append "private/Apps/" >> addFilesystemPrefix >> (::))
                             context.app
                         -----------------------------------------
                         -- Private paths
