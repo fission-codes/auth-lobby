@@ -19,6 +19,12 @@ allow model =
     case model.externalContext of
         RemoteData.Success context ->
             let
+                host =
+                    Maybe.withDefault "" model.usedUsername ++ model.dataRootDomain
+
+                addFsPrefix =
+                    addFilesystemPrefix host
+
                 resources =
                     []
                         -----------------------------------------
@@ -26,14 +32,14 @@ allow model =
                         -----------------------------------------
                         |> Maybe.unwrap
                             identity
-                            (String.append "private/Apps/" >> addFilesystemPrefix >> (::))
+                            (String.append "private/Apps/" >> addFsPrefix >> (::))
                             context.app
                         -----------------------------------------
                         -- Private paths
                         -----------------------------------------
                         |> List.prepend
                             (List.map
-                                (String.append "private/" >> addFilesystemPrefix)
+                                (String.append "private/" >> addFsPrefix)
                                 context.privatePaths
                             )
                         -----------------------------------------
@@ -41,7 +47,7 @@ allow model =
                         -----------------------------------------
                         |> List.prepend
                             (List.map
-                                (String.append "public/" >> addFilesystemPrefix)
+                                (String.append "public/" >> addFsPrefix)
                                 context.publicPaths
                             )
             in
@@ -86,5 +92,5 @@ gotUcansForApplication { readKey, ucans } model =
 -- ㊙️
 
 
-addFilesystemPrefix =
-    Tuple.pair "dnslink"
+addFilesystemPrefix host =
+    String.append (host ++ "/") >> Tuple.pair "dnslink"

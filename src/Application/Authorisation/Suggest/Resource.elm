@@ -40,7 +40,7 @@ applicationFolder appName =
             []
             [ Html.text "The "
             , Html.strong [] [ Html.text appName ]
-            , Html.text " application folders"
+            , Html.text " application folder"
             ]
         ]
 
