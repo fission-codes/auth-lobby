@@ -224,7 +224,9 @@ queryParams : Html msg
 queryParams =
     Html.span
         []
-        [ semibold "did"
+        [ semibold "didExchange"
+        , text ", "
+        , semibold "didWrite"
         , text " and "
         , semibold "redirectTo"
         , text ", where "
