@@ -8,6 +8,7 @@ import Ports
 import Radix exposing (..)
 import RemoteData
 import Return exposing (return)
+import Ucan
 
 
 
@@ -22,9 +23,6 @@ allow model =
                 host =
                     Maybe.withDefault "" model.usedUsername ++ "." ++ model.dataRootDomain
 
-                addFsPrefix =
-                    addFilesystemPrefix host
-
                 resources =
                     []
                         -----------------------------------------
@@ -32,14 +30,14 @@ allow model =
                         -----------------------------------------
                         |> Maybe.unwrap
                             identity
-                            (String.append "private/Apps/" >> addFsPrefix >> (::))
+                            (Ucan.AppFolder >> Ucan.fsResource host >> (::))
                             context.app
                         -----------------------------------------
                         -- Private paths
                         -----------------------------------------
                         |> List.prepend
                             (List.map
-                                (String.append "private/" >> addFsPrefix)
+                                (Ucan.PrivatePath >> Ucan.fsResource host)
                                 context.privatePaths
                             )
                         -----------------------------------------
@@ -47,15 +45,24 @@ allow model =
                         -----------------------------------------
                         |> List.prepend
                             (List.map
-                                (String.append "public/" >> addFsPrefix)
+                                (Ucan.PublicPath >> Ucan.fsResource host)
                                 context.publicPaths
                             )
+
+                capabilities =
+                    List.map
+                        (\resource ->
+                            { lifetimeInSeconds = context.lifetimeInSeconds
+                            , resource = resource
+                            , potency = Ucan.potency.all
+                            }
+                        )
+                        resources
             in
             ( model
             , Ports.linkApp
                 { did = context.didWrite
-                , lifetimeInSeconds = context.lifetimeInSeconds
-                , resources = resources
+                , capabilities = capabilities
                 }
             )
 
@@ -86,11 +93,3 @@ gotUcansForApplication { readKey, ucans } model =
     model.externalContext
         |> External.redirectCommand (Ok redirection)
         |> return model
-
-
-
--- ㊙️
-
-
-addFilesystemPrefix host =
-    String.append (host ++ "/") >> Tuple.pair "dnslink"

@@ -198,18 +198,21 @@ async function createAccount(args) {
 // LINK
 // ----
 
-async function linkApp({ did, lifetimeInSeconds, resources }) {
+async function linkApp({ did, capabilities }) {
   const audience = did
   const issuer = await sdk.did.local()
   const proof = await localforage.getItem("ucan")
 
-  const ucanPromises = resources.map(([key, value]) => {
+  const ucanPromises = capabilities.map(capability => {
+    const [key, value] = capability.resource
+
     return sdk.ucan.build({
+      lifetimeInSeconds: capability.lifetimeInSeconds,
+      potency: capability.potency === "" ? null : capability.potency,
       proof: proof ? proof : undefined,
-      resource: { [key]: value },
+      resource: key === "*" ? "*" : { [key]: value },
       audience,
       issuer,
-      lifetimeInSeconds
     })
   })
 
