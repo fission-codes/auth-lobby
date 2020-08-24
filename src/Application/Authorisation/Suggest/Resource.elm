@@ -134,7 +134,7 @@ enterTheDragon =
 
 resource =
     resourceItem
-        [ T.bg_gray_800
+        [ T.bg_white
 
         -- Dark mode
         ------------
