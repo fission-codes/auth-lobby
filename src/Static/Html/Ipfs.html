@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Fission Lobby IPFS Worker</title>
+</head>
+<body>
+  <script>
+    const worker = new SharedWorker("worker.min.js", { type: "module" })
+
+    window.addEventListener("message", event => {
+      const channelPort = event.ports[0]
+
+      worker.port.addEventListener("message", event => {
+        console.log("workerMessage", event.data)
+        channelPort.postMessage(event.data)
+      })
+
+      worker.port.start()
+
+      channelPort.addEventListener("message", event => {
+        console.log("channelMessage", event.data)
+        worker.port.postMessage(event.data)
+      })
+
+      channelPort.start()
+    })
+  </script>
+</body>
+</html>

@@ -45,6 +45,7 @@ src_dir  					:= "./src"
 @html:
 	echo "📄  Copying static HTML files"
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
+	cp {{src_dir}}/Static/Html/Ipfs.html {{dist_dir}}/ipfs.html
 
 
 @images:
@@ -56,13 +57,15 @@ src_dir  					:= "./src"
 @install-deps:
 	echo "🦕  Downloading dependencies"
 	pnpm install
+	mkdir -p web_modules
+	cp node_modules/webnative/index.umd.js web_modules/webnative.js
 
 
 @js:
 	echo "📄  Copying JS files"
-	mkdir -p {{dist_dir}}/web_modules
-	cp node_modules/fission-sdk/index.umd.js {{dist_dir}}/web_modules/fission-sdk.js
+	cp -rf web_modules {{dist_dir}}/web_modules
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
+	{{node_bin}}/esbuild --bundle --minify --outfile={{dist_dir}}/worker.min.js {{src_dir}}/Javascript/Worker.js
 
 
 @minify-js:

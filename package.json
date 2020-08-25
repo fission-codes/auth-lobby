@@ -3,10 +3,14 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472",
-    "fission-sdk": "^0.14.3"
+    "ipfs-message-port-protocol": "^0.1.1",
+    "ipfs-message-port-server": "^0.1.0",
+    "load-script2": "^2.0.5",
+    "webnative": "^0.16.0"
   },
   "devDependencies": {
     "elm-tailwind-css": "^0.4.5",
+    "esbuild": "^0.6.27",
     "mustache": "^4.0.1",
     "tailwindcss": "^1.6.0",
     "terser-dir": "^1.0.7"
