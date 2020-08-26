@@ -5,7 +5,6 @@
     "fission-kit": "fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472",
     "ipfs-message-port-protocol": "^0.1.1",
     "ipfs-message-port-server": "^0.1.0",
-    "load-script2": "^2.0.5",
     "webnative": "^0.16.0"
   },
   "devDependencies": {

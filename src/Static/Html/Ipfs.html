@@ -6,25 +6,22 @@
 </head>
 <body>
   <script>
-    const worker = new SharedWorker("worker.min.js", { type: "module" })
+    let channelPort
+    const worker = new SharedWorker("worker.min.js")
+    window.onmessage = connectPorts
 
-    window.addEventListener("message", event => {
-      const channelPort = event.ports[0]
-
-      worker.port.addEventListener("message", event => {
-        console.log("workerMessage", event.data)
-        channelPort.postMessage(event.data)
-      })
-
-      worker.port.start()
-
-      channelPort.addEventListener("message", event => {
-        console.log("channelMessage", event.data)
+    function connectPorts({ data, ports }) {
+      channelPort = ports[0]
+      channelPort.onmessage = event => {
+        if (data === "DEBUG") console.log("channelMessage", event.data)
         worker.port.postMessage(event.data)
-      })
+      }
 
-      channelPort.start()
-    })
+      worker.port.onmessage = event => {
+        if (data === "DEBUG") console.log("workerMessage", event.data)
+        channelPort.postMessage(event.data)
+      }
+    }
   </script>
 </body>
 </html>

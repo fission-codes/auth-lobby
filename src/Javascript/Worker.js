@@ -3,18 +3,19 @@
 (づ￣ ³￣)づ
 
 IPFS (Shared) Worker.
-Copied from an example on https://github.com/ipfs/js-ipfs
+Pretty much copied from an example on https://github.com/ipfs/js-ipfs
 
 */
 
-import { JS_IPFS } from "webnative/ipfs/config"
 import { Server, IPFSService } from "ipfs-message-port-server"
-import loadScript from "load-script2"
+
+
+window = self // hack the planet 🌍
+importScripts("web_modules/ipfs.min.js")
 
 
 const main = async () => {
-  await loadScript(JS_IPFS)
-  const IPFS = window.Ipfs
+  const IPFS = self.Ipfs
 
   // start listening to all the incoming connections (browsing contexts that
   // which run new SharedWorker...)

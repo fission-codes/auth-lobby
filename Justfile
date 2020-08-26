@@ -58,6 +58,7 @@ src_dir  					:= "./src"
 	echo "🦕  Downloading dependencies"
 	pnpm install
 	mkdir -p web_modules
+	curl -o web_modules/ipfs.min.js https://unpkg.com/ipfs@0.49.1/dist/index.min.js
 	cp node_modules/webnative/index.umd.js web_modules/webnative.js
 
 
@@ -65,7 +66,7 @@ src_dir  					:= "./src"
 	echo "📄  Copying JS files"
 	cp -rf web_modules {{dist_dir}}/web_modules
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
-	{{node_bin}}/esbuild --bundle --minify --outfile={{dist_dir}}/worker.min.js {{src_dir}}/Javascript/Worker.js
+	{{node_bin}}/esbuild --bundle --outfile={{dist_dir}}/worker.min.js {{src_dir}}/Javascript/Worker.js
 
 
 @minify-js:
