@@ -4,7 +4,7 @@
 
 */
 
-const sdk = fissionSdk
+const sdk = webnative
 
 let app
 let ipfs
