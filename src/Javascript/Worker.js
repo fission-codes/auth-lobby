@@ -11,7 +11,6 @@ import { Server, IPFSService } from "ipfs-message-port-server"
 
 
 window = self // hack the planet 🌍
-importScripts("web_modules/ipfs.min.js")
 
 
 const main = async () => {
@@ -25,6 +24,8 @@ const main = async () => {
 
   // Start an IPFS node & create server that will expose it's API to all clients
   // over message channel.
+  importScripts("web_modules/ipfs.min.js")
+
   const ipfs = await IPFS.create()
   const service = new IPFSService(ipfs)
   const server = new Server(service)
@@ -32,9 +33,7 @@ const main = async () => {
   // connect every queued and future connection to the server.
   for await (const event of connections) {
     const port = event.ports[0]
-    if (port) {
-      server.connect(port)
-    }
+    if (port) server.connect(port)
   }
 }
 

@@ -6,22 +6,8 @@
 </head>
 <body>
   <script>
-    let channelPort
     const worker = new SharedWorker("worker.min.js")
-    window.onmessage = connectPorts
-
-    function connectPorts({ data, ports }) {
-      channelPort = ports[0]
-      channelPort.onmessage = event => {
-        if (data === "DEBUG") console.log("channelMessage", event.data)
-        worker.port.postMessage(event.data)
-      }
-
-      worker.port.onmessage = event => {
-        if (data === "DEBUG") console.log("workerMessage", event.data)
-        channelPort.postMessage(event.data)
-      }
-    }
+    window.onmessage = ({ ports }) => ports[0].postMessage("CONNECT", [ worker.port ])
   </script>
 </body>
 </html>
