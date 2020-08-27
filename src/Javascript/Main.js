@@ -198,25 +198,33 @@ async function createAccount(args) {
 // LINK
 // ----
 
-async function linkApp({ did, capabilities }) {
+async function linkApp({ did, attenuation }) {
   const audience = did
   const issuer = await sdk.did.local()
   const proof = await localforage.getItem("ucan")
 
-  const ucanPromises = capabilities.map(capability => {
-    const [key, value] = capability.resource
+  const att = attenuation.map(a => {
+    const [key, value] = a.resource
 
-    return sdk.ucan.build({
-      lifetimeInSeconds: capability.lifetimeInSeconds,
-      potency: capability.potency === "" ? null : capability.potency,
-      proof: proof ? proof : undefined,
-      resource: key === "*" ? "*" : { [key]: value },
-      audience,
-      issuer,
-    })
+    return key === "*"
+      ? "*"
+      : { [key]: value, "cap": a.capability }
   })
 
-  const ucans = await Promise.all(ucanPromises)
+  const ucanPromise = sdk.ucan.build({
+    // TODO: Waiting on API changes
+    // attenuation: att,
+
+    potency: "APPEND",
+    resource: "*",
+
+    proof: proof ? proof : undefined,
+    lifetimeInSeconds: att.lifetimeInSeconds,
+    audience,
+    issuer,
+  })
+
+  const ucans = [ await ucanPromise ]
   const readKey = await myReadKey()
 
   app.ports.gotUcansForApplication.send(

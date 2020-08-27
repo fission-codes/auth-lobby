@@ -18,17 +18,19 @@ type FilesystemPart
 
 
 fsResourceKey =
+    -- TODO: Waiting on API change,
+    --       should be `wnfs`
     "floofs"
 
 
-potency =
-    { all = "*"
-    , none = ""
-
-    --
-    , append = "APPEND"
-    , destroy = "DESTROY"
-    , update = "UPDATE"
+{-| <https://whitepaper.fission.codes/access-control/ucan/webnative-attenuation#capabilities>
+-}
+capabilities =
+    { create = "CREATE"
+    , revise = "REVISE"
+    , softDelete = "SOFT_DELETE"
+    , overwrite = "OVERWRITE"
+    , superUser = "SUPER_USER"
     }
 
 

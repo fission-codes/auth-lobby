@@ -49,12 +49,12 @@ allow model =
                                 context.publicPaths
                             )
 
-                capabilities =
+                attenuation =
                     List.map
                         (\resource ->
                             { lifetimeInSeconds = context.lifetimeInSeconds
                             , resource = resource
-                            , potency = Ucan.potency.all
+                            , capability = Ucan.capabilities.overwrite
                             }
                         )
                         resources
@@ -62,7 +62,7 @@ allow model =
             ( model
             , Ports.linkApp
                 { did = context.didWrite
-                , capabilities = capabilities
+                , attenuation = attenuation
                 }
             )
 
