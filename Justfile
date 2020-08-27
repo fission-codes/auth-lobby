@@ -85,7 +85,7 @@ src_dir  					:= "./src"
 
 
 @staging-build: clean css-large production-elm html css-small js images static minify-js
-	just config=staging apply-config
+	just config=default apply-config
 
 
 @static:
