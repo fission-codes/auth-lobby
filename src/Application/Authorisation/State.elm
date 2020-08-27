@@ -52,8 +52,7 @@ allow model =
                 attenuation =
                     List.map
                         (\resource ->
-                            { lifetimeInSeconds = context.lifetimeInSeconds
-                            , resource = resource
+                            { resource = resource
                             , capability = Ucan.capabilities.overwrite
                             }
                         )
@@ -61,8 +60,9 @@ allow model =
             in
             ( model
             , Ports.linkApp
-                { did = context.didWrite
-                , attenuation = attenuation
+                { attenuation = attenuation
+                , did = context.didWrite
+                , lifetimeInSeconds = context.lifetimeInSeconds
                 }
             )
 

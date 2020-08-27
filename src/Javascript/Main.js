@@ -198,7 +198,7 @@ async function createAccount(args) {
 // LINK
 // ----
 
-async function linkApp({ did, attenuation }) {
+async function linkApp({ did, attenuation, lifetimeInSeconds }) {
   const audience = did
   const issuer = await sdk.did.local()
   const proof = await localforage.getItem("ucan")
@@ -219,9 +219,10 @@ async function linkApp({ did, attenuation }) {
     resource: "*",
 
     proof: proof ? proof : undefined,
-    lifetimeInSeconds: att.lifetimeInSeconds,
+
     audience,
     issuer,
+    lifetimeInSeconds,
   })
 
   const ucans = [ await ucanPromise ]

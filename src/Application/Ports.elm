@@ -17,13 +17,13 @@ port createAccount : { did : String, email : String, username : String } -> Cmd 
 
 
 port linkApp :
-    { did : String
-    , attenuation :
+    { attenuation :
         List
             { capability : String
-            , lifetimeInSeconds : Int
             , resource : ( String, String )
             }
+    , did : String
+    , lifetimeInSeconds : Int
     }
     -> Cmd msg
 
