@@ -51,7 +51,7 @@ port publishEncryptedOnSecureChannel : ( Maybe String, String, Json.Value ) -> C
 -- 📰
 
 
-port cancelLink : (() -> msg) -> Sub msg
+port cancelLink : ({ onBothSides : Bool } -> msg) -> Sub msg
 
 
 port gotCreateAccountFailure : (String -> msg) -> Sub msg
@@ -82,4 +82,4 @@ port gotInvalidRootDid : (() -> msg) -> Sub msg
 port gotSecureChannelMessage : (Json.Value -> msg) -> Sub msg
 
 
-port secureChannelOpened : (() -> msg) -> Sub msg
+port secureChannelOpened : (String -> msg) -> Sub msg

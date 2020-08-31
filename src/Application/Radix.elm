@@ -73,7 +73,7 @@ type Msg
       -----------------------------------------
       -- Linking
       -----------------------------------------
-    | CancelLink
+    | CancelLink { onBothSides : Bool }
     | GotLinked { username : String }
     | GotLinkExchangeError String
     | GotLinkUsernameInput String
@@ -91,7 +91,7 @@ type Msg
       -----------------------------------------
     | GotInvalidRootDid
     | GotSecureChannelMessage Json.Value
-    | SecureChannelOpened
+    | SecureChannelOpened String
       -----------------------------------------
       -- 🧿 Other things
       -----------------------------------------

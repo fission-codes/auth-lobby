@@ -3,7 +3,9 @@ module Channel.State exposing (..)
 import Account.Linking.Context as LinkingContext
 import Account.Linking.Exchange as LinkingExchange
 import Json.Decode as Json
+import Json.Encode
 import Page
+import Ports
 import Radix exposing (..)
 import Random
 import Return exposing (return)
@@ -34,7 +36,7 @@ gotInvalidRootDid model =
 
 gotMessage : Json.Value -> Manager
 gotMessage json model =
-    case model.page of
+    case Debug.log "" model.page of
         -----------------------------------------
         -- Link Account Page
         -----------------------------------------
@@ -72,18 +74,30 @@ gotMessage json model =
                 |> Return.map (\c -> { model | page = Page.LinkAccount c })
 
 
-opened : Manager
-opened model =
+opened : String -> Manager
+opened from model =
     case model.page of
         Page.LinkAccount context ->
-            let
-                newContext =
-                    { context | waitingForDevices = False }
-            in
-            LinkingExchange.nonceGenerator
-                |> Random.pair LinkingExchange.nonceGenerator
-                |> Random.generate (StartLinkingExchange newContext)
-                |> return model
+            if context.waitingForDevices then
+                let
+                    newContext =
+                        { context | waitingForDevices = False }
+                in
+                LinkingExchange.nonceGenerator
+                    |> Random.pair LinkingExchange.nonceGenerator
+                    |> Random.generate (StartLinkingExchange newContext)
+                    |> return model
+
+            else
+                -- TODO: Let the other device know the linking process
+                --       has already started on another device.
+                --
+                -- ( maybeUsername
+                -- , Json.Encode.string (LinkingExchange.alreadyAuthorised ++ "-" ++ from)
+                -- )
+                --     |> Ports.publishOnSecureChannel
+                --     |> return model
+                Return.singleton model
 
         _ ->
             Return.singleton model

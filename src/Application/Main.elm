@@ -153,8 +153,8 @@ update msg =
         -----------------------------------------
         -- Linking
         -----------------------------------------
-        CancelLink ->
-            Linking.cancel
+        CancelLink a ->
+            Linking.cancel a
 
         GotLinked a ->
             Linking.gotLinked a
@@ -195,8 +195,8 @@ update msg =
         GotSecureChannelMessage a ->
             Channel.gotMessage a
 
-        SecureChannelOpened ->
-            Channel.opened
+        SecureChannelOpened a ->
+            Channel.opened a
 
         -----------------------------------------
         -- 🧿 Other things
@@ -212,7 +212,7 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ Ports.cancelLink (\_ -> CancelLink)
+        [ Ports.cancelLink CancelLink
         , Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotLinked GotLinked
@@ -225,7 +225,7 @@ subscriptions _ =
         -----------------------------------------
         , Ports.gotInvalidRootDid (\_ -> GotInvalidRootDid)
         , Ports.gotSecureChannelMessage GotSecureChannelMessage
-        , Ports.secureChannelOpened (\_ -> SecureChannelOpened)
+        , Ports.secureChannelOpened SecureChannelOpened
         ]
 
 

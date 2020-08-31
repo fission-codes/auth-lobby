@@ -25,7 +25,8 @@ import Return exposing (return)
 
 
 type alias Exchange =
-    { didOtherSide : Maybe String
+    { ipfsIdOtherSide : Maybe String
+    , didOtherSide : Maybe String
     , error : Maybe String
     , nonceRandom : Maybe String
     , nonceUser : Maybe String
@@ -45,6 +46,14 @@ type Step
 
 
 -- 🏔
+
+
+alreadyAuthorised =
+    "ALREADY_AUTHORISED"
+
+
+alreadyInquired =
+    "ALREADY_INQUIRED"
 
 
 cancelMessage =
@@ -71,6 +80,12 @@ Authoriser EstablishConnection → Inquirer EstablishConnection → Authoriser �
 -}
 proceed : Maybe String -> Json.Decode.Value -> Exchange -> ( Exchange, Cmd msg )
 proceed maybeUsername json exchange =
+    let
+        from =
+            json
+                |> Json.Decode.decodeValue (Json.Decode.field "from" Json.Decode.string)
+                |> Result.withDefault "Unknown"
+    in
     case exchange.side of
         -----------------------------------------
         -- Inquirer
@@ -110,7 +125,8 @@ proceed maybeUsername json exchange =
                             |> Ports.publishOnSecureChannel
                             |> return
                                 { exchange
-                                    | didOtherSide = Just resp.did
+                                    | ipfsIdOtherSide = Just from
+                                    , didOtherSide = Just resp.did
                                     , side = Inquirer ConstructUcan
                                 }
                     )
@@ -121,12 +137,20 @@ proceed maybeUsername json exchange =
                 username =
                     Maybe.withDefault "" maybeUsername
             in
-            json
-                |> Json.Decode.decodeValue ucanResponseDecoder
-                |> Result.mapError Json.Decode.errorToString
-                |> Result.map (\{ ucan } -> Ports.linkedDevice { ucan = ucan, username = username })
-                |> Result.map (Tuple.pair exchange)
-                |> handleJsonResult exchange
+            if Just from == exchange.ipfsIdOtherSide then
+                json
+                    |> Json.Decode.decodeValue ucanResponseDecoder
+                    |> Result.mapError Json.Decode.errorToString
+                    |> Result.map (\{ ucan } -> Ports.linkedDevice { ucan = ucan, username = username })
+                    |> Result.map (Tuple.pair exchange)
+                    |> handleJsonResult exchange
+
+            else
+                ( maybeUsername
+                , Json.Encode.string (alreadyAuthorised ++ "-" ++ from)
+                )
+                    |> Ports.publishOnSecureChannel
+                    |> return exchange
 
         -----------------------------------------
         -- Authoriser
@@ -146,7 +170,8 @@ proceed maybeUsername json exchange =
                                 |> (\r -> ( maybeUsername, inquiry.did, r ))
                                 |> Ports.publishEncryptedOnSecureChannel
                                 |> return
-                                    { didOtherSide = Just inquiry.did
+                                    { ipfsIdOtherSide = Just from
+                                    , didOtherSide = Just inquiry.did
                                     , error = Nothing
                                     , nonceRandom = Just inquiry.nonceRandom
                                     , nonceUser = Nothing
@@ -159,22 +184,30 @@ proceed maybeUsername json exchange =
                 Return.singleton exchange
 
         Authoriser ConstructUcan ->
-            json
-                |> Json.Decode.decodeValue ucanInquiryDecoder
-                |> Result.mapError Json.Decode.errorToString
-                |> Result.andThen
-                    (\inquiry ->
-                        if Just inquiry.nonceRandom == exchange.nonceRandom then
-                            Ok inquiry
+            if Just from == exchange.ipfsIdOtherSide then
+                json
+                    |> Json.Decode.decodeValue ucanInquiryDecoder
+                    |> Result.mapError Json.Decode.errorToString
+                    |> Result.andThen
+                        (\inquiry ->
+                            if Just inquiry.nonceRandom == exchange.nonceRandom then
+                                Ok inquiry
 
-                        else
-                            Err "nonceRandom doesn't match"
-                    )
-                |> Result.map
-                    (\inquiry ->
-                        Return.singleton { exchange | nonceUser = Just inquiry.nonceUser }
-                    )
-                |> handleJsonResult exchange
+                            else
+                                Err "nonceRandom doesn't match"
+                        )
+                    |> Result.map
+                        (\inquiry ->
+                            Return.singleton { exchange | nonceUser = Just inquiry.nonceUser }
+                        )
+                    |> handleJsonResult exchange
+
+            else
+                ( maybeUsername
+                , Json.Encode.string (alreadyInquired ++ "-" ++ from)
+                )
+                    |> Ports.publishOnSecureChannel
+                    |> return exchange
 
 
 
@@ -191,7 +224,8 @@ inquire username ( nonceRandom, nonceUser ) =
         |> Tuple.pair (Just username)
         |> Ports.publishOnSecureChannel
         |> return
-            { didOtherSide = Nothing
+            { ipfsIdOtherSide = Nothing
+            , didOtherSide = Nothing
             , error = Nothing
             , nonceRandom = Just nonceRandom
             , nonceUser = Just nonceUser
@@ -266,7 +300,8 @@ ucanInquiryDecoder =
 
 initialAuthoriserExchange : Exchange
 initialAuthoriserExchange =
-    { didOtherSide = Nothing
+    { ipfsIdOtherSide = Nothing
+    , didOtherSide = Nothing
     , error = Nothing
     , nonceRandom = Nothing
     , nonceUser = Nothing

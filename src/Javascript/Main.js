@@ -407,14 +407,24 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
 
   } else if (string === "CANCEL") {
     ipfs.pubsub.unsubscribe(rootDid_)
-    app.ports.cancelLink.send(null)
+    app.ports.cancelLink.send({ onBothSides: true })
+
+  } else if (string.startsWith("ALREADY")) {
+    const split = string.split("-")
+    const unwantedDevice = split[1]
+
+    if (ipfsId === unwantedDevice) {
+      ipfs.pubsub.unsubscribe(rootDid_)
+      app.ports.cancelLink.send({ onBothSides: false })
+      alert("You currently have this page open on multiple devices, I've picked your other device to authenticate with.")
+    }
 
   } else if (string === "PING") {
     ipfs.pubsub.publish(rootDid_, "PONG")
 
   } else if (string === "PONG") {
     clearInterval(pingInterval)
-    app.ports.secureChannelOpened.send(null)
+    app.ports.secureChannelOpened.send(from)
 
   } else if (string[0] === "{") {
     await gotSecureChannelMessage(from, string)

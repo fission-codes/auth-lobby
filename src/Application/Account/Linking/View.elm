@@ -164,7 +164,7 @@ exchangeView context model =
 
                     --
                     , S.button
-                        [ E.onClick CancelLink
+                        [ E.onClick (CancelLink { onBothSides = True })
 
                         --
                         , T.bg_gray_400

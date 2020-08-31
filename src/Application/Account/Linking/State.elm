@@ -13,8 +13,8 @@ import Return exposing (return)
 -- 📣
 
 
-cancel : Manager
-cancel model =
+cancel : { onBothSides : Bool } -> Manager
+cancel { onBothSides } model =
     case model.page of
         Page.LinkAccount context ->
             case Maybe.map .side context.exchange of
@@ -22,9 +22,17 @@ cancel model =
                     Return.singleton { model | page = Page.Choose }
 
                 Just (Exchange.Authoriser _) ->
-                    ( Nothing, Json.Encode.string Exchange.cancelMessage )
-                        |> Ports.publishOnSecureChannel
-                        |> return { model | page = Page.SuggestAuthorisation }
+                    return
+                        { model | page = Page.SuggestAuthorisation }
+                        (if onBothSides then
+                            Ports.publishOnSecureChannel
+                                ( Nothing
+                                , Json.Encode.string Exchange.cancelMessage
+                                )
+
+                         else
+                            Cmd.none
+                        )
 
                 Nothing ->
                     Return.singleton model
