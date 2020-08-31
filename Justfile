@@ -58,6 +58,7 @@ src_dir  					:= "./src"
 	echo "🦕  Downloading dependencies"
 	pnpm install
 	mkdir -p web_modules
+	curl -o web_modules/localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
 	curl -o web_modules/ipfs.min.js https://unpkg.com/ipfs@0.49.1/dist/index.min.js
 	cp node_modules/webnative/index.umd.js web_modules/webnative.js
 
