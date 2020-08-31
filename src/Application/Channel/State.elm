@@ -36,7 +36,7 @@ gotInvalidRootDid model =
 
 gotMessage : Json.Value -> Manager
 gotMessage json model =
-    case Debug.log "" model.page of
+    case model.page of
         -----------------------------------------
         -- Link Account Page
         -----------------------------------------
