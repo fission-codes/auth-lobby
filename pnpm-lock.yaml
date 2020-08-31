@@ -2,7 +2,7 @@ dependencies:
   fission-kit: github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472
   ipfs-message-port-protocol: 0.1.1
   ipfs-message-port-server: 0.1.0
-  webnative: 0.16.4
+  webnative: 0.17.0-alpha-4
 devDependencies:
   elm-tailwind-css: 0.4.5
   esbuild: 0.6.27
@@ -1538,7 +1538,7 @@ packages:
     dev: false
     resolution:
       integrity: sha1-2Ca4n3SQcy+rwMDtaT7Uddyynr8=
-  /webnative/0.16.4:
+  /webnative/0.17.0-alpha-4:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -1549,11 +1549,12 @@ packages:
       localforage: 1.7.3
       make-error: 1.3.6
       throttle-debounce: 2.2.1
+      yarn: 1.22.5
     dev: false
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-ufvv2O10go9L7xQ2sdip9BBuZxnG7Qg3h3ClNNgLqs8/xmvH2hqam25dcyy8j8b56yFtN0Kb1p/8uHMKZlNlnQ==
+      integrity: sha512-pPVg04BN6UfxTfIEf55VO8lb0RIxYYoWsWWopR3e1CGv2oasnbNalFbnrIytlVQ1s1ZgYOeJ230p9LDPi35uig==
   /wrappy/1.0.2:
     dev: true
     resolution:
@@ -1579,6 +1580,13 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==
+  /yarn/1.22.5:
+    dev: false
+    engines:
+      node: '>=4.0.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-5uzKXwdMc++mYktXqkfpNYT9tY8ViWegU58Hgbo+KXzrzzhEyP1Ip+BTtXloLrXNcNlxFJbLiFKGaS9vK9ym6Q==
   github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472:
     dev: false
     name: fission-kit
@@ -1606,4 +1614,4 @@ specifiers:
   mustache: ^4.0.1
   tailwindcss: ^1.6.0
   terser-dir: ^1.0.7
-  webnative: ^0.16.4
+  webnative: 0.17.0-alpha-4

@@ -141,7 +141,7 @@ async function rootDid(maybeUsername) {
 
   } else {
     x = "local"
-    y = rootDidCache[x] || (await sdk.did.local())
+    y = rootDidCache[x] || (await sdk.did.write())
 
   }
 
@@ -200,7 +200,7 @@ async function createAccount(args) {
 
 async function linkApp({ did, attenuation, lifetimeInSeconds }) {
   const audience = did
-  const issuer = await sdk.did.local()
+  const issuer = await sdk.did.write()
   const proof = await localforage.getItem("ucan")
 
   const att = attenuation.map(a => {
@@ -356,14 +356,14 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
 
       // DID
       did: plaDid
-        ? await sdk.did.local()
+        ? await sdk.did.write()
         : undefined,
 
       // UCAN
       ucan: plaUcan
         ? await sdk.ucan.build({
             audience: didKeyOtherSide,
-            issuer: await sdk.did.local(),
+            issuer: await sdk.did.write(),
             lifetimeInSeconds: 60 * 60 * 24 * 30 * 12, // one year
             proof: await localforage.getItem("ucan")
           })
@@ -420,7 +420,7 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
     await gotSecureChannelMessage(from, string)
 
   } else {
-    const decryptedString = await decrypt(string, await sdk.did.local())
+    const decryptedString = await decrypt(string, await sdk.did.write())
     await gotSecureChannelMessage(from, decryptedString)
 
   }
