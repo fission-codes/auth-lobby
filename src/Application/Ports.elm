@@ -28,7 +28,12 @@ port linkApp :
     -> Cmd msg
 
 
-port linkedDevice : { ucan : String, username : String } -> Cmd msg
+port linkedDevice :
+    { readKey : String
+    , ucan : String
+    , username : String
+    }
+    -> Cmd msg
 
 
 

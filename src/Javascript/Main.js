@@ -237,7 +237,8 @@ async function linkApp({ did, attenuation, lifetimeInSeconds }) {
 /**
  * You got linked 🎢
  */
-async function linkedDevice({ ucan, username }) {
+async function linkedDevice({ readKey, ucan, username }) {
+  await localforage.setItem("readKey", readKey)
   await localforage.setItem("ucan", ucan)
   await localforage.setItem("usedUsername", username)
 
@@ -347,6 +348,7 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
 
     // Placeholders
     let plaDid        = dataWithPlaceholders.did !== undefined
+    let plaReadKey    = dataWithPlaceholders.readKey !== undefined
     let plaSignature  = dataWithPlaceholders.signature !== undefined
     let plaUcan       = dataWithPlaceholders.ucan !== undefined
 
@@ -357,6 +359,11 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
       // DID
       did: plaDid
         ? await sdk.did.write()
+        : undefined,
+
+      // Read key
+      readKey: plaReadKey
+        ? await myReadKey()
         : undefined,
 
       // UCAN

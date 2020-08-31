@@ -141,7 +141,14 @@ proceed maybeUsername json exchange =
                 json
                     |> Json.Decode.decodeValue ucanResponseDecoder
                     |> Result.mapError Json.Decode.errorToString
-                    |> Result.map (\{ ucan } -> Ports.linkedDevice { ucan = ucan, username = username })
+                    |> Result.map
+                        (\{ readKey, ucan } ->
+                            Ports.linkedDevice
+                                { readKey = readKey
+                                , ucan = ucan
+                                , username = username
+                                }
+                        )
                     |> Result.map (Tuple.pair exchange)
                     |> handleJsonResult exchange
 
@@ -340,27 +347,32 @@ establishingResponseDecoder =
 
 
 type alias UcanResponse =
-    { ucan : String
+    { readKey : String
+    , ucan : String
     }
 
 
 encodeUcanResponse : UcanResponse -> Json.Encode.Value
 encodeUcanResponse resp =
     Json.Encode.object
-        [ ( "ucan", placeholderJson )
+        [ ( "readKey", placeholderJson )
+        , ( "ucan", placeholderJson )
         ]
 
 
 ucanResponseDecoder : Json.Decode.Decoder UcanResponse
 ucanResponseDecoder =
-    Json.Decode.map
+    Json.Decode.map2
         UcanResponse
+        (Json.Decode.field "readKey" Json.Decode.string)
         (Json.Decode.field "ucan" Json.Decode.string)
 
 
 ucanResponse : UcanResponse
 ucanResponse =
-    { ucan = placeholder }
+    { readKey = placeholder
+    , ucan = placeholder
+    }
 
 
 
