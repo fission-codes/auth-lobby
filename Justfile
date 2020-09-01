@@ -42,6 +42,10 @@ src_dir  					:= "./src"
 	devd --quiet build --port=8001 --all
 
 
+@download-web-module filename url:
+	curl --silent --show-error --fail -o web_modules/{{filename}} {{url}}
+
+
 @html:
 	echo "📄  Copying static HTML files"
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
@@ -57,10 +61,10 @@ src_dir  					:= "./src"
 @install-deps:
 	echo "🦕  Downloading dependencies"
 	pnpm install
-	mkdir -p web_modules
-	curl -o web_modules/localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
-	curl -o web_modules/ipfs.min.js https://unpkg.com/ipfs@0.49.1/dist/index.min.js
 	cp node_modules/webnative/index.umd.js web_modules/webnative.js
+
+	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
+	just download-web-module ipfs.min.js https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.49.2-rc.4/index.min.js
 
 
 @js:
