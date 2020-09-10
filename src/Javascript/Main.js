@@ -198,8 +198,8 @@ async function createAccount(args) {
 // LINK
 // ----
 
-async function linkApp({ did, attenuation, lifetimeInSeconds }) {
-  const audience = did
+async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }) {
+  const audience = didWrite
   const issuer = await sdk.did.write()
   const proof = await localforage.getItem("ucan")
 
@@ -226,7 +226,12 @@ async function linkApp({ did, attenuation, lifetimeInSeconds }) {
   })
 
   const ucans = [ await ucanPromise ]
-  const readKey = await myReadKey()
+
+  // encrypt symmetric key
+  const plainTextReadKey = await myReadKey()
+  const ks = await sdk.keystore.get()
+  const { publicKey } = sdk.did.didToPublicKey(didExchange)
+  const readKey = await ks.encrypt(plainTextReadKey, publicKey)
 
   app.ports.gotUcansForApplication.send(
     { readKey, ucans }

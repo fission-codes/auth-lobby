@@ -61,7 +61,8 @@ allow model =
             ( model
             , Ports.linkApp
                 { attenuation = attenuation
-                , did = context.didWrite
+                , didWrite = context.didWrite
+                , didExchange = context.didExchange
                 , lifetimeInSeconds = context.lifetimeInSeconds
                 }
             )
