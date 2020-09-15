@@ -22,7 +22,8 @@ port linkApp :
             { capability : String
             , resource : ( String, String )
             }
-    , did : String
+    , didWrite : String
+    , didExchange : String
     , lifetimeInSeconds : Int
     }
     -> Cmd msg
