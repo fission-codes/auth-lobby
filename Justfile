@@ -6,6 +6,7 @@ export NODE_OPTIONS := "--no-warnings"
 
 config						:= "default"
 dist_dir 					:= "./build"
+fission_cmd       := "fission"
 node_bin 					:= "./node_modules/.bin"
 src_dir  					:= "./src"
 
@@ -126,6 +127,28 @@ main_css := src_dir + "/Css/Main.css"
 		--purge-content={{dist_elm}} \
 		--purge-content={{dist_dir}}/index.html
 	echo ""
+
+
+
+# Deploy
+# ------
+# This assumes .fission.yaml.production
+#              .fission.yaml.staging
+
+@deploy-production:
+	echo "🛳  Deploying to production"
+	just production-build
+	cp .fission.yaml.production .fission.yaml
+	{{fission_cmd}} up
+	rm .fission.yaml
+
+
+@deploy-staging:
+	echo "🛳  Deploying to staging"
+	just staging-build
+	cp .fission.yaml.staging .fission.yaml
+	{{fission_cmd}} up
+	rm .fission.yaml
 
 
 
