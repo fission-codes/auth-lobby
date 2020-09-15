@@ -61,6 +61,8 @@ src_dir  					:= "./src"
 @install-deps:
 	echo "🦕  Downloading dependencies"
 	pnpm install
+	rm -rf web_modules
+	mkdir -p web_modules
 	cp node_modules/webnative/index.umd.js web_modules/webnative.js
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
