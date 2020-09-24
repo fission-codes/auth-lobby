@@ -14,3 +14,10 @@ copyToClipboard string model =
     string
         |> Ports.copyToClipboard
         |> return model
+
+
+leave : Manager
+leave model =
+    ()
+        |> Ports.leave
+        |> return model

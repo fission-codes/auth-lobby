@@ -46,6 +46,7 @@ function ports() {
   app.ports.closeSecureChannel.subscribe(closeSecureChannel)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.createAccount.subscribe(createAccount)
+  app.ports.leave.subscribe(leave)
   app.ports.linkApp.subscribe(linkApp)
   app.ports.linkedDevice.subscribe(linkedDevice)
   app.ports.openSecureChannel.subscribe(openSecureChannel)
@@ -152,9 +153,14 @@ async function rootDid(maybeUsername) {
  * Remove all traces of the user.
  */
 async function leave() {
-  await localforage.removeItem("readKey")
-  await localforage.removeItem("ucan")
-  await localforage.removeItem("usedUsername")
+  if (window.confirm("Are you sure you want to remove this device? If you're not authenticated on any other devices, you will lose access to your account!")) {
+    await localforage.removeItem("readKey")
+    await localforage.removeItem("ucan")
+    await localforage.removeItem("usedUsername")
+    await sdk.keystore.clear()
+
+    location.reload()
+  }
 }
 
 

@@ -16,6 +16,9 @@ port copyToClipboard : String -> Cmd msg
 port createAccount : { did : String, email : String, username : String } -> Cmd msg
 
 
+port leave : () -> Cmd msg
+
+
 port linkApp :
     { attenuation :
         List

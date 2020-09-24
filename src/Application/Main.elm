@@ -204,6 +204,9 @@ update msg =
         CopyToClipboard a ->
             Other.copyToClipboard a
 
+        Leave ->
+            Other.leave
+
 
 
 -- 📰
@@ -256,7 +259,12 @@ title model =
             "Fission"
 
         Page.SuggestAuthorisation ->
-            "Authorise"
+            case model.externalContext of
+                NotAsked ->
+                    "Fission"
+
+                _ ->
+                    "Authorise"
 
         Page.PerformingAuthorisation ->
             "Granting access"
@@ -267,6 +275,14 @@ titleSuffix model =
     case model.page of
         Page.Choose ->
             ""
+
+        Page.SuggestAuthorisation ->
+            case model.externalContext of
+                NotAsked ->
+                    ""
+
+                _ ->
+                    " - Fission"
 
         _ ->
             " - Fission"

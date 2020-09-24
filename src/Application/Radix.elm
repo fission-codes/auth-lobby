@@ -96,6 +96,7 @@ type Msg
       -- 🧿 Other things
       -----------------------------------------
     | CopyToClipboard String
+    | Leave
 
 
 type alias Manager =

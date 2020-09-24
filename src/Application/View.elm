@@ -9,6 +9,7 @@ import Authorisation.Suggest.View
 import Branding
 import Common
 import External.Context exposing (Context, defaultFailedState)
+import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
@@ -194,7 +195,7 @@ authenticated username model =
         , S.messageBlock
             []
             [ S.usernameBlock
-                []
+                [ T.relative ]
                 [ Html.span
                     [ T.opacity_90 ]
                     [ Html.text "Authenticated as " ]
@@ -213,6 +214,28 @@ authenticated username model =
             , Html.em [] [ Html.text "Keep this window open if you want" ]
             , Html.br [] []
             , Html.em [] [ Html.text "to authenticate on another device." ]
+            ]
+
+        --
+        , Html.div
+            [ T.mt_6
+            , T.mx_auto
+            , T.not_italic
+            , T.opacity_75
+            , T.text_gray_400
+            , T.text_xs
+            ]
+            [ Html.text "If you wish you can also "
+            , Html.span
+                [ E.onClick Leave
+
+                --
+                , T.border_b
+                , T.border_gray_600
+                , T.cursor_pointer
+                ]
+                [ Html.text "remove this device"
+                ]
             ]
         ]
 
