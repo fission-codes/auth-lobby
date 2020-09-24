@@ -34,27 +34,45 @@ view context model =
         -----------------------------------------
         -- Name & Duration
         -----------------------------------------
-        , Html.div
-            [ T.mt_10 ]
-            [ Html.text "Allow "
-            , Html.span
-                [ T.font_semibold ]
-                [ Html.text context.redirectTo.host
-                , Html.text (Maybe.unwrap "" (String.fromInt >> (++) ":") context.redirectTo.port_)
+        , let
+            hasResources =
+                Maybe.isJust context.app
+                    || not (List.isEmpty context.privatePaths)
+                    || not (List.isEmpty context.publicPaths)
+
+            origin =
+                Html.span
+                    [ T.font_semibold ]
+                    [ Html.text context.redirectTo.host
+                    , Html.text (Maybe.unwrap "" (String.fromInt >> (++) ":") context.redirectTo.port_)
+                    ]
+          in
+          if hasResources then
+            Html.div
+                [ T.mt_10 ]
+                [ Html.text "Allow "
+                , origin
+
+                --
+                , Html.text " access to the following for "
+                , Html.text <|
+                    Time.Distance.inWordsWithConfig
+                        { withAffix = False }
+                        Time.Distance.I18n.en
+                        (Time.millisToPosix 0)
+                        (Time.millisToPosix <| context.lifetimeInSeconds * 1000)
+
+                --
+                , Html.text "?"
                 ]
 
-            --
-            , Html.text " access to the following for "
-            , Html.text <|
-                Time.Distance.inWordsWithConfig
-                    { withAffix = False }
-                    Time.Distance.I18n.en
-                    (Time.millisToPosix 0)
-                    (Time.millisToPosix <| context.lifetimeInSeconds * 1000)
-
-            --
-            , Html.text "?"
-            ]
+          else
+            Html.div
+                [ T.mt_10 ]
+                [ Html.text "Allow "
+                , origin
+                , Html.text " to authenticate with this account?"
+                ]
 
         -----------------------------------------
         -- Resources

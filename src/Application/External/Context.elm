@@ -71,33 +71,22 @@ extractFromUrl url =
     in
     case maybeContext of
         Just c ->
-            let
-                hasResource =
-                    Maybe.isJust c.app
-                        || not (List.isEmpty c.privatePaths)
-                        || not (List.isEmpty c.publicPaths)
-            in
-            if not hasResource then
-                Failure
-                    { defaultFailedState | missingResource = True }
+            case c.redirectTo of
+                Just redirectTo ->
+                    Success
+                        { app = c.app
+                        , didExchange = c.didExchange
+                        , didWrite = c.didWrite
+                        , lifetimeInSeconds = c.lifetimeInSeconds
+                        , newUser = c.newUser
+                        , privatePaths = c.privatePaths
+                        , publicPaths = c.publicPaths
+                        , redirectTo = redirectTo
+                        }
 
-            else
-                case c.redirectTo of
-                    Just redirectTo ->
-                        Success
-                            { app = c.app
-                            , didExchange = c.didExchange
-                            , didWrite = c.didWrite
-                            , lifetimeInSeconds = c.lifetimeInSeconds
-                            , newUser = c.newUser
-                            , privatePaths = c.privatePaths
-                            , publicPaths = c.publicPaths
-                            , redirectTo = redirectTo
-                            }
-
-                    Nothing ->
-                        Failure
-                            { defaultFailedState | invalidRedirectTo = True }
+                Nothing ->
+                    Failure
+                        { defaultFailedState | invalidRedirectTo = True }
 
         Nothing ->
             case url.query of
