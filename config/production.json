@@ -3,5 +3,5 @@
   "DATA_ROOT_DOMAIN": "fission.name",
 
   "RELAY": "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw",
-  "SIGNALING_ADDR": "/dns4/frozen-wave-01607.herokuapp.com/tcp/443/wss/p2p-webrtc-star/"
+  "SIGNALING_ADDR": "/dns4/webrtc.runfission.com/tcp/443/wss/p2p-webrtc-star/"
 }
