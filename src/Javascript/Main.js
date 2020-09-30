@@ -382,7 +382,7 @@ async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide,
         ? await sdk.ucan.build({
             audience: didKeyOtherSide,
             issuer: await sdk.did.write(),
-            lifetimeInSeconds: 60 * 60 * 24 * 30 * 12, // one year
+            lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
             proof: await localforage.getItem("ucan")
           })
         : undefined
