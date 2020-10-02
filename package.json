@@ -5,7 +5,7 @@
     "fission-kit": "fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472",
     "ipfs-message-port-protocol": "^0.2.0",
     "ipfs-message-port-server": "^0.2.2",
-    "webnative": "0.19.0-alpha"
+    "webnative": "0.19.9"
   },
   "devDependencies": {
     "elm-tailwind-css": "^0.4.5",
