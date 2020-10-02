@@ -22,7 +22,7 @@ import Url
 view : Context -> Model -> Html Msg
 view context model =
     Html.div
-        []
+        [ T.flex_1 ]
         [ Branding.logo { usedUsername = model.usedUsername }
 
         --

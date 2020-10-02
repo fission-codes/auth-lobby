@@ -57,7 +57,7 @@ creatingAccount =
 formWithToppings : Maybe String -> Context -> Model -> Html Msg
 formWithToppings maybeError context model =
     Html.div
-        []
+        [ T.flex_1 ]
         [ Branding.logo { usedUsername = model.usedUsername }
         , form model.dataRootDomain maybeError context
         ]

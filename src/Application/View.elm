@@ -32,7 +32,7 @@ view model =
         , T.items_center
         , T.justify_center
         , T.min_h_screen_alt
-        , T.px_4
+        , T.px_6
         , T.w_screen
         ]
         [ case model.externalContext of
