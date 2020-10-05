@@ -233,11 +233,11 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
 
   const ucans = [ await ucanPromise ]
 
-  // encrypt symmetric key
+  // encrypt symmetric key (url-safe base64)
   const plainTextReadKey = await myReadKey()
   const ks = await sdk.keystore.get()
   const { publicKey } = sdk.did.didToPublicKey(didExchange)
-  const readKey = await ks.encrypt(plainTextReadKey, publicKey)
+  const readKey = await ks.encrypt(plainTextReadKey, publicKey).then(makeBase64UrlSafe)
 
   app.ports.gotUcansForApplication.send(
     { readKey, ucans }
@@ -594,4 +594,9 @@ function stringToArrayBuffer(str) {
 function copyToClipboard(text) {
   if (navigator.clipboard) navigator.clipboard.writeText(text)
   else console.log(`Missing clipboard api, tried to copy: "${text}"`)
+}
+
+
+function makeBase64UrlSafe(base64) {
+  return base64.replace(/\//g, "_").replace(/\+/g, "-").replace(/=+$/, "")
 }
