@@ -238,7 +238,7 @@ usernameMessage dataRootDomain context =
           else
             Html.span
                 []
-                [ Html.span [ T.antialiased ] [ Html.text "Your personal Drive address will be " ]
+                [ Html.span [ T.antialiased ] [ Html.text "Your personal address will be " ]
                 , Html.strong [ T.break_all ] [ Html.text username, Html.text ".", Html.text dataRootDomain ]
                 ]
         ]
