@@ -159,6 +159,7 @@ form dataRootDomain maybeError context =
                             |> E.onClick
 
                         --
+                        , T.cursor_pointer
                         , T.italic
                         , T.text_center
                         , T.text_gray_300
