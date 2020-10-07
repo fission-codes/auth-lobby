@@ -18,7 +18,7 @@ animationWithAttributes attributes { size } =
         |> Icons.wrap
             (List.append
                 [ T.animate_spin
-                , T.block
+                , T.inline_block
                 ]
                 attributes
             )

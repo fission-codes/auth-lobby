@@ -434,7 +434,7 @@ function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, 
     if (ipfsId === unwantedDevice) {
       ipfs.pubsub.unsubscribe(rootDid_)
       app.ports.cancelLink.send({ onBothSides: false })
-      alert("You currently have this page open on multiple devices, I've picked your other device to authenticate with.")
+      alert("You currently have this page open on multiple devices, I've chosen your other device to authenticate with.")
     }
 
   } else if (string === "PING") {

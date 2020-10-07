@@ -2,6 +2,7 @@ module Account.Creation.View exposing (..)
 
 import Account.Creation.Context exposing (..)
 import Account.Linking.Context as LinkingContext
+import Account.Linking.View
 import Branding
 import Common exposing (ifThenElse)
 import External.Context
@@ -9,6 +10,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Extra as Html
 import Icons
 import Loading
 import Page
@@ -35,7 +37,7 @@ view context model =
             formWithToppings Nothing context model
 
         Success _ ->
-            creatingAccount
+            needsLink context model
 
 
 
@@ -74,8 +76,9 @@ form dataRootDomain maybeError context =
         , T.mx_auto
         , T.w_full
         ]
-        [ -- Email
-          --------
+        [ -----------------------------------------
+          -- Email
+          -----------------------------------------
           S.label
             [ A.for "email" ]
             [ Html.text "Email" ]
@@ -90,8 +93,9 @@ form dataRootDomain maybeError context =
             ]
             []
 
+        -----------------------------------------
         -- Username
-        -----------
+        -----------------------------------------
         , S.label
             [ A.for "username"
             , T.mt_6
@@ -109,8 +113,9 @@ form dataRootDomain maybeError context =
             []
         , usernameMessage dataRootDomain context
 
+        -----------------------------------------
         -- Sign Up
-        ----------
+        -----------------------------------------
         , let
             isKindOfValid =
                 context.usernameIsValid
@@ -139,16 +144,12 @@ form dataRootDomain maybeError context =
             ]
             [ Html.text "Get started" ]
 
-        --
+        -----------------------------------------
+        -- Error or sign-in link
+        -----------------------------------------
         , case maybeError of
             Just err ->
-                Html.div
-                    [ T.italic
-                    , T.mt_4
-                    , T.text_red
-                    , T.text_sm
-                    ]
-                    [ Html.text err ]
+                S.formError [] [ Html.text err ]
 
             Nothing ->
                 [ Html.text "Can I sign in instead?" ]
@@ -160,17 +161,12 @@ form dataRootDomain maybeError context =
 
                         --
                         , T.cursor_pointer
-                        , T.italic
-                        , T.text_center
-                        , T.text_gray_300
-                        , T.text_sm
                         , T.underline
                         ]
                     |> List.singleton
-                    |> Html.div
-                        [ T.mt_3
-                        , T.text_center
-                        ]
+                    |> Html.div [ T.text_center ]
+                    |> List.singleton
+                    |> S.subtleFootNote
         ]
 
 
@@ -241,4 +237,94 @@ usernameMessage dataRootDomain context =
                 [ Html.span [ T.antialiased ] [ Html.text "Your personal address will be " ]
                 , Html.strong [ T.break_all ] [ Html.text username, Html.text ".", Html.text dataRootDomain ]
                 ]
+        ]
+
+
+
+-- LINKING
+
+
+needsLink context model =
+    Html.div
+        [ T.flex_1 ]
+        [ Branding.logo { usedUsername = model.usedUsername }
+        , S.messageBlock
+            [ T.italic ]
+            [ S.highlightBlock
+                [ T.inline_flex, T.items_center ]
+                [ S.buttonIcon FeatherIcons.key
+                , Html.text "Your account is ready!"
+                ]
+
+            --
+            , Html.div
+                [ T.leading_relaxed
+                , T.mx_auto
+                , T.max_w_md
+                , T.opacity_50
+                ]
+                [ Html.text "You are now the sole owner of a unique key to your account, that key is hidden here. Therefor, if you lose your device, or you clear all your browser data, you will be locked out of your account. To prevent this scenario, "
+                , Html.span
+                    [ T.font_semibold ]
+                    [ Html.text "we highly recommend that you link another device" ]
+                , Html.text "."
+                ]
+            , -----------------------------------------
+              -- Waiting
+              -----------------------------------------
+              if context.waitingForDevices then
+                Html.div
+                    []
+                    [ Html.div
+                        [ T.mt_5 ]
+                        [ Html.text "Open this page on your other device and sign in with “"
+                        , Html.span
+                            [ T.font_semibold
+                            , T.text_black
+
+                            -- Dark mode
+                            ------------
+                            , T.dark__text_white
+                            ]
+                            [ Html.text context.username ]
+                        , Html.text "”"
+                        ]
+
+                    --
+                    , let
+                        url =
+                            Common.urlOrigin model.url
+                      in
+                      S.clickToCopy url (CopyToClipboard url)
+
+                    --
+                    , Html.div
+                        [ T.mt_6
+                        , T.mx_auto
+                        , T.max_w_md
+                        , T.opacity_50
+                        ]
+                        [ Loading.animation { size = 18 }
+                        ]
+
+                    --
+                    , S.subtleFootNote
+                        [ Html.span
+                            [ E.onClick SkipLinkDuringSetup
+
+                            --
+                            , T.cursor_pointer
+                            , T.underline
+                            , T.underline_thick
+                            ]
+                            [ Html.text "I'm aware of the risks, skip this step" ]
+                        ]
+                    ]
+
+              else
+                -----------------------------------------
+                -- Linking
+                -----------------------------------------
+                Account.Linking.View.errorOrExchange Html.nothing context.exchange model
+            ]
         ]

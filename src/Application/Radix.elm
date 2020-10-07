@@ -66,6 +66,7 @@ type Msg
     | GotCreateEmailInput String
     | GotCreateUsernameInput String
     | GotUsernameAvailability { available : Bool, valid : Bool }
+    | SkipLinkDuringSetup
       -----------------------------------------
       -- Debouncers
       -----------------------------------------
@@ -79,7 +80,6 @@ type Msg
     | GotLinkUsernameInput String
     | LinkAccount Linking.Context
     | SendLinkingUcan Linking.Exchange
-    | StartLinkingExchange Linking.Context ( String, String )
       -----------------------------------------
       -- Routing
       -----------------------------------------
@@ -92,6 +92,7 @@ type Msg
     | GotInvalidRootDid
     | GotSecureChannelMessage Json.Value
     | SecureChannelOpened String
+    | StartExchange ( String, String )
       -----------------------------------------
       -- 🧿 Other things
       -----------------------------------------

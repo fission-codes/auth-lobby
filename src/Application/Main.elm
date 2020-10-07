@@ -144,6 +144,9 @@ update msg =
         GotUsernameAvailability a ->
             Creation.gotUsernameAvailability a
 
+        SkipLinkDuringSetup ->
+            Creation.skipLinkDuringSetup
+
         -----------------------------------------
         -- Debouncers
         -----------------------------------------
@@ -171,9 +174,6 @@ update msg =
         SendLinkingUcan a ->
             Linking.sendUcan a
 
-        StartLinkingExchange a b ->
-            Linking.startExchange a b
-
         -----------------------------------------
         -- Routing
         -----------------------------------------
@@ -197,6 +197,9 @@ update msg =
 
         SecureChannelOpened a ->
             Channel.opened a
+
+        StartExchange a ->
+            Channel.startExchange a
 
         -----------------------------------------
         -- 🧿 Other things
