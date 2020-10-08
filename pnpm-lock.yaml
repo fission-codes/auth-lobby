@@ -2,7 +2,7 @@ dependencies:
   fission-kit: github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472
   ipfs-message-port-protocol: 0.2.0
   ipfs-message-port-server: 0.2.2
-  webnative: 0.19.9
+  webnative: 0.19.10
 devDependencies:
   elm-tailwind-css: 0.4.5
   esbuild: 0.7.1
@@ -1595,7 +1595,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-DcXs2lbVPzuJmn2kuDEwul2oZg7p4YMa5J2f0YzsOBHaAnBYGPNUB/rJ74DTjTKpw7F0+lSsVM8sFHE2UyBixg==
-  /webnative/0.19.9:
+  /webnative/0.19.10:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -1611,7 +1611,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-4Xx8WItKAXuiNxzKP2dWebNGyCClXeunuBkLxOYkmlTfWEdA+lfQfOq1IUcIa0k3g9u3eSjy9tIUBmz/RWhs6w==
+      integrity: sha512-X/4chYln4REvWc6ak42Xws4Z+vYYDCKOiP+OZPTVdUKohlThmxPWpwyDWMBRTwgqV1IQ9w7TS/GatvAI8+jLgA==
   /wrappy/1.0.2:
     dev: true
     resolution:
@@ -1671,4 +1671,4 @@ specifiers:
   mustache: ^4.0.1
   tailwindcss: ^1.6.0
   terser-dir: ^1.0.7
-  webnative: 0.19.9
+  webnative: 0.19.10
