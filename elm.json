@@ -22,14 +22,20 @@
             "elm-community/result-extra": "2.4.0",
             "feathericons/elm-feather": "1.4.0",
             "gingko/time-distance": "2.3.0",
-            "krisajenkins/remotedata": "6.0.1"
+            "krisajenkins/remotedata": "6.0.1",
+            "pablohirafuji/elm-qrcode": "4.0.1"
         },
         "indirect": {
+            "avh4/elm-color": "1.0.0",
+            "danfishgold/base64-bytes": "1.0.3",
             "elm/bytes": "1.0.8",
             "elm/file": "1.0.5",
             "elm/http": "2.0.0",
+            "elm/regex": "1.0.0",
             "elm/virtual-dom": "1.0.2",
-            "elm-community/list-extra": "8.2.4"
+            "elm-community/list-extra": "8.2.4",
+            "folkertdev/elm-flate": "2.0.4",
+            "justgook/elm-image": "4.0.0"
         }
     },
     "test-dependencies": {

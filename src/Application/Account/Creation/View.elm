@@ -2,6 +2,7 @@ module Account.Creation.View exposing (..)
 
 import Account.Creation.Context exposing (..)
 import Account.Linking.Context as LinkingContext
+import Account.Linking.QRCode
 import Account.Linking.View
 import Branding
 import Common exposing (ifThenElse)
@@ -253,7 +254,10 @@ needsLink context model =
             [ S.highlightBlock
                 [ T.inline_flex, T.items_center ]
                 [ S.buttonIcon FeatherIcons.key
-                , Html.text "Your account is ready!"
+                , Html.span
+                    []
+                    [ Html.text "Your account is ready!"
+                    ]
                 ]
 
             --
@@ -263,11 +267,11 @@ needsLink context model =
                 , T.max_w_md
                 , T.opacity_50
                 ]
-                [ Html.text "You are now the sole owner of a unique key to your account, that key is hidden here. Therefor, if you lose your device, or you clear all your browser data, you will be locked out of your account. To prevent this scenario, "
+                [ Html.text "Your browser holds the unique, private key to this account, so you don’t need a password. In order to not get locked out of your account, "
                 , Html.span
                     [ T.font_semibold ]
-                    [ Html.text "we highly recommend that you link another device" ]
-                , Html.text "."
+                    [ Html.text "we recommend that you link to at least one other device" ]
+                , Html.text ", like your phone, tablet, or other computer with a web browser."
                 ]
             , -----------------------------------------
               -- Waiting
@@ -291,11 +295,9 @@ needsLink context model =
                         ]
 
                     --
-                    , let
-                        url =
-                            Common.urlOrigin model.url
-                      in
-                      S.clickToCopy url (CopyToClipboard url)
+                    , Account.Linking.QRCode.view
+                        model.url
+                        context.username
 
                     --
                     , Html.div
@@ -317,7 +319,18 @@ needsLink context model =
                             , T.underline
                             , T.underline_thick
                             ]
-                            [ Html.text "I'm aware of the risks, skip this step" ]
+                            [ Html.text "Remind me later" ]
+                        , Html.br [] []
+                        , Html.a
+                            [ A.href "https://guide.fission.codes/hosting/fission-accounts"
+                            , A.target "_blank"
+
+                            --
+                            , T.cursor_pointer
+                            , T.underline
+                            , T.underline_thick
+                            ]
+                            [ Html.text "Read more about how Fission accounts work" ]
                         ]
                     ]
 

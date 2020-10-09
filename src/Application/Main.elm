@@ -4,6 +4,7 @@ import Account.Creation.Context
 import Account.Creation.State as Creation
 import Account.Linking.Context
 import Account.Linking.State as Linking
+import Account.Linking.Url
 import Authorisation.State as Authorisation
 import Browser
 import Browser.Navigation as Nav
@@ -20,6 +21,7 @@ import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
 import Routing
 import Url exposing (Url)
+import Url.Parser as Url
 import View
 
 
@@ -68,7 +70,31 @@ init flags url navKey =
                         Page.LinkAccount Account.Linking.Context.default
 
                     _ ->
-                        Page.Choose
+                        let
+                            context =
+                                Account.Linking.Context.default
+
+                            maybeUsername =
+                                url
+                                    |> Url.parse (Url.query Account.Linking.Url.screenParamsParser)
+                                    |> Maybe.join
+                        in
+                        case maybeUsername of
+                            Just username ->
+                                Page.LinkAccount
+                                    { context | username = username }
+
+                            Nothing ->
+                                Page.Choose
+
+        -- Page.CreateAccount
+        --     { email = "icid.asset@gmail.com"
+        --     , exchange = Nothing
+        --     , username = "icidasset"
+        --     , usernameIsAvailable = RemoteData.NotAsked
+        --     , usernameIsValid = True
+        --     , waitingForDevices = True
+        --     }
     in
     return
         { dataRootDomain = flags.dataRootDomain
