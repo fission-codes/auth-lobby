@@ -93,15 +93,20 @@ extractFromUrl url =
                 Just "" ->
                     NotAsked
 
-                Just _ ->
-                    Failure defaultFailedState
+                Just query ->
+                    if String.contains "&username=" query then
+                        NotAsked
+
+                    else
+                        Failure defaultFailedState
 
                 Nothing ->
                     NotAsked
 
 
 redirectCommand :
-    Result String
+    Result
+        String
         { newUser : Bool
         , readKey : String
         , ucans : List String

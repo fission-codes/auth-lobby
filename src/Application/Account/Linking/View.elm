@@ -1,5 +1,6 @@
 module Account.Linking.View exposing (..)
 
+import Account.Creation.Context
 import Account.Linking.Context exposing (..)
 import Account.Linking.Exchange exposing (Exchange, Side(..), Step(..))
 import Branding
@@ -9,6 +10,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Icons
+import Page
 import Radix exposing (Model, Msg(..))
 import Styling as S
 import Tailwind as T
@@ -29,16 +31,7 @@ view context model =
         , if context.waitingForDevices then
             let
                 url =
-                    model.url
-                        |> (\u -> { u | query = Nothing })
-                        |> Url.toString
-                        |> (\s ->
-                                if String.endsWith "/" s then
-                                    String.dropRight 1 s
-
-                                else
-                                    s
-                           )
+                    Common.urlOrigin model.url
             in
             S.messageBlock
                 [ T.italic ]
@@ -47,40 +40,8 @@ view context model =
                     [ Html.text "Open this website on your other device to authenticate this one." ]
 
                 --
-                , Html.div
-                    [ A.title "Click to copy"
-                    , E.onClick (CopyToClipboard url)
-
-                    --
-                    , T.border_2
-                    , T.border_dashed
-                    , T.border_gray_500
-                    , T.cursor_pointer
-                    , T.inline_flex
-                    , T.items_center
-                    , T.mt_6
-                    , T.opacity_80
-                    , T.p_5
-                    , T.rounded_md
-
-                    -- Dark mode
-                    ------------
-                    , T.dark__border_gray_200
-                    ]
-                    [ S.buttonIcon FeatherIcons.scissors
-
-                    --
-                    , Html.text url
-                    ]
-
-                --
-                , Html.div
-                    [ T.mt_6
-                    , T.not_italic
-                    , T.opacity_75
-                    , T.text_gray_400
-                    , T.text_xs
-                    ]
+                , S.clickToCopy url (CopyToClipboard url)
+                , S.subtleFootNote
                     [ Html.text "Authenticating with "
                     , Html.span
                         [ T.border_b, T.border_gray_600 ]
@@ -89,25 +50,31 @@ view context model =
                 ]
 
           else
-            case Maybe.andThen .error context.exchange of
-                Just err ->
-                    S.warning
-                        [ Html.em [] [ Html.text "Got an error during the exchange:" ]
-                        , Html.br [] []
-                        , Html.text err
-                        ]
-
-                Nothing ->
-                    exchangeView context model
+            errorOrExchange (form context) context.exchange model
         ]
+
+
+errorOrExchange : Html Msg -> Maybe Exchange -> Model -> Html Msg
+errorOrExchange fallbackView maybeExchange model =
+    case Maybe.andThen .error maybeExchange of
+        Just err ->
+            S.warning
+                [ Html.em [] [ Html.text "Got an error during the exchange:" ]
+                , Html.br [] []
+                , Html.text err
+                ]
+
+        Nothing ->
+            exchangeView fallbackView maybeExchange model
 
 
 
 -- EXCHANGE
 
 
-exchangeView context model =
-    case Maybe.map (\e -> Tuple.pair e.side e) context.exchange of
+exchangeView : Html Msg -> Maybe Exchange -> Model -> Html Msg
+exchangeView fallbackView maybeExchange model =
+    case Maybe.map (\e -> Tuple.pair e.side e) maybeExchange of
         Just ( Inquirer _, exchange ) ->
             S.messageBlock
                 [ T.italic ]
@@ -130,7 +97,9 @@ exchangeView context model =
         Just ( Authoriser ConstructUcan, exchange ) ->
             S.messageBlock
                 []
-                [ Html.text "Confirm these are the numbers shown on your other device."
+                [ Html.span
+                    [ T.italic ]
+                    [ Html.text "Confirm these are the numbers shown on your other device." ]
 
                 --
                 , case exchange.nonceUser of
@@ -183,7 +152,7 @@ exchangeView context model =
                 ]
 
         Nothing ->
-            form context
+            fallbackView
 
 
 
@@ -236,22 +205,32 @@ form context =
         --
         , case context.note of
             Just note ->
-                Html.div
-                    [ T.flex
-                    , T.items_center
-                    , T.justify_center
-                    , T.mt_3
-                    , T.text_center
-                    , T.text_sm
-                    ]
+                S.formError
+                    []
                     [ Icons.wrap
                         [ T.mr_1, T.pr_px ]
                         (FeatherIcons.withSize 15 FeatherIcons.alertTriangle)
-                    , Html.span [ T.italic ] [ Html.text note ]
+                    , Html.span
+                        [ T.italic ]
+                        [ Html.text note ]
                     ]
 
             Nothing ->
-                Html.text ""
+                [ Html.text "Can I create an account instead?" ]
+                    |> Html.span
+                        [ Account.Creation.Context.default
+                            |> Page.CreateAccount
+                            |> GoToPage
+                            |> E.onClick
+
+                        --
+                        , T.cursor_pointer
+                        , T.underline
+                        ]
+                    |> List.singleton
+                    |> Html.div [ T.text_center ]
+                    |> List.singleton
+                    |> S.subtleFootNote
         ]
 
 

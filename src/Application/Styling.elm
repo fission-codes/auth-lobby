@@ -3,6 +3,7 @@ module Styling exposing (..)
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
+import Html.Events as E
 import Icons
 import Tailwind as T
 
@@ -90,6 +91,49 @@ buttonWithNode node attributes =
         |> node
 
 
+clickToCopy : String -> msg -> Html msg
+clickToCopy text msg =
+    Html.div
+        [ A.title "Click to copy"
+        , E.onClick msg
+
+        --
+        , T.border_2
+        , T.border_dashed
+        , T.border_gray_500
+        , T.cursor_pointer
+        , T.inline_flex
+        , T.italic
+        , T.items_center
+        , T.mt_6
+        , T.opacity_80
+        , T.p_5
+        , T.rounded_md
+
+        -- Dark mode
+        ------------
+        , T.dark__border_gray_200
+        ]
+        [ buttonIcon FeatherIcons.scissors
+        , Html.text text
+        ]
+
+
+formError : Node msg
+formError attributes =
+    attributes
+        |> List.append
+            [ T.flex
+            , T.italic
+            , T.items_center
+            , T.justify_center
+            , T.mt_6
+            , T.text_red
+            , T.text_sm
+            ]
+        |> Html.div
+
+
 label : Node msg
 label attributes =
     attributes
@@ -119,6 +163,18 @@ messageBlock attributes =
             , T.text_center
             ]
         |> Html.div
+
+
+subtleFootNote : List (Html msg) -> Html msg
+subtleFootNote =
+    Html.div
+        [ T.mt_6
+        , T.mx_auto
+        , T.not_italic
+        , T.opacity_75
+        , T.text_gray_400
+        , T.text_xs
+        ]
 
 
 textField : Node msg
@@ -153,8 +209,8 @@ textField attributes =
         |> Html.input
 
 
-usernameBlock : Node msg
-usernameBlock attributes =
+highlightBlock : Node msg
+highlightBlock attributes =
     attributes
         |> List.append
             [ T.bg_purple_tint

@@ -194,7 +194,7 @@ authenticated username model =
         --
         , S.messageBlock
             []
-            [ S.usernameBlock
+            [ S.highlightBlock
                 [ T.relative ]
                 [ Html.span
                     [ T.opacity_90 ]
@@ -217,14 +217,7 @@ authenticated username model =
             ]
 
         --
-        , Html.div
-            [ T.mt_6
-            , T.mx_auto
-            , T.not_italic
-            , T.opacity_75
-            , T.text_gray_400
-            , T.text_xs
-            ]
+        , S.subtleFootNote
             [ Html.text "If you wish you can also "
             , Html.span
                 [ E.onClick Leave

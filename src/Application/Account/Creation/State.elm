@@ -1,6 +1,7 @@
 module Account.Creation.State exposing (..)
 
 import Account.Creation.Context as Context exposing (Context)
+import Account.Linking.Exchange as LinkingExchange
 import Browser.Navigation as Nav
 import Debouncing
 import Maybe.Extra as Maybe
@@ -15,6 +16,24 @@ import Url
 
 
 -- 📣
+
+
+afterAccountCreation : Context -> Manager
+afterAccountCreation context model =
+    Return.singleton
+        { model
+            | page =
+                case model.externalContext of
+                    NotAsked ->
+                        Page.Choose
+
+                    _ ->
+                        Page.SuggestAuthorisation
+
+            --
+            , reCreateAccount = Success ()
+            , usedUsername = Just context.username
+        }
 
 
 checkIfUsernameIsAvailable : Manager
@@ -69,30 +88,24 @@ gotCreateAccountSuccess model =
 
                 _ ->
                     Nothing
+
+        context =
+            case model.page of
+                Page.CreateAccount c ->
+                    c
+
+                _ ->
+                    Context.default
+
+        newContext =
+            { context | waitingForDevices = True }
     in
     return
         { model
-            | page =
-                case model.externalContext of
-                    NotAsked ->
-                        Page.Choose
-
-                    _ ->
-                        Page.SuggestAuthorisation
-
-            --
+            | page = Page.CreateAccount newContext
             , reCreateAccount = Success ()
-            , usedUsername = maybeUsername
         }
-        -- If authenticated, subscribe to the pubsub channel.
-        -- But only if we're not redirecting elsewhere.
-        (case model.externalContext of
-            NotAsked ->
-                Ports.openSecureChannel Nothing
-
-            _ ->
-                Cmd.none
-        )
+        (Ports.openSecureChannel Nothing)
 
 
 gotCreateEmailInput : String -> Manager
@@ -136,6 +149,25 @@ gotUsernameAvailability { available, valid } =
                     , usernameIsValid = True
                 }
         )
+
+
+skipLinkDuringSetup : Manager
+skipLinkDuringSetup model =
+    case model.page of
+        Page.CreateAccount context ->
+            model
+                |> afterAccountCreation context
+                |> Return.command
+                    (case model.externalContext of
+                        NotAsked ->
+                            Cmd.none
+
+                        _ ->
+                            Ports.closeSecureChannel ()
+                    )
+
+        _ ->
+            Return.singleton model
 
 
 

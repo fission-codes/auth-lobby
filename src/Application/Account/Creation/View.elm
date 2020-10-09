@@ -2,6 +2,8 @@ module Account.Creation.View exposing (..)
 
 import Account.Creation.Context exposing (..)
 import Account.Linking.Context as LinkingContext
+import Account.Linking.QRCode
+import Account.Linking.View
 import Branding
 import Common exposing (ifThenElse)
 import External.Context
@@ -9,6 +11,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Extra as Html
 import Icons
 import Loading
 import Page
@@ -35,7 +38,7 @@ view context model =
             formWithToppings Nothing context model
 
         Success _ ->
-            creatingAccount
+            needsLink context model
 
 
 
@@ -74,8 +77,9 @@ form dataRootDomain maybeError context =
         , T.mx_auto
         , T.w_full
         ]
-        [ -- Email
-          --------
+        [ -----------------------------------------
+          -- Email
+          -----------------------------------------
           S.label
             [ A.for "email" ]
             [ Html.text "Email" ]
@@ -90,8 +94,9 @@ form dataRootDomain maybeError context =
             ]
             []
 
+        -----------------------------------------
         -- Username
-        -----------
+        -----------------------------------------
         , S.label
             [ A.for "username"
             , T.mt_6
@@ -109,8 +114,9 @@ form dataRootDomain maybeError context =
             []
         , usernameMessage dataRootDomain context
 
+        -----------------------------------------
         -- Sign Up
-        ----------
+        -----------------------------------------
         , let
             isKindOfValid =
                 context.usernameIsValid
@@ -139,16 +145,12 @@ form dataRootDomain maybeError context =
             ]
             [ Html.text "Get started" ]
 
-        --
+        -----------------------------------------
+        -- Error or sign-in link
+        -----------------------------------------
         , case maybeError of
             Just err ->
-                Html.div
-                    [ T.italic
-                    , T.mt_4
-                    , T.text_red
-                    , T.text_sm
-                    ]
-                    [ Html.text err ]
+                S.formError [] [ Html.text err ]
 
             Nothing ->
                 [ Html.text "Can I sign in instead?" ]
@@ -160,17 +162,12 @@ form dataRootDomain maybeError context =
 
                         --
                         , T.cursor_pointer
-                        , T.italic
-                        , T.text_center
-                        , T.text_gray_300
-                        , T.text_sm
                         , T.underline
                         ]
                     |> List.singleton
-                    |> Html.div
-                        [ T.mt_3
-                        , T.text_center
-                        ]
+                    |> Html.div [ T.text_center ]
+                    |> List.singleton
+                    |> S.subtleFootNote
         ]
 
 
@@ -241,4 +238,106 @@ usernameMessage dataRootDomain context =
                 [ Html.span [ T.antialiased ] [ Html.text "Your personal address will be " ]
                 , Html.strong [ T.break_all ] [ Html.text username, Html.text ".", Html.text dataRootDomain ]
                 ]
+        ]
+
+
+
+-- LINKING
+
+
+needsLink context model =
+    Html.div
+        [ T.flex_1 ]
+        [ Branding.logo { usedUsername = model.usedUsername }
+        , S.messageBlock
+            [ T.italic ]
+            [ S.highlightBlock
+                [ T.inline_flex, T.items_center ]
+                [ S.buttonIcon FeatherIcons.key
+                , Html.span
+                    []
+                    [ Html.text "Your account is ready!"
+                    ]
+                ]
+
+            --
+            , Html.div
+                [ T.leading_relaxed
+                , T.mx_auto
+                , T.max_w_md
+                , T.opacity_50
+                ]
+                [ Html.text "Your browser holds the unique, private key to this account, so you don’t need a password. In order to not get locked out of your account, "
+                , Html.span
+                    [ T.font_semibold ]
+                    [ Html.text "we recommend that you link to at least one other device" ]
+                , Html.text ", like your phone, tablet, or other computer with a web browser."
+                ]
+            , -----------------------------------------
+              -- Waiting
+              -----------------------------------------
+              if context.waitingForDevices then
+                Html.div
+                    []
+                    [ Html.div
+                        [ T.mt_5 ]
+                        [ Html.text "Open this page on your other device and sign in with “"
+                        , Html.span
+                            [ T.font_semibold
+                            , T.text_black
+
+                            -- Dark mode
+                            ------------
+                            , T.dark__text_white
+                            ]
+                            [ Html.text context.username ]
+                        , Html.text "”"
+                        ]
+
+                    --
+                    , Account.Linking.QRCode.view
+                        model.url
+                        context.username
+
+                    --
+                    , Html.div
+                        [ T.mt_6
+                        , T.mx_auto
+                        , T.max_w_md
+                        , T.opacity_50
+                        ]
+                        [ Loading.animation { size = 18 }
+                        ]
+
+                    --
+                    , S.subtleFootNote
+                        [ Html.span
+                            [ E.onClick SkipLinkDuringSetup
+
+                            --
+                            , T.cursor_pointer
+                            , T.underline
+                            , T.underline_thick
+                            ]
+                            [ Html.text "Remind me later" ]
+                        , Html.br [] []
+                        , Html.a
+                            [ A.href "https://guide.fission.codes/hosting/fission-accounts"
+                            , A.target "_blank"
+
+                            --
+                            , T.cursor_pointer
+                            , T.underline
+                            , T.underline_thick
+                            ]
+                            [ Html.text "Read more about how Fission accounts work" ]
+                        ]
+                    ]
+
+              else
+                -----------------------------------------
+                -- Linking
+                -----------------------------------------
+                Account.Linking.View.errorOrExchange Html.nothing context.exchange model
+            ]
         ]

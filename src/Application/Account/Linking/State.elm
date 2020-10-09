@@ -1,11 +1,13 @@
 module Account.Linking.State exposing (..)
 
+import Account.Creation.State
 import Account.Linking.Context as Context exposing (Context)
 import Account.Linking.Exchange as Exchange exposing (Exchange)
 import Json.Encode
 import Page
 import Ports
 import Radix exposing (..)
+import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
 
 
@@ -16,6 +18,21 @@ import Return exposing (return)
 cancel : { onBothSides : Bool } -> Manager
 cancel { onBothSides } model =
     case model.page of
+        Page.CreateAccount context ->
+            { context
+                | exchange = Nothing
+                , waitingForDevices = True
+            }
+                |> (\c -> Page.CreateAccount c)
+                |> (\p -> { model | page = p })
+                |> Return.singleton
+                |> Return.command
+                    (Ports.publishOnSecureChannel
+                        ( Nothing
+                        , Json.Encode.string Exchange.cancelMessage
+                        )
+                    )
+
         Page.LinkAccount context ->
             case Maybe.map .side context.exchange of
                 Just (Exchange.Inquirer _) ->
@@ -95,28 +112,35 @@ sendUcan : Exchange -> Manager
 sendUcan exchange model =
     case exchange.didOtherSide of
         Just didOtherSide ->
-            Exchange.ucanResponse
-                |> Exchange.encodeUcanResponse
-                |> (\r -> ( model.usedUsername, didOtherSide, r ))
-                |> Ports.publishEncryptedOnSecureChannel
-                |> return { model | page = Page.Note "Device was successfully linked!\nYou can close this window now." }
+            let
+                makeCmd maybeUsername =
+                    Exchange.ucanResponse
+                        |> Exchange.encodeUcanResponse
+                        |> (\r -> ( maybeUsername, didOtherSide, r ))
+                        |> Ports.publishEncryptedOnSecureChannel
+            in
+            case model.page of
+                Page.CreateAccount context ->
+                    model
+                        |> Account.Creation.State.afterAccountCreation context
+                        |> Return.command (makeCmd <| Just context.username)
+                        -- If redirecting elsewhere, close the pubsub channel.
+                        |> Return.command
+                            (case model.externalContext of
+                                NotAsked ->
+                                    Cmd.none
+
+                                _ ->
+                                    Ports.closeSecureChannel ()
+                            )
+
+                _ ->
+                    return
+                        { model | page = Page.Note "Device was successfully linked!\nYou can close this window now." }
+                        (makeCmd model.usedUsername)
 
         Nothing ->
             Return.singleton model
-
-
-startExchange : Context -> ( String, String ) -> Manager
-startExchange context nonces model =
-    nonces
-        |> Exchange.inquire context.username
-        |> Return.map
-            (\e ->
-                { context | exchange = Just e }
-            )
-        |> Return.map
-            (\c ->
-                { model | page = Page.LinkAccount c }
-            )
 
 
 

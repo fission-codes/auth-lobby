@@ -221,6 +221,17 @@ proceed maybeUsername json exchange =
 -- INQUIRER
 
 
+initialInquirerExchange : Exchange
+initialInquirerExchange =
+    { ipfsIdOtherSide = Nothing
+    , didOtherSide = Nothing
+    , error = Nothing
+    , nonceRandom = Nothing
+    , nonceUser = Nothing
+    , side = Inquirer EstablishConnection
+    }
+
+
 inquire : String -> ( String, String ) -> ( Exchange, Cmd msg )
 inquire username ( nonceRandom, nonceUser ) =
     { did = placeholder
@@ -313,6 +324,14 @@ initialAuthoriserExchange =
     , nonceRandom = Nothing
     , nonceUser = Nothing
     , side = Authoriser EstablishConnection
+    }
+
+
+initialAuthoriserExchangeWithNonces : ( String, String ) -> Exchange
+initialAuthoriserExchangeWithNonces ( nonceRandom, nonceUser ) =
+    { initialAuthoriserExchange
+        | nonceRandom = Just nonceRandom
+        , nonceUser = Just nonceUser
     }
 
 
