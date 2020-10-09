@@ -86,15 +86,6 @@ init flags url navKey =
 
                             Nothing ->
                                 Page.Choose
-
-        -- Page.CreateAccount
-        --     { email = "icid.asset@gmail.com"
-        --     , exchange = Nothing
-        --     , username = "icidasset"
-        --     , usernameIsAvailable = RemoteData.NotAsked
-        --     , usernameIsValid = True
-        --     , waitingForDevices = True
-        --     }
     in
     return
         { dataRootDomain = flags.dataRootDomain
