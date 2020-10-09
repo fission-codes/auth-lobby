@@ -81,8 +81,7 @@ init flags url navKey =
                         in
                         case maybeUsername of
                             Just username ->
-                                Page.LinkAccount
-                                    { context | username = username }
+                                Page.LinkAccount { context | username = username }
 
                             Nothing ->
                                 Page.Choose

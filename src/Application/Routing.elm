@@ -2,6 +2,7 @@ module Routing exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
+import Common
 import Page exposing (Page)
 import Ports
 import Radix
@@ -15,17 +16,28 @@ import Url exposing (Url)
 
 goToPage : Page -> Radix.Manager
 goToPage page model =
-    return
-        { model | page = page }
-        (case model.page of
-            Page.LinkAccount _ ->
-                -- When moving away from the link-account page,
-                -- make sure to close the secure channel.
-                Ports.closeSecureChannel ()
+    [ case model.page of
+        Page.LinkAccount _ ->
+            -- When moving away from the link-account page,
+            -- make sure to close the secure channel.
+            Ports.closeSecureChannel ()
 
-            _ ->
-                Cmd.none
-        )
+        _ ->
+            Cmd.none
+
+    --
+    , case page of
+        Page.CreateAccount _ ->
+            Common.focus Radix.Bypassed "email"
+
+        Page.LinkAccount _ ->
+            Common.focus Radix.Bypassed "username"
+
+        _ ->
+            Cmd.none
+    ]
+        |> Cmd.batch
+        |> return { model | page = page }
 
 
 urlChanged : Url -> Radix.Manager

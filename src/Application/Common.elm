@@ -1,6 +1,15 @@
 module Common exposing (..)
 
+import Browser.Dom as Dom
+import Task
 import Url exposing (Url)
+
+
+focus : msg -> String -> Cmd msg
+focus msg id =
+    Task.attempt
+        (\_ -> msg)
+        (Dom.focus id)
 
 
 ifThenElse : Bool -> a -> a -> a

@@ -16,6 +16,9 @@ port copyToClipboard : String -> Cmd msg
 port createAccount : { did : String, email : String, username : String } -> Cmd msg
 
 
+port focusOnForm : () -> Cmd msg
+
+
 port leave : () -> Cmd msg
 
 
