@@ -14,13 +14,16 @@ import Url exposing (Url)
 -- 🖼
 
 
-view : Url -> String -> Html Msg
-view url username =
+view : Url -> Maybe String -> Html Msg
+view url maybeUsername =
     let
         urlWithParams =
-            Common.urlOrigin url
-                ++ "?newUser=f&username="
-                ++ Url.percentEncode username
+            case maybeUsername of
+                Just username ->
+                    Common.urlOrigin url ++ "?newUser=f&username=" ++ Url.percentEncode username
+
+                Nothing ->
+                    Common.urlOrigin url
     in
     Html.div
         [ E.onClick (Radix.CopyToClipboard urlWithParams)

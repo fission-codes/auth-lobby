@@ -3,6 +3,7 @@ module Account.Linking.View exposing (..)
 import Account.Creation.Context
 import Account.Linking.Context exposing (..)
 import Account.Linking.Exchange exposing (Exchange, Side(..), Step(..))
+import Account.Linking.QRCode
 import Branding
 import Common exposing (ifThenElse)
 import FeatherIcons
@@ -29,10 +30,6 @@ view context model =
 
         --
         , if context.waitingForDevices then
-            let
-                url =
-                    Common.urlOrigin model.url
-            in
             S.messageBlock
                 [ T.italic ]
                 [ Html.div
@@ -40,7 +37,11 @@ view context model =
                     [ Html.text "Open this website on your other device to authenticate this one." ]
 
                 --
-                , S.clickToCopy url (CopyToClipboard url)
+                , Account.Linking.QRCode.view
+                    model.url
+                    Nothing
+
+                --
                 , S.subtleFootNote
                     [ Html.text "Authenticating with "
                     , Html.span
