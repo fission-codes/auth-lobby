@@ -27,76 +27,79 @@ import Tailwind as T
 
 view : Model -> List (Html Msg)
 view model =
-    [ Html.div
-        [ T.flex
-        , T.items_center
-        , T.justify_center
-        , T.min_h_screen_alt
-        , T.px_6
-        , T.w_screen
-        ]
-        [ case model.externalContext of
-            Failure _ ->
-                External.Context.note model.externalContext
+    [ case model.externalContext of
+        Failure _ ->
+            External.Context.note model.externalContext
 
-            Success context ->
-                case model.page of
-                    Page.Choose ->
-                        choose model
+        Success context ->
+            case model.page of
+                Page.Choose ->
+                    choose model
 
-                    Page.CreateAccount a ->
-                        Account.Creation.View.view a model
+                Page.CreateAccount a ->
+                    Account.Creation.View.view a model
 
-                    Page.LinkAccount a ->
-                        Account.Linking.View.view a model
+                Page.LinkAccount a ->
+                    Account.Linking.View.view a model
 
-                    Page.Note a ->
-                        note a model
+                Page.Note a ->
+                    note a model
 
-                    Page.PerformingAuthorisation ->
-                        Authorisation.Performing.View.view model
+                Page.PerformingAuthorisation ->
+                    Authorisation.Performing.View.view model
 
-                    Page.SuggestAuthorisation ->
-                        Authorisation.Suggest.View.view context model
+                Page.SuggestAuthorisation ->
+                    Authorisation.Suggest.View.view context model
 
-            Loading ->
-                { defaultFailedState | required = True }
-                    |> Failure
-                    |> External.Context.note
+        Loading ->
+            { defaultFailedState | required = True }
+                |> Failure
+                |> External.Context.note
 
-            NotAsked ->
-                case model.usedUsername of
-                    Just username ->
-                        case model.page of
-                            Page.LinkAccount a ->
-                                Account.Linking.View.view a model
+        NotAsked ->
+            case model.usedUsername of
+                Just username ->
+                    case model.page of
+                        Page.LinkAccount a ->
+                            Account.Linking.View.view a model
 
-                            Page.Note a ->
-                                note a model
+                        Page.Note a ->
+                            note a model
 
-                            _ ->
-                                authenticated username model
+                        _ ->
+                            authenticated username model
 
-                    Nothing ->
-                        case model.page of
-                            Page.Choose ->
-                                choose model
+                Nothing ->
+                    case model.page of
+                        Page.Choose ->
+                            choose model
 
-                            Page.CreateAccount a ->
-                                Account.Creation.View.view a model
+                        Page.CreateAccount a ->
+                            Account.Creation.View.view a model
 
-                            Page.LinkAccount a ->
-                                Account.Linking.View.view a model
+                        Page.LinkAccount a ->
+                            Account.Linking.View.view a model
 
-                            Page.Note a ->
-                                note a model
+                        Page.Note a ->
+                            note a model
 
-                            _ ->
-                                { defaultFailedState | required = True }
-                                    |> Failure
-                                    |> External.Context.note
-        ]
+                        _ ->
+                            { defaultFailedState | required = True }
+                                |> Failure
+                                |> External.Context.note
     ]
+        |> Html.div
+            [ T.py_6 ]
+        |> List.singleton
+        |> Html.div
+            [ T.flex
+            , T.items_center
+            , T.justify_center
+            , T.min_h_screen_alt
+            , T.px_6
+            , T.w_screen
+            ]
+        |> List.singleton
 
 
 
