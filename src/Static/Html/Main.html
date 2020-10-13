@@ -42,5 +42,15 @@
     <img src="images/loader-gray.svg" class="animate-spin" />
   </div>
 
+
+  <!-- Service worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js")
+      })
+    }
+  </script>
+
 </body>
 </html>

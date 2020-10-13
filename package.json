@@ -12,6 +12,8 @@
     "esbuild": "^0.7.1",
     "mustache": "^4.0.1",
     "tailwindcss": "^1.6.0",
-    "terser-dir": "^1.0.7"
+    "terser-dir": "^1.0.7",
+    "workbox-cli": "^5.1.4",
+    "workbox-strategies": "^5.1.4"
   }
 }

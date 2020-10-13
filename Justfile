@@ -9,6 +9,7 @@ dist_dir 					:= "./build"
 fission_cmd       := "fission"
 node_bin 					:= "./node_modules/.bin"
 src_dir  					:= "./src"
+workbox_config 		:= "workbox.config.cjs"
 
 
 # Tasks
@@ -75,6 +76,8 @@ src_dir  					:= "./src"
 	cp -rf web_modules {{dist_dir}}/web_modules
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 	{{node_bin}}/esbuild --bundle --outfile={{dist_dir}}/worker.min.js {{src_dir}}/Javascript/Worker.js
+
+	pnpx workbox generateSW {{workbox_config}}
 
 
 @minify-js:
