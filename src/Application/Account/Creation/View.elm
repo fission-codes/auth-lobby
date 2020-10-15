@@ -295,9 +295,7 @@ needsLink context model =
                         ]
 
                     --
-                    , Account.Linking.QRCode.view
-                        model.url
-                        (Just context.username)
+                    , Account.Linking.View.qrOrUrlView model.url
 
                     --
                     , Html.div

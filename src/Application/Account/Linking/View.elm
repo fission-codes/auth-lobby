@@ -15,7 +15,7 @@ import Page
 import Radix exposing (Model, Msg(..))
 import Styling as S
 import Tailwind as T
-import Url
+import Url exposing (Url)
 
 
 
@@ -37,9 +37,7 @@ view context model =
                     [ Html.text "Open this website on your other device to authenticate this one." ]
 
                 --
-                , Account.Linking.QRCode.view
-                    model.url
-                    Nothing
+                , qrOrUrlView model.url
 
                 --
                 , S.subtleFootNote
@@ -67,6 +65,29 @@ errorOrExchange fallbackView maybeExchange model =
 
         Nothing ->
             exchangeView fallbackView maybeExchange model
+
+
+qrOrUrlView : Url -> Html Msg
+qrOrUrlView url =
+    Html.div
+        []
+        [ Html.div
+            [ T.hidden
+            , T.lg__block
+            ]
+            [ Account.Linking.QRCode.view
+                url
+                Nothing
+            ]
+
+        --
+        , Html.div
+            [ T.lg__hidden ]
+            [ S.clickToCopy
+                (Common.urlOrigin url)
+                (CopyToClipboard <| Common.urlOrigin url)
+            ]
+        ]
 
 
 
