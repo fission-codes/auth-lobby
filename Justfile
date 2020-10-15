@@ -34,7 +34,7 @@ workbox_config 		:= "workbox.config.cjs"
 	mkdir -p {{dist_dir}}
 
 
-@dev-build: clean css-large elm html js images static apply-config
+@dev-build: clean css-large elm html js images static apply-config service-worker
 	echo {{config}} &> /dev/null
 
 
@@ -77,8 +77,6 @@ workbox_config 		:= "workbox.config.cjs"
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 	{{node_bin}}/esbuild --bundle --outfile={{dist_dir}}/worker.min.js {{src_dir}}/Javascript/Worker.js
 
-	pnpx workbox generateSW {{workbox_config}}
-
 
 @minify-js:
 	echo "⚙️  Minifying Javascript Files"
@@ -91,11 +89,11 @@ workbox_config 		:= "workbox.config.cjs"
 		-- --compress --mangle
 
 
-@production-build: clean css-large production-elm html css-small js images static minify-js
+@production-build: clean css-large production-elm html css-small js images static minify-js production-service-worker
 	just config=production apply-config
 
 
-@staging-build: clean css-large production-elm html css-small js images static minify-js
+@staging-build: clean css-large production-elm html css-small js images static minify-js production-service-worker
 	just config=default apply-config
 
 
@@ -169,6 +167,20 @@ main_elm := src_dir + "/Application/Main.elm"
 @production-elm:
 	echo "🌳  Compiling Elm"
 	elm make {{main_elm}} --output={{dist_elm}} --optimize
+
+
+
+# Service worker
+# --------------
+
+@service-worker:
+	echo "⚙️  Generating service worker"
+	NODE_ENV=development pnpx workbox generateSW {{workbox_config}}
+
+
+@production-service-worker:
+	echo "⚙️  Generating service worker"
+	NODE_ENV=production pnpx workbox generateSW {{workbox_config}}
 
 
 
