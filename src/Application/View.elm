@@ -89,7 +89,9 @@ view model =
                                 |> External.Context.note
     ]
         |> Html.div
-            [ T.py_6 ]
+            [ T.py_6
+            , T.w_full
+            ]
         |> List.singleton
         |> Html.div
             [ T.flex
