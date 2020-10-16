@@ -1,5 +1,5 @@
 dependencies:
-  fission-kit: github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472
+  fission-kit: github.com/fission-suite/kit/768a1384450d0be543152f75d02ffe3dfe90bd4e
   ipfs-message-port-protocol: 0.2.0
   ipfs-message-port-server: 0.2.2
   webnative: 0.19.10
@@ -7,6 +7,7 @@ devDependencies:
   elm-tailwind-css: 0.4.5
   esbuild: 0.7.1
   mustache: 4.0.1
+  postcss-import: 12.0.1
   tailwindcss: 1.6.2
   terser-dir: 1.0.7
   workbox-cli: 5.1.4
@@ -3835,6 +3836,12 @@ packages:
       node: '>=8.6'
     resolution:
       integrity: sha512-q0M/9eZHzmr0AulXyPwNfZjtwZ/RBZlbN3K3CErVrk50T2ASYI7Bye0EvekFY3IP1Nt2DHu0re+V2ZHIpMkuWg==
+  /pify/2.3.0:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-7RQaasBDqEnqWISY59yosVMw6Qw=
   /pify/3.0.0:
     dev: true
     engines:
@@ -3875,6 +3882,17 @@ packages:
     dev: true
     resolution:
       integrity: sha1-DpTQFERwCkgd4g3k1V+yZAVkJQ4=
+  /postcss-import/12.0.1:
+    dependencies:
+      postcss: 7.0.35
+      postcss-value-parser: 3.3.1
+      read-cache: 1.0.0
+      resolve: 1.17.0
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-3Gti33dmCjyKBgimqGxL3vcV8w9+bsHwO5UrBawp796+jdardbcFl4RP5w/76BwNL7aGzpKstIfF9I+kdE8pTw==
   /postcss-js/2.0.3:
     dependencies:
       camelcase-css: 2.0.1
@@ -3927,6 +3945,16 @@ packages:
       node: '>=6.0.0'
     resolution:
       integrity: sha512-03eXong5NLnNCD05xscnGKGDZ98CyzoqPSMjOe6SuoQY7Z2hIj0Ld1g/O/UQRuOle2aRtiIRDg9tDcTGAkLfKw==
+  /postcss/7.0.35:
+    dependencies:
+      chalk: 2.4.2
+      source-map: 0.6.1
+      supports-color: 6.1.0
+    dev: true
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-3QT8bBJeX/S5zKTTjTCIjRF3If4avAT6kqxcASlTWEtAFCb9NH0OUxNDfgZSWdP5fJnBYCMEWkIFfWeugjzYMg==
   /prepend-http/2.0.0:
     dev: true
     engines:
@@ -4011,6 +4039,12 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==
+  /read-cache/1.0.0:
+    dependencies:
+      pify: 2.3.0
+    dev: true
+    resolution:
+      integrity: sha1-5mTvMRYRZsl1HNvo28+GtftY93Q=
   /read-pkg-up/3.0.0:
     dependencies:
       find-up: 2.1.0
@@ -5221,12 +5255,12 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-5uzKXwdMc++mYktXqkfpNYT9tY8ViWegU58Hgbo+KXzrzzhEyP1Ip+BTtXloLrXNcNlxFJbLiFKGaS9vK9ym6Q==
-  github.com/fission-suite/kit/6a20e9af963dd000903b1c6e64f9fbb2102ba472:
+  github.com/fission-suite/kit/768a1384450d0be543152f75d02ffe3dfe90bd4e:
     dev: false
     name: fission-kit
     resolution:
       registry: 'https://registry.npmjs.org/'
-      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/6a20e9af963dd000903b1c6e64f9fbb2102ba472'
+      tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/768a1384450d0be543152f75d02ffe3dfe90bd4e'
     version: 0.2.0
   github.com/icidasset/postcss-elm-tailwind/b88835786d9b0aa48a88d83fd8c13df89bbd60a0:
     dependencies:
@@ -5242,10 +5276,11 @@ packages:
 specifiers:
   elm-tailwind-css: ^0.4.5
   esbuild: ^0.7.1
-  fission-kit: fission-suite/kit#6a20e9af963dd000903b1c6e64f9fbb2102ba472
+  fission-kit: fission-suite/kit#768a1384450d0be543152f75d02ffe3dfe90bd4e
   ipfs-message-port-protocol: ^0.2.0
   ipfs-message-port-server: ^0.2.2
   mustache: ^4.0.1
+  postcss-import: ^12.0.1
   tailwindcss: ^1.6.0
   terser-dir: ^1.0.7
   webnative: 0.19.10

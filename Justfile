@@ -102,6 +102,9 @@ workbox_config 		:= "workbox.config.cjs"
 	cp -RT {{src_dir}}/Static/Favicons/ {{dist_dir}}/
 	cp -RT {{src_dir}}/Static/Manifests/ {{dist_dir}}/
 
+	mkdir -p {{dist_dir}}/fonts/
+	cp node_modules/fission-kit/fonts/**/*.woff2 {{dist_dir}}/fonts/
+
 
 
 # CSS
@@ -116,7 +119,8 @@ main_css := src_dir + "/Css/Main.css"
 	pnpx etc {{main_css}} \
 		--config tailwind.config.js \
 		--elm-path src/Library/Tailwind.elm \
-		--output {{dist_css}}
+		--output {{dist_css}} \
+		--post-plugin-before postcss-import
 	echo ""
 
 
@@ -126,7 +130,8 @@ main_css := src_dir + "/Css/Main.css"
 		--config tailwind.config.js \
 		--output {{dist_css}} \
 		--purge-content={{dist_elm}} \
-		--purge-content={{dist_dir}}/index.html
+		--purge-content={{dist_dir}}/index.html \
+		--post-plugin-before postcss-import
 	echo ""
 
 
