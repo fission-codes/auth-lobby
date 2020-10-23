@@ -11,6 +11,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Icons
+import Loading
 import Page
 import Radix exposing (Model, Msg(..))
 import Styling as S
@@ -97,26 +98,14 @@ qrOrUrlView url =
 exchangeView : Html Msg -> Maybe Exchange -> Model -> Html Msg
 exchangeView fallbackView maybeExchange model =
     case Maybe.map (\e -> Tuple.pair e.side e) maybeExchange of
-        Just ( Inquirer _, exchange ) ->
+        Just ( Inquirer (Delegation pin), exchange ) ->
             S.messageBlock
                 [ T.italic ]
                 [ Html.text "Do these numbers match the ones shown on your other device?"
-
-                --
-                , case exchange.nonceUser of
-                    Just nonceUser ->
-                        numberDisplay nonceUser
-
-                    Nothing ->
-                        Html.text ""
+                , numberDisplay pin
                 ]
 
-        Just ( Authoriser EstablishConnection, _ ) ->
-            S.messageBlock
-                [ T.italic ]
-                [ Html.text "Negotiating with your other device." ]
-
-        Just ( Authoriser ConstructUcan, exchange ) ->
+        Just ( Authoriser (Delegation pin), exchange ) ->
             S.messageBlock
                 []
                 [ Html.span
@@ -124,12 +113,7 @@ exchangeView fallbackView maybeExchange model =
                     [ Html.text "Confirm these are the numbers shown on your other device." ]
 
                 --
-                , case exchange.nonceUser of
-                    Just nonceUser ->
-                        numberDisplay nonceUser
-
-                    Nothing ->
-                        Html.text ""
+                , numberDisplay pin
 
                 --
                 , Html.div
@@ -170,6 +154,20 @@ exchangeView fallbackView maybeExchange model =
                         [ S.buttonIcon FeatherIcons.x
                         , Html.text "Cancel"
                         ]
+                    ]
+                ]
+
+        Just ( _, _ ) ->
+            S.messageBlock
+                [ T.italic ]
+                [ Html.text "Negotiating with your other device."
+                , Html.div
+                    [ T.mt_6
+                    , T.mx_auto
+                    , T.max_w_md
+                    , T.opacity_50
+                    ]
+                    [ Loading.animation { size = 18 }
                     ]
                 ]
 
@@ -260,10 +258,9 @@ form context =
 -- NUMBER DISPLAY
 
 
-numberDisplay : String -> Html Msg
-numberDisplay number =
-    number
-        |> String.toList
+numberDisplay : List Int -> Html Msg
+numberDisplay numbers =
+    numbers
         |> List.map
             (\n ->
                 Html.div
@@ -285,7 +282,7 @@ numberDisplay number =
                     -------------
                     , T.sm__w_16
                     ]
-                    [ Html.text (String.fromChar n)
+                    [ Html.text (String.fromInt n)
                     ]
             )
         |> Html.div

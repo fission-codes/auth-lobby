@@ -4,7 +4,7 @@
 
 */
 
-const sdk = webnative
+const wn = webnative
 
 let app
 let ipfs
@@ -13,7 +13,7 @@ let ipfs
 // 🚀
 
 
-sdk.setup.endpoints({
+wn.setup.endpoints({
   api: API_ENDPOINT,
   lobby: location.origin,
   user: DATA_ROOT_DOMAIN
@@ -43,15 +43,18 @@ async function bootElm() {
 
 function ports() {
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
-  app.ports.closeSecureChannel.subscribe(closeSecureChannel)
+  app.ports.closeChannel.subscribe(closeChannel)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.createAccount.subscribe(createAccount)
   app.ports.leave.subscribe(leave)
   app.ports.linkApp.subscribe(linkApp)
   app.ports.linkedDevice.subscribe(linkedDevice)
-  app.ports.openSecureChannel.subscribe(openSecureChannel)
-  app.ports.publishOnSecureChannel.subscribe(publishOnSecureChannel)
-  app.ports.publishEncryptedOnSecureChannel.subscribe(publishEncryptedOnSecureChannel)
+  app.ports.openChannel.subscribe(openChannel)
+
+  // Better error reporting for async things
+  app.ports.publishOnChannel.subscribe(
+    a => publishOnChannel(a).catch(console.error)
+  )
 }
 
 
@@ -87,7 +90,7 @@ async function bootIpfs() {
     }
   })
 
-  sdk.ipfs.set(ipfs)
+  wn.ipfs.set(ipfs)
 
   ipfs.libp2p.connectionManager.on("peer:connect", (connection) => {
     console.log("Connected to peer", connection.remotePeer._idB58String)
@@ -114,7 +117,7 @@ async function myReadKey() {
   const maybeReadKey = await localforage.getItem("readKey")
   if (maybeReadKey) return maybeReadKey
 
-  const readKey = await sdk.keystore.genKeyStr()
+  const readKey = await wn.keystore.genKeyStr()
   await localforage.setItem("readKey", readKey)
   return readKey
 }
@@ -129,20 +132,20 @@ async function myReadKey() {
  * The only way we get a UCAN in this lobby,
  * is to link this domain/device to another one.
  */
-async function rootDid(maybeUsername) {
+async function lookupRootDid(maybeUsername) {
   let ucan, x, y
 
   if (maybeUsername) {
     x = maybeUsername
-    y = rootDidCache[x] || (await sdk.did.root(x))
+    y = rootDidCache[x] || (await wn.did.root(x))
 
   } else if (ucan = await localforage.getItem("ucan")) {
     x = "ucan"
-    y = rootDidCache[x] || sdk.ucan.rootIssuer(ucan)
+    y = rootDidCache[x] || wn.ucan.rootIssuer(ucan)
 
   } else {
     x = "local"
-    y = rootDidCache[x] || (await sdk.did.write())
+    y = rootDidCache[x] || (await wn.did.write())
 
   }
 
@@ -157,7 +160,7 @@ async function leave() {
     await localforage.removeItem("readKey")
     await localforage.removeItem("ucan")
     await localforage.removeItem("usedUsername")
-    await sdk.keystore.clear()
+    await wn.keystore.clear()
 
     location.reload()
   }
@@ -168,8 +171,8 @@ async function leave() {
 // ------
 
 async function checkIfUsernameIsAvailable(username) {
-  if (sdk.lobby.isUsernameValid(username)) {
-    const isAvailable = await sdk.lobby.isUsernameAvailable(username, DATA_ROOT_DOMAIN)
+  if (wn.lobby.isUsernameValid(username)) {
+    const isAvailable = await wn.lobby.isUsernameAvailable(username, DATA_ROOT_DOMAIN)
     app.ports.gotUsernameAvailability.send({ available: isAvailable, valid: true })
 
   } else {
@@ -180,7 +183,7 @@ async function checkIfUsernameIsAvailable(username) {
 
 
 async function createAccount(args) {
-  const { success } = await sdk.lobby.createAccount(
+  const { success } = await wn.lobby.createAccount(
     { email: args.email, username: args.username },
     { apiEndpoint: API_ENDPOINT }
   )
@@ -206,21 +209,25 @@ async function createAccount(args) {
 
 async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }) {
   const audience = didWrite
-  const issuer = await sdk.did.write()
+  const issuer = await wn.did.write()
   const proof = await localforage.getItem("ucan")
 
   const att = attenuation.map(a => {
     const [key, value] = a.resource
-
-    return key === "*"
-      ? "*"
-      : { [key]: value, "cap": a.capability }
+    return { [key]: value, "cap": a.capability }
   })
 
-  const ucanPromise = sdk.ucan.build({
-    // TODO: Waiting on API changes
-    // attenuation: att,
+  // TODO: Waiting on API changes
+  // const ucanPromise = wn.ucan.build({
+  //   attenuations: [ att ],
+  //   proofs: proof ? [ proof ] : [],
+  //
+  //   audience,
+  //   issuer,
+  //   lifetimeInSeconds
+  // })
 
+  const ucanPromise = sdk.ucan.build({
     potency: "APPEND",
     resource: "*",
 
@@ -235,8 +242,8 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
 
   // encrypt symmetric key (url-safe base64)
   const plainTextReadKey = await myReadKey()
-  const ks = await sdk.keystore.get()
-  const { publicKey } = sdk.did.didToPublicKey(didExchange)
+  const ks = await wn.keystore.get()
+  const { publicKey } = wn.did.didToPublicKey(didExchange)
   const readKey = await ks.encrypt(plainTextReadKey, publicKey).then(makeBase64UrlSafe)
 
   app.ports.gotUcansForApplication.send(
@@ -258,303 +265,431 @@ async function linkedDevice({ readKey, ucan, username }) {
 
 
 
-// SECURE CHANNEL
-// ==============
+// CHANNEL
+// =======
 
-let pingInterval
+/**
+ * Channel State.
+ */
+let cs = {}
 
 
-async function closeSecureChannel() {
-  console.log("Closing secure channel")
+/**
+ * Close the channel & reset state.
+ */
+async function closeChannel() {
+  console.log("Closing channel")
   await ipfs.pubsub.unsubscribe()
+  resetChannelState()
 }
 
 
 /**
  * Tries to subscribe to a pubsub channel
  * with the root DID as the topic.
- *
- * If it succeeds, it'll call the `secureChannelOpened` port,
- * otherwise the `secureChannelTimeout` port will called.
  */
-async function openSecureChannel(maybeUsername) {
-  const rootDid_ = await rootDid(maybeUsername).catch(_ => null)
-  const ipfsId = await ipfs.id().then(a => a.id)
+async function openChannel(maybeUsername) {
+  resetChannelState()
 
-  if (!rootDid_) {
+  const rootDid = await lookupRootDid(maybeUsername).catch(_ => null)
+  const ipfsId = await ipfs.id().then(a => a.id)
+  const topic = `deviceLink@${rootDid}`
+
+  if (!rootDid) {
     app.ports.gotInvalidRootDid.send(null)
     return
   }
 
-  console.log("Opening secure channel", rootDid_)
+  console.log("Opening channel", topic)
 
   await ipfs.pubsub.subscribe(
-    rootDid_,
-    secureChannelMessage(rootDid_, ipfsId)
+    topic,
+    channelMessage(rootDid, ipfsId)
   )
-
-  if (maybeUsername) {
-    pingInterval = setInterval(
-      () => ipfs.pubsub.publish(rootDid_, "PING"),
-      500
-    )
-
-  } else {
-    // tryManualPeerConnection()
-    // pingInterval = setInterval(tryManualPeerConnection, 5000)
-
-  }
 }
 
 
-async function tryManualPeerConnection() {
-  const addrs = (await ipfs.swarm.addrs())
-    .filter(a => a.addrs[0].toString().startsWith(SIGNALING_ADDR))
-    .map(a => a.id)
+/**
+ * 📢 Outgoing channel message
+ */
+async function publishOnChannel([ maybeUsername, subject, data ]) {
+  const rootDid = await lookupRootDid(maybeUsername)
+  const topic = `deviceLink@${rootDid}`
 
-  addrs.forEach(a => {
-    console.log(`${RELAY}/p2p-circuit/p2p/${a}`)
-    try {
-      ipfs.swarm.connect(
-        `${RELAY}/p2p-circuit/p2p/${a}`,
-        { timeout: 5000 }
+  switch (subject) {
+
+    ////////////////////////////////////////////
+    // 🔗 INQUIRER, Pt. 2
+    ////////////////////////////////////////////
+    case "TEMPORARY_EXCHANGE_KEY": return await (async () => {
+      cs.temporaryRsaPair = await crypto.subtle.generateKey(
+        RSA_KEY_ALGO,
+        true,
+        [ "encrypt", "decrypt" ]
       )
-    } catch (err) {
-      console.error(err)
-    }
-  })
-}
 
+      const didThrowaway = await crypto.subtle
+        .exportKey("spki", cs.temporaryRsaPair.publicKey)
+        .then(arrayBufferToBase64)
+        .then(k => wn.did.publicKeyToDid(k, "rsa"))
 
-async function publishOnSecureChannel([ maybeUsername, dataWithPlaceholders ]) {
-  ipfs.pubsub.publish(
-    await rootDid(maybeUsername),
-    await prepareData(dataWithPlaceholders)
-  )
-}
+      cs.pingIntervalId = setInterval(
+        () => ipfs.pubsub.publish(topic, didThrowaway),
+        2000
+      )
+    })()
 
+    ////////////////////////////////////////////
+    // 🔗 AUTHORISER, Pt. 3
+    ////////////////////////////////////////////
+    case "SESSION_KEY": return await (async () => {
+      cs.sessionKey = await crypto.subtle.generateKey(
+        {
+          name: "AES-GCM",
+          length: 256
+        },
+        true,
+        [ "encrypt", "decrypt" ]
+      )
 
-async function publishEncryptedOnSecureChannel([ maybeUsername, didKeyOtherSide, dataWithPlaceholders ]) {
-  ipfs.pubsub.publish(
-    await rootDid(maybeUsername),
-    await encrypt(
-      await prepareData(
-        dataWithPlaceholders,
-        maybeUsername,
-        didKeyOtherSide
-      ),
-      didKeyOtherSide
-    )
-  )
-}
+      const sessionKeyBuffer = await crypto.subtle.exportKey("raw", cs.sessionKey)
+      const sessionKey = arrayBufferToBase64(sessionKeyBuffer)
 
+      // Transform throwaway DID into public RSA key
+      const { publicKey } = wn.did.didToPublicKey(data.didThrowaway)
+      const publicCryptoKey = await crypto.subtle.importKey(
+        "spki",
+        base64ToArrayBuffer(publicKey),
+        RSA_KEY_ALGO,
+        false,
+        [ "encrypt" ]
+      )
 
-  async function prepareData(dataWithPlaceholders, maybeUsername, didKeyOtherSide) {
-    let ks
+      // Encode & encrypt session key
+      const encryptedSessionKey = await crypto.subtle.encrypt(
+        { name: "RSA-OAEP" },
+        publicCryptoKey,
+        sessionKeyBuffer
+      )
 
-    // Check
-    if (typeof dataWithPlaceholders === "string") {
-      return dataWithPlaceholders
-    }
+      // Make UCAN
+      const proof = await localforage.getItem("ucan")
+      const ucan = await wn.ucan.build({
+        issuer: await wn.did.ucan(),
+        audience: data.didThrowaway,
+        lifetimeInSeconds: 60 * 5, // 5 minutes
+        facts: [{ sessionKey }],
+        proofs: proof ? [ proof ] : []
+      })
 
-    // Placeholders
-    let plaDid        = dataWithPlaceholders.did !== undefined
-    let plaReadKey    = dataWithPlaceholders.readKey !== undefined
-    let plaSignature  = dataWithPlaceholders.signature !== undefined
-    let plaUcan       = dataWithPlaceholders.ucan !== undefined
+      // Encode & encrypt UCAN
+      //
+      // TODO: Waiting for API changes
+      // const encodedUcan = wn.ucan.encode(ucan)
 
-    // Payload
-    const payload = {
-      ...dataWithPlaceholders,
+      const { iv, msg } = await encryptWithAes(
+        stringToArrayBuffer(ucan)
+      )
 
-      // DID
-      did: plaDid
-        ? await sdk.did.write()
-        : undefined,
+      // Publish
+      ipfs.pubsub.publish(
+        topic,
+        JSON.stringify({
+          iv: arrayBufferToBase64(iv),
+          msg: arrayBufferToBase64(msg),
+          sessionKey: arrayBufferToBase64(encryptedSessionKey)
+        })
+      )
+    })()
 
-      // Read key
-      readKey: plaReadKey
-        ? await myReadKey()
-        : undefined,
+    ////////////////////////////////////////////
+    // 🔗 INQUIRER, Pt. 4
+    ////////////////////////////////////////////
+    case "USER_CHALLENGE": return await (async () => {
+      const iv = crypto.getRandomValues(
+        new Uint8Array(12)
+      )
+
+      const msg = await crypto.subtle.encrypt(
+        {
+          name: "AES-GCM",
+          iv: iv
+        },
+        cs.sessionKey,
+        jsonBuffer({
+          did: await wn.did.ucan(),
+          pin: data.pin
+        })
+      )
+
+      // Publish
+      ipfs.pubsub.publish(
+        topic,
+        JSON.stringify({
+          iv: arrayBufferToBase64(iv),
+          msg: arrayBufferToBase64(msg)
+        })
+      )
+    })()
+
+    ////////////////////////////////////////////
+    // 🔗 AUTHORISER, Pt. 5
+    ////////////////////////////////////////////
+    case "READ_KEY_&_UCAN": return await (async () => {
+      const readKey = await myReadKey()
 
       // UCAN
-      ucan: plaUcan
-        ? await sdk.ucan.build({
-            audience: didKeyOtherSide,
-            issuer: await sdk.did.write(),
-            lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
-            proof: await localforage.getItem("ucan")
+      const ucan = await wn.ucan.build({
+        audience: data.didInquirer,
+        issuer: await wn.did.write(),
+        lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
+        proofs: [ await localforage.getItem("ucan") ]
+      })
+
+      // Encode & encrypt
+      const iv = crypto.getRandomValues(
+        new Uint8Array(12)
+      )
+
+      const msg = await crypto.subtle.encrypt(
+        {
+          name: "AES-GCM",
+          iv: iv
+        },
+        cs.sessionKey,
+        // TODO: Waiting for API changes
+        // wn.ucan.encode(ucan)
+        jsonBuffer({ readKey, ucan: ucan })
+      )
+
+      // Publish
+      ipfs.pubsub.publish(
+        topic,
+        JSON.stringify({
+          iv: arrayBufferToBase64(iv),
+          msg: arrayBufferToBase64(msg)
+        })
+      )
+    })()
+
+    ////////////////////////////////////////////
+    // 🦉
+    ////////////////////////////////////////////
+    default:
+      if (cs.sessionKey) {
+        const { iv, msg } = await encryptWithAes(
+          jsonBuffer(data)
+        )
+
+        ipfs.pubsub.publish(
+          topic,
+          JSON.stringify({
+            iv: arrayBufferToBase64(iv),
+            msg: arrayBufferToBase64(msg)
           })
-        : undefined
-    }
+        )
 
-    // Load keystore if needed
-    if (plaSignature) {
-      delete payload.signature
-      ks = await sdk.keystore.get()
-    }
+      } else {
+        ipfs.pubsub.publish(
+          topic,
+          JSON.stringify(data)
+        )
 
-    // Put signature in place if needed
-    const data = {
-      ...payload,
+      }
 
-      signature: plaSignature
-        ? await ks.sign( JSON.stringify(payload) )
-        : undefined,
-    }
-
-    // Return
-    return JSON.stringify(data)
   }
+}
 
 
-function secureChannelMessage(rootDid_, ipfsId) { return async function({ from, data }) {
+/**
+ * 👂 Incoming channel message
+ */
+function channelMessage(rootDid, ipfsId) { return async function({ from, data }) {
   const string = data.toString()
 
+  // Ignore our own messages, so stop here
   if (from === ipfsId) {
-    console.log("Sending", string)
-  } else {
-    console.log("Receiving", string)
-  }
-
-  if (from === ipfsId) {
-    // if (string === "CANCEL") {
-    //   pingInterval = setInterval(tryManualPeerConnection, 5000)
-    // }
     return
 
-  } else if (string === "CANCEL") {
-    ipfs.pubsub.unsubscribe(rootDid_)
+  // Stop interval for broadcast
+  } else if (cs.pingIntervalId) {
+    clearInterval(cs.pingIntervalId)
+    cs.pingIntervalId = null
+  }
+
+  // TODO:
+  // } else if (string.startsWith("ALREADY")) {
+  //   const split = string.split("-")
+  //   const unwantedDevice = split[1]
+  //
+  //   if (ipfsId === unwantedDevice) {
+  //     ipfs.pubsub.unsubscribe(rootDid)
+  //     app.ports.cancelLink.send({ onBothSides: false })
+  //     alert("You currently have this page open on multiple devices, I've chosen your other device to authenticate with.")
+  //   }
+
+  const decryptedMessagePromise = (async () => {
+    ////////////////////////////////////////////
+    // 🔏 (Linking, Pt. 3)
+    ////////////////////////////////////////////
+    if (cs.temporaryRsaPair) {
+      const json = JSON.parse(string)
+      const iv = base64ToArrayBuffer(json.iv)
+
+      // Extract session key
+      const rawSessionKey = await crypto.subtle.decrypt(
+        {
+          name: "RSA-OAEP"
+        },
+        cs.temporaryRsaPair.privateKey,
+        base64ToArrayBuffer(json.sessionKey)
+      )
+
+      // Import session key
+      const sessionKey = await crypto.subtle.importKey(
+        "raw",
+        rawSessionKey,
+        "AES-GCM",
+        false,
+        [ "encrypt", "decrypt" ]
+      )
+
+      cs.sessionKey = sessionKey
+      cs.temporaryRsaPair = null
+
+      // Extract UCAN
+      const encodedUcan = arrayBufferToString(await crypto.subtle.decrypt(
+        {
+          name: "AES-GCM",
+          iv: iv
+        },
+        cs.sessionKey,
+        base64ToArrayBuffer(json.msg)
+      ))
+
+      const ucan = wn.ucan.decode(encodedUcan)
+
+      // TODO: (next UCAN version)
+      // if (await wn.ucan.isValid(ucan) === false) {
+      //   throw new Error("Invalid closed UCAN")
+      // }
+
+      if (!isValidUcan(encodedUcan)) {
+        throw new Error("Invalid closed UCAN")
+      }
+
+      // TODO: (next UCAN version) Proof of closed ucan
+      // if (ucan.payload.prf.length > 0 || ucan.payload.prf[0].payload.att.length === 0) {
+      //   throw new Error("Invalid closed UCAN")
+      // }
+
+      if (ucan.payload.prf) {
+        throw new Error("Invalid closed UCAN")
+      }
+
+      // Extract session key
+      const sessionKeyFromFact = ucan.payload.fct[0] && ucan.payload.fct[0].sessionKey
+
+      if (!sessionKeyFromFact) {
+        throw new Error("Session key is missing from closed UCAN")
+      }
+
+      // Compare session keys
+      const sessionKeyWeAlreadyGot = arrayBufferToBase64(rawSessionKey)
+
+      if (sessionKeyFromFact !== sessionKeyWeAlreadyGot) {
+        throw new Error("Closed UCAN session key does not match the one we already have")
+      }
+
+      // Carry on
+      return Array.from(crypto.getRandomValues(
+        new Uint8Array(6)
+      )).map(n => {
+        return n % 10
+      })
+
+    ////////////////////////////////////////////
+    // 🔐 (Linking, Pt. 4+)
+    ////////////////////////////////////////////
+    } else if (cs.sessionKey) {
+      const { iv, msg } = JSON.parse(string)
+
+      if (!iv) {
+        throw new Error("I tried to decrypt some data (with AES) but the `iv` was missing from the message")
+      }
+
+      const buffer = await crypto.subtle.decrypt(
+        {
+          name: "AES-GCM",
+          iv: base64ToArrayBuffer(iv)
+        },
+        cs.sessionKey,
+        base64ToArrayBuffer(msg)
+      )
+
+      return arrayBufferToString(buffer)
+
+    ////////////////////////////////////////////
+    // 🦉
+    ////////////////////////////////////////////
+    } else {
+      return string
+
+    }
+  })()
+
+  let decryptedMessage
+
+  try {
+    decryptedMessage = await decryptedMessagePromise
+  } catch (err) {
+    console.error("Got invalid channel message", err)
+  }
+
+  if (!decryptedMessage) return
+
+  // Determine message structure
+  const probablyJson = (
+    typeof decryptedMessage === "string" && decryptedMessage.indexOf("{") === 0
+  )
+
+  const obj = probablyJson
+    ? JSON.parse(decryptedMessage)
+    : { msg: decryptedMessage }
+
+  // ACT ON MESSAGE
+  // Either:
+  // * Cancel the device link
+  // * Pass the message to the Elm app
+  if (obj.linkStatus === "DENIED") {
+    closeChannel()
     app.ports.cancelLink.send({ onBothSides: true })
 
-  } else if (string.startsWith("ALREADY")) {
-    const split = string.split("-")
-    const unwantedDevice = split[1]
-
-    if (ipfsId === unwantedDevice) {
-      ipfs.pubsub.unsubscribe(rootDid_)
-      app.ports.cancelLink.send({ onBothSides: false })
-      alert("You currently have this page open on multiple devices, I've chosen your other device to authenticate with.")
-    }
-
-  } else if (string === "PING") {
-    ipfs.pubsub.publish(rootDid_, "PONG")
-
-  } else if (string === "PONG") {
-    clearInterval(pingInterval)
-    app.ports.secureChannelOpened.send(from)
-
-  } else if (string[0] === "{") {
-    await gotSecureChannelMessage(from, string)
-
   } else {
-    const decryptedString = await decrypt(string, await sdk.did.write())
-    await gotSecureChannelMessage(from, decryptedString)
+    app.ports.gotChannelMessage.send({
+      ...obj,
+      from,
+      timestamp: Date.now(),
+    })
 
   }
 }}
 
 
-  async function gotSecureChannelMessage(from, string) {
-    const obj = JSON.parse(string)
+function resetChannelState() {
+  cs = {}
+}
 
-    if (obj.did && obj.signature) {
-      const objWithoutSignature = { ...obj, signature: undefined }
-      const hasValidSignature = await sdk.did.verifySignedData({
-        data: JSON.stringify(objWithoutSignature),
-        did: obj.did,
-        signature: obj.signature
-      })
-
-      if (!hasValidSignature) {
-        app.ports.gotLinkExchangeError.send("Received a message with an invalid signature.")
-        return
-      }
-    }
-
-    app.ports.gotSecureChannelMessage.send({
-      ...obj,
-      from,
-      timestamp: Date.now(),
-    })
-  }
 
 
 // CRYPTO
-// ------
+// ======
 
-async function encrypt(string, passphrase) {
-  const key = await keyFromPassphrase(passphrase)
-
-  const iv = crypto.getRandomValues(new Uint8Array(12)).buffer
-  const buf = await crypto.subtle.encrypt(
-    {
-      name: "AES-GCM",
-      iv: iv,
-      tagLength: 128
-    },
-    key,
-    stringToArrayBuffer(string)
-  )
-
-  const iv_b64 = arrayBufferToBase64(iv)
-  const buf_b64 = arrayBufferToBase64(buf)
-
-  return iv_b64 + buf_b64
-}
-
-
-async function decrypt(string, passphrase) {
-  const key = await keyFromPassphrase(passphrase)
-
-  const iv_b64 = string.substring(0, 16)
-  const buf_b64 = string.substring(16)
-
-  const iv = base64ToArrayBuffer(iv_b64)
-  const buf = base64ToArrayBuffer(buf_b64)
-
-  const decryptedBuf = await crypto.subtle.decrypt(
-    {
-      name: "AES-GCM",
-      iv: iv,
-      tagLength: 128
-    },
-    key,
-    buf
-  )
-
-  return arrayBufferToString(
-    decryptedBuf
-  )
-}
-
-
-function keyFromPassphrase(passphrase) {
-  return crypto.subtle.importKey(
-    "raw",
-    stringToArrayBuffer(passphrase),
-    {
-      name: "PBKDF2"
-    },
-    false,
-    [ "deriveKey" ]
-
-  ).then(baseKey => crypto.subtle.deriveKey(
-    {
-      name: "PBKDF2",
-      salt: stringToArrayBuffer("fission"),
-      iterations: 10000,
-      hash: "SHA-512"
-    },
-    baseKey,
-    {
-      name: "AES-GCM",
-      length: 256
-    },
-    false,
-    [ "encrypt", "decrypt" ]
-
-  ))
+const RSA_KEY_ALGO = {
+  name: "RSA-OAEP",
+  modulusLength: 2048,
+  publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+  hash: { name: "SHA-256" }
 }
 
 
@@ -582,6 +717,29 @@ function base64ToArrayBuffer(b64) {
 }
 
 
+async function encryptWithAes(buffer) {
+  const iv = crypto.getRandomValues(
+    new Uint8Array(12)
+  )
+
+  const msg = await crypto.subtle.encrypt(
+    {
+      name: "AES-GCM",
+      iv: iv
+    },
+    cs.sessionKey,
+    buffer
+  )
+
+  return { iv, msg }
+}
+
+
+function jsonBuffer(j) {
+  return stringToArrayBuffer(JSON.stringify(j))
+}
+
+
 function stringToArrayBuffer(str) {
   return new TextEncoder().encode(str).buffer
 }
@@ -594,6 +752,32 @@ function stringToArrayBuffer(str) {
 function copyToClipboard(text) {
   if (navigator.clipboard) navigator.clipboard.writeText(text)
   else console.log(`Missing clipboard api, tried to copy: "${text}"`)
+}
+
+
+async function isValidUcan(encodedUcan) {
+  const [encodedHeader, encodedPayload] = encodedUcan.split(".")
+  const ucan = wn.ucan.decode(encodedUcan)
+
+  const a = await wn.did.verifySignedData({
+    charSize: 8,
+    data: `${encodedHeader}.${encodedPayload}`,
+    did: ucan.payload.iss,
+    signature: ucan.signature || ""
+  })
+
+  if (!a) return a
+
+  // Verify proofs
+  if (!ucan.payload.prf) return a
+
+  const decodedProof = wn.ucan.decode(ucan.payload.prf)
+  const b = decodedProof.payload.aud === ucan.payload.iss
+
+  if (!b) return b
+
+  const c = await isValidUcan(ucan.payload.prf)
+  return c
 }
 
 

@@ -20,7 +20,7 @@ goToPage page model =
         Page.LinkAccount _ ->
             -- When moving away from the link-account page,
             -- make sure to close the secure channel.
-            Ports.closeSecureChannel ()
+            Ports.closeChannel ()
 
         _ ->
             Cmd.none

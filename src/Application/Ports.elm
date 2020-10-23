@@ -44,19 +44,16 @@ port linkedDevice :
 
 
 
--- 📣  ▒▒  SECURE CHANNEL
+-- 📣  ▒▒  CHANNEL
 
 
-port closeSecureChannel : () -> Cmd msg
+port closeChannel : () -> Cmd msg
 
 
-port openSecureChannel : Maybe String -> Cmd msg
+port openChannel : Maybe String -> Cmd msg
 
 
-port publishOnSecureChannel : ( Maybe String, Json.Value ) -> Cmd msg
-
-
-port publishEncryptedOnSecureChannel : ( Maybe String, String, Json.Value ) -> Cmd msg
+port publishOnChannel : ( Maybe String, Maybe String, Json.Value ) -> Cmd msg
 
 
 
@@ -91,7 +88,4 @@ port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Su
 port gotInvalidRootDid : (() -> msg) -> Sub msg
 
 
-port gotSecureChannelMessage : (Json.Value -> msg) -> Sub msg
-
-
-port secureChannelOpened : (String -> msg) -> Sub msg
+port gotChannelMessage : (Json.Value -> msg) -> Sub msg

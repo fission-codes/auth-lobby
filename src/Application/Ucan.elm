@@ -25,7 +25,7 @@ fsResourceKey =
 
 {-| <https://whitepaper.fission.codes/access-control/ucan/webnative-attenuation#capabilities>
 -}
-capabilities =
+fsCapabilities =
     { create = "CREATE"
     , revise = "REVISE"
     , softDelete = "SOFT_DELETE"

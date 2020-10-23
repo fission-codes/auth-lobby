@@ -1,6 +1,6 @@
 module Account.Linking.State exposing (..)
 
-import Account.Creation.State
+import Account.Common.State as Common
 import Account.Linking.Context as Context exposing (Context)
 import Account.Linking.Exchange as Exchange exposing (Exchange)
 import Json.Encode
@@ -27,9 +27,10 @@ cancel { onBothSides } model =
                 |> (\p -> { model | page = p })
                 |> Return.singleton
                 |> Return.command
-                    (Ports.publishOnSecureChannel
+                    (Ports.publishOnChannel
                         ( Nothing
-                        , Json.Encode.string Exchange.cancelMessage
+                        , Nothing
+                        , Exchange.cancelMessage
                         )
                     )
 
@@ -42,9 +43,10 @@ cancel { onBothSides } model =
                     return
                         { model | page = Page.SuggestAuthorisation }
                         (if onBothSides then
-                            Ports.publishOnSecureChannel
+                            Ports.publishOnChannel
                                 ( Nothing
-                                , Json.Encode.string Exchange.cancelMessage
+                                , Nothing
+                                , Exchange.cancelMessage
                                 )
 
                          else
@@ -103,26 +105,28 @@ linkAccount context model =
                 newContext =
                     { context | username = username, waitingForDevices = True }
             in
-            return
-                { model | page = Page.LinkAccount newContext }
-                (Ports.openSecureChannel <| Just username)
+            Exchange.initialInquirerExchange
+                |> Exchange.proceed (Just username) Json.Encode.null
+                |> Return.map (\e -> { newContext | exchange = Just e })
+                |> Return.map (\c -> { model | page = Page.LinkAccount c })
 
 
 sendUcan : Exchange -> Manager
 sendUcan exchange model =
-    case exchange.didOtherSide of
-        Just didOtherSide ->
+    case exchange.didInquirer of
+        Just didInquirer ->
             let
                 makeCmd maybeUsername =
-                    Exchange.ucanResponse
-                        |> Exchange.encodeUcanResponse
-                        |> (\r -> ( maybeUsername, didOtherSide, r ))
-                        |> Ports.publishEncryptedOnSecureChannel
+                    Ports.publishOnChannel
+                        ( maybeUsername
+                        , Exchange.stepSubject exchange.side
+                        , Json.Encode.object [ ( "didInquirer", Json.Encode.string didInquirer ) ]
+                        )
             in
             case model.page of
                 Page.CreateAccount context ->
                     model
-                        |> Account.Creation.State.afterAccountCreation context
+                        |> Common.afterAccountCreation context
                         |> Return.command (makeCmd <| Just context.username)
                         -- If redirecting elsewhere, close the pubsub channel.
                         |> Return.command
@@ -131,7 +135,7 @@ sendUcan exchange model =
                                     Cmd.none
 
                                 _ ->
-                                    Ports.closeSecureChannel ()
+                                    Ports.closeChannel ()
                             )
 
                 _ ->
@@ -141,6 +145,11 @@ sendUcan exchange model =
 
         Nothing ->
             Return.singleton model
+
+
+waitForRequests : Manager
+waitForRequests model =
+    return model (Ports.openChannel Nothing)
 
 
 

@@ -1,7 +1,9 @@
 module Account.Creation.State exposing (..)
 
+import Account.Common.State as Common
 import Account.Creation.Context as Context exposing (Context)
 import Account.Linking.Exchange as LinkingExchange
+import Account.Linking.State as Linking
 import Browser.Navigation as Nav
 import Debouncing
 import Maybe.Extra as Maybe
@@ -16,24 +18,6 @@ import Url
 
 
 -- 📣
-
-
-afterAccountCreation : Context -> Manager
-afterAccountCreation context model =
-    Return.singleton
-        { model
-            | page =
-                case model.externalContext of
-                    NotAsked ->
-                        Page.Choose
-
-                    _ ->
-                        Page.SuggestAuthorisation
-
-            --
-            , reCreateAccount = Success ()
-            , usedUsername = Just context.username
-        }
 
 
 checkIfUsernameIsAvailable : Manager
@@ -100,12 +84,11 @@ gotCreateAccountSuccess model =
         newContext =
             { context | waitingForDevices = True }
     in
-    return
+    Linking.waitForRequests
         { model
             | page = Page.CreateAccount newContext
             , reCreateAccount = Success ()
         }
-        (Ports.openSecureChannel Nothing)
 
 
 gotCreateEmailInput : String -> Manager
@@ -156,14 +139,14 @@ skipLinkDuringSetup model =
     case model.page of
         Page.CreateAccount context ->
             model
-                |> afterAccountCreation context
+                |> Common.afterAccountCreation context
                 |> Return.command
                     (case model.externalContext of
                         NotAsked ->
                             Cmd.none
 
                         _ ->
-                            Ports.closeSecureChannel ()
+                            Ports.closeChannel ()
                     )
 
         _ ->
