@@ -227,7 +227,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   //   lifetimeInSeconds
   // })
 
-  const ucanPromise = sdk.ucan.build({
+  const ucanPromise = wn.ucan.build({
     potency: "APPEND",
     resource: "*",
 
