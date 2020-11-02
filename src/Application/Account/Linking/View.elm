@@ -105,6 +105,14 @@ exchangeView fallbackView maybeExchange model =
                 , numberDisplay pin
                 ]
 
+        Just ( Authoriser (Delegation []), exchange ) ->
+            S.messageBlock
+                [ T.italic ]
+                [ Html.text "Waiting to hear from your other device."
+                , Html.br [] []
+                , Html.text "If you have this page open on more than two devices, close this one."
+                ]
+
         Just ( Authoriser (Delegation pin), exchange ) ->
             S.messageBlock
                 []

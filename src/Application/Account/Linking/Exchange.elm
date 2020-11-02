@@ -26,6 +26,7 @@ import Json.Encode as Encode
 import Maybe.Extra as Maybe
 import Ports
 import Return exposing (return)
+import Return.Extra as Return
 
 
 
@@ -37,6 +38,7 @@ type alias Exchange =
     , didThrowaway : Maybe String
     , error : Maybe String
     , side : Side
+    , stepsDone : List Step
     }
 
 
@@ -53,6 +55,13 @@ type Step
 
 
 -- 🏔
+
+
+allSteps =
+    [ Broadcast
+    , Negotiation
+    , Delegation []
+    ]
 
 
 alreadyAuthorised =
@@ -117,81 +126,116 @@ proceed maybeUsername json exchange =
             ( exchange, Cmd.none )
 
         Authoriser Negotiation ->
-            json
-                |> Decode.decodeValue (Decode.field "msg" Decode.string)
-                |> Result.mapError Decode.errorToString
-                |> Result.map
-                    (\didThrowaway ->
-                        ( maybeUsername
-                        , stepSubject exchange.side
-                        , Encode.object [ ( "didThrowaway", Encode.string didThrowaway ) ]
-                        )
-                            |> Ports.publishOnChannel
-                            |> return
-                                { exchange
-                                    | didThrowaway = Just didThrowaway
-                                    , side = Authoriser (Delegation [])
-                                }
-                    )
-                |> handleJsonResult exchange
+            case exchange.stepsDone of
+                [ Broadcast ] ->
+                    json
+                        |> Decode.decodeValue (Decode.field "msg" Decode.string)
+                        |> Result.mapError Decode.errorToString
+                        |> Result.map
+                            (\didThrowaway ->
+                                ( maybeUsername
+                                , stepSubject exchange.side
+                                , Encode.object [ ( "didThrowaway", Encode.string didThrowaway ) ]
+                                )
+                                    |> Ports.publishOnChannel
+                                    |> return
+                                        { exchange
+                                            | didThrowaway = Just didThrowaway
+                                            , side = Authoriser (Delegation [])
+                                            , stepsDone = [ Broadcast, Negotiation ]
+                                        }
+                            )
+                        |> handleJsonResult exchange
+
+                _ ->
+                    Return.singleton exchange
 
         Authoriser (Delegation _) ->
-            json
-                |> Decode.decodeValue didAndPinDecoder
-                |> Result.mapError Decode.errorToString
-                |> Result.map
-                    (\{ did, pin } ->
-                        Return.singleton
-                            { exchange
-                                | didInquirer = Just did
-                                , side = Authoriser (Delegation pin)
-                            }
-                    )
-                |> handleJsonResult exchange
+            case exchange.stepsDone of
+                [ Broadcast, Negotiation ] ->
+                    json
+                        |> Decode.decodeValue didAndPinDecoder
+                        |> Result.mapError Decode.errorToString
+                        |> Result.map
+                            (\{ did, pin } ->
+                                Return.singleton
+                                    { exchange
+                                        | didInquirer = Just did
+                                        , side = Authoriser (Delegation pin)
+                                        , stepsDone = allSteps
+                                    }
+                            )
+                        |> handleJsonResult exchange
+
+                _ ->
+                    Return.singleton exchange
 
         -----------------------------------------
         -- Inquirer
         -----------------------------------------
         Inquirer Broadcast ->
-            [ Ports.openChannel maybeUsername
-            , Ports.publishOnChannel
-                ( maybeUsername
-                , stepSubject exchange.side
-                , Encode.null
-                )
-            ]
-                |> Cmd.batch
-                |> return { exchange | side = Inquirer Negotiation }
-
-        Inquirer Negotiation ->
-            json
-                |> Decode.decodeValue (Decode.field "msg" <| Decode.list Decode.int)
-                |> Result.mapError Decode.errorToString
-                |> Result.map
-                    (\pin ->
+            case exchange.stepsDone of
+                [] ->
+                    [ Ports.openChannel maybeUsername
+                    , Ports.publishOnChannel
                         ( maybeUsername
                         , stepSubject exchange.side
-                        , Encode.object [ ( "pin", Encode.list Encode.int pin ) ]
+                        , Encode.null
                         )
-                            |> Ports.publishOnChannel
-                            |> return { exchange | side = Inquirer (Delegation pin) }
-                    )
-                |> handleJsonResult exchange
+                    ]
+                        |> Cmd.batch
+                        |> return
+                            { exchange
+                                | side = Inquirer Negotiation
+                                , stepsDone = [ Broadcast ]
+                            }
+
+                _ ->
+                    Return.singleton exchange
+
+        Inquirer Negotiation ->
+            case exchange.stepsDone of
+                [ Broadcast ] ->
+                    json
+                        |> Decode.decodeValue (Decode.field "msg" <| Decode.list Decode.int)
+                        |> Result.mapError Decode.errorToString
+                        |> Result.map
+                            (\pin ->
+                                ( maybeUsername
+                                , stepSubject exchange.side
+                                , Encode.object [ ( "pin", Encode.list Encode.int pin ) ]
+                                )
+                                    |> Ports.publishOnChannel
+                                    |> return
+                                        { exchange
+                                            | side = Inquirer (Delegation pin)
+                                            , stepsDone = [ Broadcast, Negotiation ]
+                                        }
+                            )
+                        |> handleJsonResult exchange
+
+                _ ->
+                    Return.singleton exchange
 
         Inquirer (Delegation _) ->
-            json
-                |> Decode.decodeValue readKeyAndUcanDecoder
-                |> Result.mapError Decode.errorToString
-                |> Result.map
-                    (\{ readKey, ucan } ->
-                        Ports.linkedDevice
-                            { readKey = readKey
-                            , ucan = ucan
-                            , username = Maybe.withDefault "" maybeUsername
-                            }
-                    )
-                |> Result.map (Tuple.pair exchange)
-                |> handleJsonResult exchange
+            case exchange.stepsDone of
+                [ Broadcast, Negotiation ] ->
+                    json
+                        |> Decode.decodeValue readKeyAndUcanDecoder
+                        |> Result.mapError Decode.errorToString
+                        |> Result.map
+                            (\{ readKey, ucan } ->
+                                Ports.linkedDevice
+                                    { readKey = readKey
+                                    , ucan = ucan
+                                    , username = Maybe.withDefault "" maybeUsername
+                                    }
+                            )
+                        |> Result.map (return { exchange | stepsDone = allSteps })
+                        |> handleJsonResult exchange
+
+                _ ->
+                    Return.singleton exchange
 
 
 
@@ -204,6 +248,7 @@ initialInquirerExchange =
     , didThrowaway = Nothing
     , error = Nothing
     , side = Inquirer Broadcast
+    , stepsDone = []
     }
 
 
@@ -217,6 +262,7 @@ initialAuthoriserExchange =
     , didThrowaway = Nothing
     , error = Nothing
     , side = Authoriser Negotiation
+    , stepsDone = [ Broadcast ]
     }
 
 

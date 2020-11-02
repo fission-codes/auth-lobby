@@ -306,6 +306,7 @@ async function openChannel(maybeUsername) {
 async function publishOnChannel([ maybeUsername, subject, data ]) {
   const rootDid = await lookupRootDid(maybeUsername)
   const topic = `deviceLink@${rootDid}`
+  const publish = a => ipfs.pubsub.publish(topic, a)
 
   switch (subject) {
 
@@ -325,7 +326,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         .then(k => wn.did.publicKeyToDid(k, "rsa"))
 
       cs.pingIntervalId = setInterval(
-        () => ipfs.pubsub.publish(topic, didThrowaway),
+        () => publish(didThrowaway),
         2000
       )
     })()
@@ -383,8 +384,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
       )
 
       // Publish
-      ipfs.pubsub.publish(
-        topic,
+      publish(
         JSON.stringify({
           iv: arrayBufferToBase64(iv),
           msg: arrayBufferToBase64(msg),
@@ -414,8 +414,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
       )
 
       // Publish
-      ipfs.pubsub.publish(
-        topic,
+      publish(
         JSON.stringify({
           iv: arrayBufferToBase64(iv),
           msg: arrayBufferToBase64(msg)
@@ -454,8 +453,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
       )
 
       // Publish
-      ipfs.pubsub.publish(
-        topic,
+      publish(
         JSON.stringify({
           iv: arrayBufferToBase64(iv),
           msg: arrayBufferToBase64(msg)
@@ -475,8 +473,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
           jsonBuffer(data)
         )
 
-        ipfs.pubsub.publish(
-          topic,
+        publish(
           JSON.stringify({
             iv: arrayBufferToBase64(iv),
             msg: arrayBufferToBase64(msg)
@@ -484,8 +481,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         )
 
       } else {
-        ipfs.pubsub.publish(
-          topic,
+        publish(
           JSON.stringify(data)
         )
 
@@ -509,23 +505,13 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
   // Ignore our own messages, so stop here
   if (from === ipfsId) {
     return
+  }
 
   // Stop interval for broadcast
-  } else if (cs.pingIntervalId) {
+  if (cs.pingIntervalId) {
     clearInterval(cs.pingIntervalId)
     cs.pingIntervalId = null
   }
-
-  // TODO:
-  // } else if (string.startsWith("ALREADY")) {
-  //   const split = string.split("-")
-  //   const unwantedDevice = split[1]
-  //
-  //   if (ipfsId === unwantedDevice) {
-  //     ipfs.pubsub.unsubscribe(rootDid)
-  //     app.ports.cancelLink.send({ onBothSides: false })
-  //     alert("You currently have this page open on multiple devices, I've chosen your other device to authenticate with.")
-  //   }
 
   const decryptedMessagePromise = (async () => {
     ////////////////////////////////////////////
@@ -534,6 +520,11 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
     if (cs.temporaryRsaPair) {
       const json = JSON.parse(string)
       const iv = base64ToArrayBuffer(json.iv)
+
+      // Already did this?
+      if (cs.sessionKey) {
+        throw new Error("Already got a session key")
+      }
 
       // Extract session key
       const rawSessionKey = await crypto.subtle.decrypt(
@@ -600,7 +591,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
         throw new Error("Closed UCAN session key does not match the one we already have")
       }
 
-      // Carry on
+      // Carry on with challenge
       return Array.from(crypto.getRandomValues(
         new Uint8Array(6)
       )).map(n => {
@@ -642,7 +633,11 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
   try {
     decryptedMessage = await decryptedMessagePromise
   } catch (err) {
-    console.error("Got invalid channel message", err)
+    if (err.message.indexOf("DOMException")) {
+      console.warn("Couldn't decrypt message, probably not intended for this device")
+    } else {
+      console.warn("Got invalid channel message", err)
+    }
   }
 
   if (!decryptedMessage) return
@@ -659,10 +654,14 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
   // ACT ON MESSAGE
   // Either:
   // * Cancel the device link
+  // * Ignore encrypted messages if we don't have any keys to decrypt them
   // * Pass the message to the Elm app
   if (obj.linkStatus === "DENIED") {
     closeChannel()
     app.ports.cancelLink.send({ onBothSides: false })
+
+  } else if (obj.iv && !cs.sessionKey) {
+    return
 
   } else {
     app.ports.gotChannelMessage.send({
@@ -689,7 +688,8 @@ async function closeChannel() {
  * Reset the channel state.
  */
 function resetChannelState() {
-  cs = {}
+  cs.sessionKey = null
+  cs.temporaryRsaPair = null
 }
 
 
