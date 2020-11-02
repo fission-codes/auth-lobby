@@ -275,16 +275,6 @@ let cs = {}
 
 
 /**
- * Close the channel & reset state.
- */
-async function closeChannel() {
-  console.log("Closing channel")
-  await ipfs.pubsub.unsubscribe()
-  resetChannelState()
-}
-
-
-/**
  * Tries to subscribe to a pubsub channel
  * with the root DID as the topic.
  */
@@ -301,6 +291,7 @@ async function openChannel(maybeUsername) {
   }
 
   console.log("Opening channel", topic)
+  cs.topic = topic
 
   await ipfs.pubsub.subscribe(
     topic,
@@ -470,6 +461,9 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
           msg: arrayBufferToBase64(msg)
         })
       )
+
+      // Reset channel state
+      resetChannelState()
     })()
 
     ////////////////////////////////////////////
@@ -495,6 +489,11 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
           JSON.stringify(data)
         )
 
+      }
+
+      // Reset channel state when cancelling
+      if (data.linkStatus === "DENIED") {
+        resetChannelState()
       }
 
   }
@@ -663,7 +662,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
   // * Pass the message to the Elm app
   if (obj.linkStatus === "DENIED") {
     closeChannel()
-    app.ports.cancelLink.send({ onBothSides: true })
+    app.ports.cancelLink.send({ onBothSides: false })
 
   } else {
     app.ports.gotChannelMessage.send({
@@ -676,6 +675,19 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
 }}
 
 
+/**
+ * Close the channel.
+ */
+async function closeChannel() {
+  console.log("Closing channel")
+  await ipfs.pubsub.unsubscribe(cs.topic)
+  resetChannelState()
+}
+
+
+/**
+ * Reset the channel state.
+ */
 function resetChannelState() {
   cs = {}
 }
