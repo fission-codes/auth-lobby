@@ -10,7 +10,30 @@ Pretty much copied from an example on https://github.com/ipfs/js-ipfs
 import { Server, IPFSService } from "ipfs-message-port-server"
 
 
+const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
+const DELEGATE_ADDR = "/dns4/ipfs.runfission.com/tcp/443/https"
+
+
+const OPTIONS = {
+  config: {
+    Addresses: {
+      Delegates: [ DELEGATE_ADDR ]
+    },
+    Bootstrap: [ PEER_WSS ],
+    Discovery: {
+      webRTCStar: { enabled: false }
+    }
+  },
+  preload: {
+    enabled: false
+  }
+}
+
+
 window = self // hack the planet 🌍
+self.RTCPeerConnection = true
+
+
 importScripts("web_modules/ipfs.min.js")
 
 
@@ -25,7 +48,7 @@ const main = async () => {
 
   // Start an IPFS node & create server that will expose it's API to all clients
   // over message channel.
-  const ipfs = await IPFS.create()
+  const ipfs = await IPFS.create(OPTIONS)
   const service = new IPFSService(ipfs)
   const server = new Server(service)
 

@@ -68,11 +68,12 @@ workbox_config 		:= "workbox.config.cjs"
 	cp node_modules/webnative/index.umd.js web_modules/webnative.js
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
-	just download-web-module ipfs.min.js https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.49.2-rc.4/index.min.js
+	just download-web-module ipfs.min.js https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.51.0/index.min.js
 
 
 @js:
 	echo "📄  Copying JS files"
+	rm -rf {{dist_dir}}/web_modules
 	cp -rf web_modules {{dist_dir}}/web_modules
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 	{{node_bin}}/esbuild --bundle --outfile={{dist_dir}}/worker.min.js {{src_dir}}/Javascript/Worker.js
