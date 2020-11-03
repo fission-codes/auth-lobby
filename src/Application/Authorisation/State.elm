@@ -53,7 +53,7 @@ allow model =
                     List.map
                         (\resource ->
                             { resource = resource
-                            , capability = Ucan.capabilities.overwrite
+                            , capability = Ucan.fsCapabilities.overwrite
                             }
                         )
                         resources

@@ -14,7 +14,7 @@ import Debouncing
 import External.Context
 import Maybe.Extra as Maybe
 import Other.State as Other
-import Page
+import Page exposing (Page)
 import Ports
 import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
@@ -58,60 +58,64 @@ init flags url navKey =
             External.Context.extractFromUrl url
 
         page =
-            if Maybe.isJust flags.usedUsername then
-                Page.SuggestAuthorisation
-
-            else
-                case RemoteData.map .newUser externalContext of
-                    Success (Just True) ->
-                        Page.CreateAccount Account.Creation.Context.default
-
-                    Success (Just False) ->
-                        Page.LinkAccount Account.Linking.Context.default
-
-                    _ ->
-                        let
-                            context =
-                                Account.Linking.Context.default
-
-                            maybeUsername =
-                                url
-                                    |> Url.parse (Url.query Account.Linking.Url.screenParamsParser)
-                                    |> Maybe.join
-                        in
-                        case maybeUsername of
-                            Just username ->
-                                Page.LinkAccount { context | username = username }
-
-                            Nothing ->
-                                Page.Choose
+            determineInitialPage flags url externalContext
     in
-    return
-        { dataRootDomain = flags.dataRootDomain
-        , externalContext = externalContext
-        , navKey = navKey
-        , page = page
-        , url = url
-        , usedUsername = flags.usedUsername
+    { dataRootDomain = flags.dataRootDomain
+    , externalContext = externalContext
+    , navKey = navKey
+    , page = page
+    , url = url
+    , usedUsername = flags.usedUsername
 
-        -----------------------------------------
-        -- Debouncers
-        -----------------------------------------
-        , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
+    -----------------------------------------
+    -- Debouncers
+    -----------------------------------------
+    , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
 
-        -----------------------------------------
-        -- Remote Data
-        -----------------------------------------
-        , reCreateAccount = RemoteData.NotAsked
-        }
-        -- If authenticated, subscribe to the pubsub channel.
-        (case flags.usedUsername of
-            Just _ ->
-                Ports.openSecureChannel Nothing
+    -----------------------------------------
+    -- Remote Data
+    -----------------------------------------
+    , reCreateAccount = RemoteData.NotAsked
+    }
+        |> -- If authenticated, wait for incoming linking requests.
+           (case flags.usedUsername of
+                Just _ ->
+                    Linking.waitForRequests
 
-            Nothing ->
-                Cmd.none
-        )
+                Nothing ->
+                    Return.singleton
+           )
+
+
+determineInitialPage : Flags -> Url -> External.Context.ParsedContext -> Page
+determineInitialPage flags url externalContext =
+    if Maybe.isJust flags.usedUsername then
+        Page.SuggestAuthorisation
+
+    else
+        case RemoteData.map .newUser externalContext of
+            Success (Just True) ->
+                Page.CreateAccount Account.Creation.Context.default
+
+            Success (Just False) ->
+                Page.LinkAccount Account.Linking.Context.default
+
+            _ ->
+                let
+                    context =
+                        Account.Linking.Context.default
+
+                    maybeUsername =
+                        url
+                            |> Url.parse (Url.query Account.Linking.Url.screenParamsParser)
+                            |> Maybe.join
+                in
+                case maybeUsername of
+                    Just username ->
+                        Page.LinkAccount { context | username = username }
+
+                    Nothing ->
+                        Page.Choose
 
 
 
@@ -135,6 +139,15 @@ update msg =
 
         GotUcansForApplication a ->
             Authorisation.gotUcansForApplication a
+
+        -----------------------------------------
+        -- Channel
+        -----------------------------------------
+        GotInvalidRootDid ->
+            Channel.gotInvalidRootDid
+
+        GotChannelMessage a ->
+            Channel.gotMessage a
 
         -----------------------------------------
         -- Create
@@ -203,21 +216,6 @@ update msg =
             Routing.urlRequested a
 
         -----------------------------------------
-        -- Secure Channel
-        -----------------------------------------
-        GotInvalidRootDid ->
-            Channel.gotInvalidRootDid
-
-        GotSecureChannelMessage a ->
-            Channel.gotMessage a
-
-        SecureChannelOpened a ->
-            Channel.opened a
-
-        StartExchange a ->
-            Channel.startExchange a
-
-        -----------------------------------------
         -- 🧿 Other things
         -----------------------------------------
         CopyToClipboard a ->
@@ -243,11 +241,10 @@ subscriptions _ =
         , Ports.gotUsernameAvailability GotUsernameAvailability
 
         -----------------------------------------
-        -- Secure Channel
+        -- Channel
         -----------------------------------------
         , Ports.gotInvalidRootDid (\_ -> GotInvalidRootDid)
-        , Ports.gotSecureChannelMessage GotSecureChannelMessage
-        , Ports.secureChannelOpened SecureChannelOpened
+        , Ports.gotChannelMessage GotChannelMessage
         ]
 
 

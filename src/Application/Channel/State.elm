@@ -23,7 +23,11 @@ gotInvalidRootDid model =
         -- Link Account Page
         -----------------------------------------
         Page.LinkAccount context ->
-            { context | note = Just "Couldn't find that user", waitingForDevices = False }
+            { context
+                | exchange = Nothing
+                , note = Just "Couldn't find that user"
+                , waitingForDevices = False
+            }
                 |> Page.LinkAccount
                 |> (\page -> { model | page = page })
                 |> Return.singleton
@@ -83,15 +87,28 @@ gotMessage json model =
                     in
                     exchange
                         |> LinkingExchange.proceed maybeUsername json
-                        |> Return.map (\e -> { context | exchange = Just e })
+                        |> Return.map
+                            (\e ->
+                                { context
+                                    | exchange = Just e
+                                    , waitingForDevices = False
+                                }
+                            )
                         |> Return.map (\c -> { model | page = Page.LinkAccount c })
 
-                -- This scenario isn't accounted for, because normally
-                -- the user on the already authenticated device will
-                -- not be on the link-account page (yet). See `case`
-                -- branch at the bottom of this function 👇 for that side.
                 _ ->
-                    Return.singleton model
+                    if Maybe.isJust model.usedUsername then
+                        -- This scenario isn't accounted for, because normally
+                        -- the user on the already authenticated device will
+                        -- not be on the link-account page (yet). See `case`
+                        -- branch at the bottom of this function 👇 for that side.
+                        Return.singleton model
+
+                    else
+                        LinkingExchange.initialInquirerExchange
+                            |> LinkingExchange.proceed (Just context.username) json
+                            |> Return.map (\e -> { context | exchange = Just e })
+                            |> Return.map (\c -> { model | page = Page.LinkAccount c })
 
         -----------------------------------------
         -- *
@@ -115,68 +132,3 @@ gotMessage json model =
 
             else
                 Return.singleton model
-
-
-opened : String -> Manager
-opened from model =
-    case model.page of
-        -----------------------------------------
-        -- Link Account Page
-        -----------------------------------------
-        Page.LinkAccount context ->
-            if context.waitingForDevices then
-                LinkingExchange.nonceGenerator
-                    |> Random.pair LinkingExchange.nonceGenerator
-                    |> Random.generate StartExchange
-                    |> return model
-
-            else
-                alreadyLinking model
-
-        -----------------------------------------
-        -- *
-        -----------------------------------------
-        _ ->
-            Return.singleton model
-
-
-startExchange : ( String, String ) -> Manager
-startExchange nonces model =
-    case model.page of
-        -----------------------------------------
-        -- Link Account Page
-        -----------------------------------------
-        Page.LinkAccount context ->
-            nonces
-                |> LinkingExchange.inquire context.username
-                |> Return.map
-                    (\e ->
-                        { context | exchange = Just e, waitingForDevices = False }
-                    )
-                |> Return.map
-                    (\c ->
-                        { model | page = Page.LinkAccount c }
-                    )
-
-        -----------------------------------------
-        -- *
-        -----------------------------------------
-        _ ->
-            Return.singleton model
-
-
-
--- ㊙️
-
-
-alreadyLinking : Manager
-alreadyLinking model =
-    -- TODO: Let the other device know the linking process
-    --       has already started on another device.
-    --
-    -- ( maybeUsername
-    -- , Json.Encode.string (LinkingExchange.alreadyAuthorised ++ "-" ++ from)
-    -- )
-    --     |> Ports.publishOnSecureChannel
-    --     |> return model
-    Return.singleton model

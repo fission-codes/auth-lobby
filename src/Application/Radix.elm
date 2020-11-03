@@ -87,12 +87,10 @@ type Msg
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
       -----------------------------------------
-      -- Secure Channel
+      -- Channel
       -----------------------------------------
     | GotInvalidRootDid
-    | GotSecureChannelMessage Json.Value
-    | SecureChannelOpened String
-    | StartExchange ( String, String )
+    | GotChannelMessage Json.Value
       -----------------------------------------
       -- 🧿 Other things
       -----------------------------------------
