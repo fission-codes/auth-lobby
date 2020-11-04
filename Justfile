@@ -145,17 +145,17 @@ main_css := src_dir + "/Css/Main.css"
 @deploy-production:
 	echo "🛳  Deploying to production"
 	just production-build
-	cp .fission.yaml.production .fission.yaml
+	cp fission.yaml.production fission.yaml
 	{{fission_cmd}} up
-	rm .fission.yaml
+	rm fission.yaml
 
 
 @deploy-staging:
 	echo "🛳  Deploying to staging"
 	just staging-build
-	cp .fission.yaml.staging .fission.yaml
+	cp fission.yaml.staging fission.yaml
 	{{fission_cmd}} up
-	rm .fission.yaml
+	rm fission.yaml
 
 
 
