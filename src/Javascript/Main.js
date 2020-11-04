@@ -283,7 +283,7 @@ async function openChannel(maybeUsername) {
 
   const rootDid = await lookupRootDid(maybeUsername).catch(_ => null)
   const ipfsId = await ipfs.id().then(a => a.id)
-  const topic = `deviceLink@${rootDid}`
+  const topic = `deviceLink#${rootDid}`
 
   if (!rootDid) {
     app.ports.gotInvalidRootDid.send(null)
@@ -305,7 +305,7 @@ async function openChannel(maybeUsername) {
  */
 async function publishOnChannel([ maybeUsername, subject, data ]) {
   const rootDid = await lookupRootDid(maybeUsername)
-  const topic = `deviceLink@${rootDid}`
+  const topic = `deviceLink#${rootDid}`
   const publish = a => ipfs.pubsub.publish(topic, a)
 
   switch (subject) {
