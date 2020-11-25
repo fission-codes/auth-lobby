@@ -320,7 +320,7 @@ needsLink context model =
                             [ Html.text "Remind me later" ]
                         , Html.br [] []
                         , Html.a
-                            [ A.href "https://guide.fission.codes/hosting/fission-accounts"
+                            [ A.href "https://guide.fission.codes/accounts"
                             , A.target "_blank"
 
                             --
