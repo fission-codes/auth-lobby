@@ -92,13 +92,13 @@ async function bootIpfs() {
 
   wn.ipfs.set(ipfs)
 
-  ipfs.libp2p.connectionManager.on("peer:connect", (connection) => {
-    console.log("Connected to peer", connection.remotePeer._idB58String)
-  })
-
-  ipfs.libp2p.connectionManager.on("peer:disconnect", (connection) => {
-    console.log("Disconnected from peer", connection.remotePeer._idB58String)
-  })
+  // ipfs.libp2p.connectionManager.on("peer:connect", (connection) => {
+  //   console.log("Connected to peer", connection.remotePeer._idB58String)
+  // })
+  //
+  // ipfs.libp2p.connectionManager.on("peer:disconnect", (connection) => {
+  //   console.log("Disconnected from peer", connection.remotePeer._idB58String)
+  // })
 
   window.i = ipfs
 }
@@ -293,10 +293,18 @@ async function openChannel(maybeUsername) {
   console.log("Opening channel", topic)
   cs.topic = topic
 
-  await ipfs.pubsub.subscribe(
-    topic,
-    channelMessage(rootDid, ipfsId)
-  )
+  // Replace the following with the socket code below
+  // to switch to IPFS pubsub instead of a web socket.
+  // Also change the `publishOnChannel` and `closeChannel` functions.
+  // ---
+  // await ipfs.pubsub.subscribe(
+  //   topic,
+  //   channelMessage(rootDid, ipfsId)
+  // )
+
+  cs.socket = new WebSocket(`wss://runfission.net/user/link/${rootDid}`)
+  cs.socket.onerror = () => alert("Couldn't establish web socket")
+  cs.socket.onmessage = channelMessage(rootDid, ipfsId)
 }
 
 
@@ -306,7 +314,8 @@ async function openChannel(maybeUsername) {
 async function publishOnChannel([ maybeUsername, subject, data ]) {
   const rootDid = await lookupRootDid(maybeUsername)
   const topic = `deviceLink#${rootDid}`
-  const publish = a => ipfs.pubsub.publish(topic, a)
+  // const publish = a => ipfs.pubsub.publish(topic, a)
+  const publish = a => cs.socket.send(a)
 
   switch (subject) {
 
@@ -679,7 +688,8 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
  */
 async function closeChannel() {
   console.log("Closing channel")
-  await ipfs.pubsub.unsubscribe(cs.topic)
+  // await ipfs.pubsub.unsubscribe(cs.topic)
+  cs.socket.close()
   resetChannelState()
 }
 
