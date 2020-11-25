@@ -30,10 +30,6 @@ const OPTIONS = {
 }
 
 
-window = self // hack the planet 🌍
-self.RTCPeerConnection = true
-
-
 importScripts("web_modules/ipfs.min.js")
 
 

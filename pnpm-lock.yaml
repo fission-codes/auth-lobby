@@ -1,7 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/768a1384450d0be543152f75d02ffe3dfe90bd4e
-  ipfs-message-port-protocol: 0.3.0
-  ipfs-message-port-server: 0.3.0
+  ipfs-message-port-server: 'link:../../Code/js-ipfs/packages/ipfs-message-port-server'
   webnative: 0.19.12
 devDependencies:
   elm-tailwind-css: 0.4.5
@@ -1622,19 +1621,6 @@ packages:
       npm: '>=3.0.0'
     resolution:
       integrity: sha512-yoXTbV3llpm+EBGWKeL9xKtksPE/s6DPoDSY4fn8I8TEW1zehWXPSB0pwAXVDlLaOlrw+sNynj995uD9abmPhA==
-  /cids/1.0.0:
-    dependencies:
-      class-is: 1.1.0
-      multibase: 3.0.0
-      multicodec: 2.0.1
-      multihashes: 3.0.1
-      uint8arrays: 1.1.0
-    dev: false
-    engines:
-      node: '>=4.0.0'
-      npm: '>=3.0.0'
-    resolution:
-      integrity: sha512-HEBCIElSiXlkgZq3dgHJc3eDcnFteFp96N8/1/oqX5lkxBtB66sZ12jqEP3g7Ut++jEk6kIUGifQ1Qrya1jcNQ==
   /class-is/1.1.0:
     dev: false
     resolution:
@@ -2625,36 +2611,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
-  /ipfs-message-port-protocol/0.3.0:
-    dependencies:
-      cids: 1.0.0
-      ipld-block: 0.10.1
-    dev: false
-    engines:
-      node: '>=10.3.0'
-      npm: '>=3.0.0'
-    resolution:
-      integrity: sha512-Yw234fpSsFGszX9ECD7227BxcqZeeYa99j8TjJYdGOpUbclPA7QodQBIvmac5DdtHOzYs5CyleBaKUQThCtLwQ==
-  /ipfs-message-port-server/0.3.0:
-    dependencies:
-      cids: 1.0.0
-      it-all: 1.0.4
-    dev: false
-    engines:
-      node: '>=10.3.0'
-      npm: '>=3.0.0'
-    resolution:
-      integrity: sha512-CkoB9qhqa5HbnfUk6j6Jb8QuYbXRnkBmIYLyiE6S2+x2m/wlgvuLrC7OYk4EQpchs9xpUzjl4fN0grjVFiA3Uw==
-  /ipld-block/0.10.1:
-    dependencies:
-      cids: 1.0.0
-      class-is: 1.1.0
-    dev: false
-    engines:
-      node: '>=6.0.0'
-      npm: '>=3.0.0'
-    resolution:
-      integrity: sha512-lPMfW9tA2hVZw9hdO/YSppTxFmA0+5zxcefBOlCTOn+12RLyy+pdepKMbQw8u0KESFu3pYVmabNRWuFGcgHLLw==
   /ipld-dag-pb/0.18.5:
     dependencies:
       buffer: 5.6.0
@@ -2948,10 +2904,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
-  /it-all/1.0.4:
-    dev: false
-    resolution:
-      integrity: sha512-7K+gjHHzZ7t+bCkrtulYiow35k3UgqH7miC+iUa9RGiyDRXJ6hVDeFsDrnWrlscjrkLFOJRKHxNOke4FNoQnhw==
   /jest-worker/24.9.0:
     dependencies:
       merge-stream: 2.0.0
@@ -3429,16 +3381,6 @@ packages:
       npm: '>=6.0.0'
     resolution:
       integrity: sha512-KcCxpBVY8fdVKu4dJMAahq4F/2Z/9xqEjIiR7PiMe7LRGeorFn2NLmicN6nLBCqQvft6MG2Lc9X5P0IdyvnxEw==
-  /multibase/3.0.0:
-    dependencies:
-      base-x: 3.0.8
-      web-encoding: 1.0.4
-    dev: false
-    engines:
-      node: '>=10.0.0'
-      npm: '>=6.0.0'
-    resolution:
-      integrity: sha512-fuB+zfRbF5zWV4L+CPM0dgA0gX7DHG/IMyzwhVi2RxbRVWn41Wk7SkKW8cxYDGOg6TVh7XgyoesjOAYrB1HBAA==
   /multicodec/1.0.4:
     dependencies:
       buffer: 5.6.0
@@ -3446,13 +3388,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-NDd7FeS3QamVtbgfvu5h7fd1IlbaC4EQ0/pgU4zqE2vdHCmBGsUa0TiM8/TdSeG6BMPC92OOCf8F1ocE/Wkrrg==
-  /multicodec/2.0.1:
-    dependencies:
-      uint8arrays: 1.0.0
-      varint: 5.0.0
-    dev: false
-    resolution:
-      integrity: sha512-YDYeWn9iGa76hOHAyyZa0kbt3tr5FLg1ZXUHrZUJltjnxxdbTIbHnxWLd2zTcMOjdT3QyO+Xs4bQgJUcC2RWUA==
   /multihashes/1.0.1:
     dependencies:
       buffer: 5.6.0
@@ -3464,17 +3399,6 @@ packages:
       npm: '>=6.0.0'
     resolution:
       integrity: sha512-S27Tepg4i8atNiFaU5ZOm3+gl3KQlUanLs/jWcBxQHFttgq+5x1OgbQmf2d8axJ/48zYGBd/wT9d723USMFduw==
-  /multihashes/3.0.1:
-    dependencies:
-      multibase: 3.0.0
-      uint8arrays: 1.1.0
-      varint: 5.0.0
-    dev: false
-    engines:
-      node: '>=10.0.0'
-      npm: '>=6.0.0'
-    resolution:
-      integrity: sha512-fFY67WOtb0359IjDZxaCU3gJILlkwkFbxbwrK9Bej5+NqNaYztzLOj8/NgMNMg/InxmhK+Uu8S/U4EcqsHzB7Q==
   /multihashing-async/0.8.2:
     dependencies:
       blakejs: 1.1.0
@@ -4871,20 +4795,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
-  /uint8arrays/1.0.0:
-    dependencies:
-      multibase: 3.0.0
-      web-encoding: 1.0.4
-    dev: false
-    resolution:
-      integrity: sha512-14tqEVujDREW7YwonSZZwLvo7aFDfX7b6ubvM/U7XvZol+CC/LbhaX/550VlWmhddAL9Wou1sxp0Of3tGqXigg==
-  /uint8arrays/1.1.0:
-    dependencies:
-      multibase: 3.0.0
-      web-encoding: 1.0.4
-    dev: false
-    resolution:
-      integrity: sha512-cLdlZ6jnFczsKf5IH1gPHTtcHtPGho5r4CvctohmQjw8K7Q3gFdfIGHxSTdTaCKrL4w09SsPRJTqRS0drYeszA==
   /unicode-canonical-property-names-ecmascript/1.0.4:
     dev: true
     engines:
@@ -5014,10 +4924,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=
-  /web-encoding/1.0.4:
-    dev: false
-    resolution:
-      integrity: sha512-DcXs2lbVPzuJmn2kuDEwul2oZg7p4YMa5J2f0YzsOBHaAnBYGPNUB/rJ74DTjTKpw7F0+lSsVM8sFHE2UyBixg==
   /webnative/0.19.12:
     dependencies:
       base58-universal: 1.0.0
@@ -5269,8 +5175,7 @@ specifiers:
   elm-tailwind-css: ^0.4.5
   esbuild: ^0.8.2
   fission-kit: fission-suite/kit#768a1384450d0be543152f75d02ffe3dfe90bd4e
-  ipfs-message-port-protocol: ^0.3.0
-  ipfs-message-port-server: ^0.3.0
+  ipfs-message-port-server: ../../Code/js-ipfs/packages/ipfs-message-port-server
   mustache: ^4.0.1
   postcss-import: ^12.0.1
   tailwindcss: ^1.6.0
