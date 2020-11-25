@@ -22,7 +22,7 @@ type FileSystemRoot
 
 everything : Html Msg
 everything =
-    enterTheDragon
+    resource
         [ resourceIcon FeatherIcons.alertTriangle
         , Html.text "Your entire Fission account"
         ]
@@ -61,8 +61,8 @@ fileSystemPath : FileSystemRoot -> String -> Html Msg
 fileSystemPath root path =
     case path of
         "/" ->
-            enterTheDragon
-                [ resourceIcon FeatherIcons.alertTriangle
+            resource
+                [ resourceIcon FeatherIcons.hardDrive
                 , Html.span
                     []
                     [ Html.text "Your "
@@ -123,13 +123,6 @@ fissionDomain domain =
 
 
 -- ㊙️
-
-
-enterTheDragon =
-    resourceItem
-        [ T.bg_red
-        , T.text_white
-        ]
 
 
 resource =

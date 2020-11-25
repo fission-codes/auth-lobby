@@ -6,6 +6,7 @@ import Dict
 import External.Context exposing (Context, defaultFailedState)
 import FeatherIcons
 import Html exposing (Html)
+import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Icons
@@ -105,6 +106,55 @@ view context model =
                 ------------
                 , T.dark__text_gray_400
                 ]
+
+        --
+        , if List.any ((==) "/") context.privatePaths then
+            Html.div
+                [ T.bg_yellow_tint
+                , T.flex
+                , T.italic
+                , T.items_center
+                , T.max_w_md
+                , T.mt_6
+                , T.mx_auto
+                , T.p_4
+                , T.rounded_md
+                , T.relative
+                , T.shadow_sm
+                , T.text_left
+                , T.text_sm
+                , T.text_yellow_shade
+
+                -- Dark mode
+                ------------
+                , T.dark__bg_yellow_shade
+                , T.dark__text_yellow
+                ]
+                [ Icons.wrap
+                    [ T.align_middle
+                    , T.inline_block
+                    , T.mr_3
+                    , T.opacity_60
+                    ]
+                    (FeatherIcons.withSize 14 FeatherIcons.alertTriangle)
+                , Html.span
+                    [ T.opacity_75 ]
+                    [ Html.text """
+                        This application will have access to all your private files. Make sure you trust this app before you grant permission.
+                      """
+                    , Html.text " "
+                    , Html.a
+                        [ A.href "https://guide.fission.codes/accounts#app-permissions"
+                        , A.target "_blank"
+                        , T.underline
+                        ]
+                        [ Html.text "Learn more" ]
+                    , Html.text ""
+                    ]
+                ]
+
+          else
+            Html.nothing
 
         -----------------------------------------
         -- Buttons
