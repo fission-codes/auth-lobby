@@ -18,6 +18,7 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm-community/html-extra": "3.4.0",
+            "elm-community/list-extra": "8.2.4",
             "elm-community/maybe-extra": "5.2.0",
             "elm-community/result-extra": "2.4.0",
             "feathericons/elm-feather": "1.4.0",
@@ -33,7 +34,6 @@
             "elm/http": "2.0.0",
             "elm/regex": "1.0.0",
             "elm/virtual-dom": "1.0.2",
-            "elm-community/list-extra": "8.2.4",
             "folkertdev/elm-flate": "2.0.4",
             "justgook/elm-image": "4.0.0"
         }

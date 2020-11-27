@@ -11,6 +11,7 @@ import Html.Events as E
 import Html.Extra as Html
 import Icons
 import List.Ext as List
+import List.Extra as List
 import Loading
 import Maybe.Extra as Maybe
 import Radix exposing (..)
@@ -41,18 +42,25 @@ view context model =
                     || not (List.isEmpty context.privatePaths)
                     || not (List.isEmpty context.publicPaths)
 
-            origin =
+            label =
                 Html.span
-                    [ T.font_semibold ]
-                    [ Html.text context.redirectTo.host
-                    , Html.text (Maybe.unwrap "" (String.fromInt >> (++) ":") context.redirectTo.port_)
+                    [ T.font_semibold
+                    , T.text_black
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__text_white
                     ]
+                    (context
+                        |> appNameLabel
+                        |> Maybe.withDefault (originLabel context)
+                    )
           in
           if hasResources then
             Html.div
                 [ T.mt_10 ]
                 [ Html.text "Allow "
-                , origin
+                , label
 
                 --
                 , Html.text " access to the following for "
@@ -71,7 +79,7 @@ view context model =
             Html.div
                 [ T.mt_10 ]
                 [ Html.text "Allow "
-                , origin
+                , label
                 , Html.text " to authenticate with this account?"
                 ]
 
@@ -199,3 +207,17 @@ view context model =
                 ]
             ]
         ]
+
+
+originLabel : Context -> List (Html Msg)
+originLabel context =
+    [ Html.text context.redirectTo.host
+    , Html.text (Maybe.unwrap "" (String.fromInt >> (++) ":") context.redirectTo.port_)
+    ]
+
+
+appNameLabel : Context -> Maybe (List (Html Msg))
+appNameLabel context =
+    context.app
+        |> Maybe.andThen (String.split "/" >> List.getAt 1)
+        |> Maybe.map (Html.text >> List.singleton)
