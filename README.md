@@ -18,7 +18,7 @@ __UI for [auth.fission.codes](https://auth.fission.codes)__
 * `redirectTo`, the url the user will redirected to
 
 After that, you need at least one of these resources:
-* `appFolder`, ask if the user wants to grant access to the application folders (private and public).
+* `appFolder`, ask if the user wants to grant access to the private application folder.
 * `privatePath`, request access to a private path (you may pass multiple).
 * `publicPath`, request access to a public path (you may pass multiple).
 
