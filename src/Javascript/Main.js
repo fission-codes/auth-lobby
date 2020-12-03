@@ -315,7 +315,10 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
   const rootDid = await lookupRootDid(maybeUsername)
   const topic = `deviceLink#${rootDid}`
   // const publish = a => ipfs.pubsub.publish(topic, a)
-  const publish = a => cs.socket.send(a)
+  const publish = a => {
+    if (cs.debug) console.log("Outgoing message (encrypted if needed):", a)
+    cs.socket.send(a)
+  }
 
   switch (subject) {
 
@@ -514,6 +517,8 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
   // Ignore our own messages, so stop here
   if (from === ipfsId) {
     return
+  } else if (cs.debug) {
+    console.log("Incoming message (raw):", data)
   }
 
   // Stop interval for broadcast
@@ -645,11 +650,14 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
     if (err.message.indexOf("DOMException")) {
       console.warn("Couldn't decrypt message, probably not intended for this device")
     } else {
-      console.warn("Got invalid channel message", err)
+      console.warn("Got invalid channel message")
     }
+
+    if (cs.debug) console.warn(err)
   }
 
   if (!decryptedMessage) return
+  else if (cs.debug) console.log("Incoming message (decrypted):", decryptedMessage)
 
   // Determine message structure
   const probablyJson = (
@@ -700,6 +708,7 @@ async function closeChannel() {
 function resetChannelState() {
   cs.sessionKey = null
   cs.temporaryRsaPair = null
+  cs.debug = ["auth.runfission.net", "localhost"].includes(location.hostname)
 }
 
 
