@@ -317,7 +317,14 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
   // const publish = a => ipfs.pubsub.publish(topic, a)
   const publish = a => {
     if (cs.debug) console.log("Outgoing message (encrypted if needed):", a)
-    cs.socket.send(a)
+
+    const binary = typeof a === "string"
+      ? stringToArrayBuffer(a)
+      : a
+
+    if (cs.debug) console.log("Outgoing message (raw):", binary)
+
+    cs.socket.send(binary)
   }
 
   switch (subject) {
@@ -512,13 +519,14 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
  * 👂 Incoming channel message
  */
 function channelMessage(rootDid, ipfsId) { return async function({ from, data }) {
-  const string = data.toString()
+  const string = arrayBufferToString(data.arrayBuffer ? await data.arrayBuffer() : data)
 
   // Ignore our own messages, so stop here
   if (from === ipfsId) {
     return
   } else if (cs.debug) {
     console.log("Incoming message (raw):", data)
+    console.log("Incoming message (transformed):", string)
   }
 
   // Stop interval for broadcast
