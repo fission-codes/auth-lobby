@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/aed7844ccd76f6ca7feeca95981b47d4b1114a7c
-  ipfs-message-port-server: 0.4.2
+  ipfs-message-port-server: 0.4.3-rc.8
   webnative: 0.20.2
 devDependencies:
   elm-tailwind-css: 1.0.1_tailwindcss@1.6.2
@@ -2628,7 +2628,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
-  /ipfs-message-port-protocol/0.4.2:
+  /ipfs-message-port-protocol/0.4.3-rc.8:
     dependencies:
       cids: 1.0.2
       ipld-block: 0.11.0
@@ -2637,17 +2637,17 @@ packages:
       node: '>=10.3.0'
       npm: '>=3.0.0'
     resolution:
-      integrity: sha512-fjSjZ6m4Gw7fcIw1W1mYLAQo7WseJbQcV30KKbuXe82lvtfqChMObFjDVRCvXaowxH2dINpRt8mCsXWhkRlIqg==
-  /ipfs-message-port-server/0.4.2:
+      integrity: sha512-X36ZMl5QTLaDK5M7/DckTIInW0pWbH6SClaVm7+eg4P+sXcPKG8SUUITs7SKff/vzg7IFb7sa609CaHym+KdFg==
+  /ipfs-message-port-server/0.4.3-rc.8:
     dependencies:
-      ipfs-message-port-protocol: 0.4.2
+      ipfs-message-port-protocol: 0.4.3-rc.8
       it-all: 1.0.4
     dev: false
     engines:
       node: '>=10.3.0'
       npm: '>=3.0.0'
     resolution:
-      integrity: sha512-wJ+3GFIMWwyfSKUSdp3g6WDvenPNFmv/nV3AIw/HpDb0awqjbLLGKHTT9LaoTfvD+bEeTEn7IWzfXlojg0/wHA==
+      integrity: sha512-gz5PUOgaGAWDzT3wof3zGidQUBxiCvV81m9A+eLNjz3fEQdm9oTQavz2dVnGYe5LiWEZQ6bwpTRpnnCBP/9ERg==
   /ipld-block/0.11.0:
     dependencies:
       cids: 1.0.2
@@ -5329,13 +5329,14 @@ packages:
     dev: false
     name: fission-kit
     resolution:
+      registry: 'https://registry.npmjs.org/'
       tarball: 'https://codeload.github.com/fission-suite/kit/tar.gz/aed7844ccd76f6ca7feeca95981b47d4b1114a7c'
     version: 0.2.0
 specifiers:
   elm-tailwind-css: ^1.0.1
   esbuild: ^0.8.2
   fission-kit: fission-suite/kit#aed7844ccd76f6ca7feeca95981b47d4b1114a7c
-  ipfs-message-port-server: ^0.4.1
+  ipfs-message-port-server: 0.4.3-rc.8
   mustache: ^4.0.1
   postcss-import: ^12.0.1
   tailwindcss: ^1.6.0

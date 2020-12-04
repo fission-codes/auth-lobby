@@ -3,7 +3,7 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#aed7844ccd76f6ca7feeca95981b47d4b1114a7c",
-    "ipfs-message-port-server": "^0.4.1",
+    "ipfs-message-port-server": "0.4.3-rc.8",
     "webnative": "^0.20.2"
   },
   "devDependencies": {
