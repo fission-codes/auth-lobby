@@ -135,6 +135,7 @@ main_css := src_dir + "/Css/Main.css"
 		--output {{dist_css}} \
 		--purge-content={{dist_elm}} \
 		--purge-content={{dist_dir}}/index.html \
+		--purge-content={{dist_dir}}/reset/index.html \
 		--post-plugin-before postcss-import
 	echo ""
 
