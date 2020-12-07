@@ -304,8 +304,11 @@ async function openChannel(maybeUsername) {
   // )
 
   cs.socket = new WebSocket(`wss://runfission.net/user/link/${rootDid}`)
-  cs.socket.onerror = () => alert("Couldn't establish web socket")
   cs.socket.onmessage = channelMessage(rootDid, ipfsId)
+  cs.socket.onerror = () => {
+    if (cs.socket.closed) return
+    alert("Couldn't establish web socket")
+  }
 }
 
 
@@ -706,7 +709,8 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
 async function closeChannel() {
   console.log("Closing channel")
   // await ipfs.pubsub.unsubscribe(cs.topic)
-  cs.socket.close()
+  cs.socket.close(1000)
+  cs.socket.closed = true
   resetChannelState()
 }
 
