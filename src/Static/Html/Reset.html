@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+
+  <meta charset="utf-8">
+  <title>Fission</title>
+
+  <!-- Favicons & Manifests -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#ff5274" />
+  <meta name="msapplication-TileColor" content="#ff5274" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../stylesheet.css" />
+
+</head>
+<body>
+
+  <script src="../web_modules/localforage.min.js"></script>
+  <script src="../web_modules/webnative.js"></script>
+  <script>
+    async function clear() {
+      const ks = await webnative.keystore.get()
+      await ks.destroy()
+      await localforage.clear()
+    }
+
+    clear()
+  </script>
+
+  <p class="flex font-body items-center justify-center h-screen">
+    🧹 Cleared all traces
+  </p>
+
+</body>
+</html>

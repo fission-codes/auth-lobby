@@ -160,7 +160,8 @@ async function leave() {
     await localforage.removeItem("readKey")
     await localforage.removeItem("ucan")
     await localforage.removeItem("usedUsername")
-    await wn.keystore.clear()
+    const ks = await webnative.keystore.get()
+    await ks.destroy()
 
     location.reload()
   }

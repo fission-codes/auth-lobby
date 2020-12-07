@@ -50,8 +50,11 @@ workbox_config 		:= "workbox.config.cjs"
 
 @html:
 	echo "📄  Copying static HTML files"
+	mkdir -p {{dist_dir}}/reset/
+
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
 	cp {{src_dir}}/Static/Html/Ipfs.html {{dist_dir}}/ipfs.html
+	cp {{src_dir}}/Static/Html/Reset.html {{dist_dir}}/reset/index.html
 
 
 @images:
