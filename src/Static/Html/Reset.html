@@ -22,17 +22,23 @@
   <script src="../web_modules/localforage.min.js"></script>
   <script src="../web_modules/webnative.js"></script>
   <script>
-    async function clear() {
+    async function clearData(event) {
       const ks = await webnative.keystore.get()
       await ks.destroy()
       await localforage.clear()
-    }
 
-    clear()
+      const button = document.body.querySelector("button")
+      button.className = "cursor-default inline-flex p-3 text-green"
+      button.querySelectorAll("span")[1].innerHTML = "Cleared all traces"
+      button.blur()
+    }
   </script>
 
   <p class="flex font-body items-center justify-center h-screen">
-    🧹 Cleared all traces
+    <button class="border-2 border-gray-500 dark:border-gray-200 cursor-pointer inline-flex p-3 rounded" onclick="clearData()">
+      <span class="mr-2 pt-px">🧹</span>
+      <span class="pt-px">Clear lobby Fission data</span>
+    </button>
   </p>
 
 </body>
