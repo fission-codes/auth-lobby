@@ -19,27 +19,38 @@
 </head>
 <body>
 
+  <div class="flex flex-col font-body items-center justify-center h-screen p-4">
+    <button class="border-2 border-gray-500 dark:border-gray-200 cursor-pointer inline-flex p-3 rounded" onclick="clearData()">
+      <span class="mr-2 pt-px">🧹</span>
+      <span class="pt-px">Clear lobby Fission data</span>
+    </button>
+
+    <p id="did" class="break-all max-w-sm mt-6 opacity-70 text-sm"></p>
+  </div>
+
+
   <script src="../web_modules/localforage.min.js"></script>
   <script src="../web_modules/webnative.js"></script>
   <script>
     async function clearData(event) {
-      const ks = await webnative.keystore.get()
-      await ks.destroy()
+      await webnative.keystore.clear()
       await localforage.clear()
 
       const button = document.body.querySelector("button")
       button.className = "cursor-default inline-flex p-3 text-green"
       button.querySelectorAll("span")[1].innerHTML = "Cleared all traces"
       button.blur()
-    }
-  </script>
 
-  <p class="flex font-body items-center justify-center h-screen">
-    <button class="border-2 border-gray-500 dark:border-gray-200 cursor-pointer inline-flex p-3 rounded" onclick="clearData()">
-      <span class="mr-2 pt-px">🧹</span>
-      <span class="pt-px">Clear lobby Fission data</span>
-    </button>
-  </p>
+      await renderDid()
+    }
+
+    async function renderDid() {
+      const did = await webnative.did.ucan()
+      document.querySelector("#did").innerHTML = did
+    }
+
+    renderDid()
+  </script>
 
 </body>
 </html>
