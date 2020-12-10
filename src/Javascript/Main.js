@@ -419,16 +419,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
     // 🔗 INQUIRER, Pt. 4
     ////////////////////////////////////////////
     case "USER_CHALLENGE": return await (async () => {
-      const iv = crypto.getRandomValues(
-        new Uint8Array(12)
-      )
-
-      const msg = await crypto.subtle.encrypt(
-        {
-          name: "AES-GCM",
-          iv: iv
-        },
-        cs.sessionKey,
+      const { iv, msg } = await encryptWithAes(
         jsonBuffer({
           did: await wn.did.ucan(),
           pin: data.pin
@@ -459,16 +450,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
       })
 
       // Encode & encrypt
-      const iv = crypto.getRandomValues(
-        new Uint8Array(12)
-      )
-
-      const msg = await crypto.subtle.encrypt(
-        {
-          name: "AES-GCM",
-          iv: iv
-        },
-        cs.sessionKey,
+      const { iv, msg } = await encryptWithAes(
         // TODO: Waiting for API changes
         // wn.ucan.encode(ucan)
         jsonBuffer({ readKey, ucan: ucan })
@@ -762,7 +744,7 @@ function base64ToArrayBuffer(b64) {
 
 async function encryptWithAes(buffer) {
   const iv = crypto.getRandomValues(
-    new Uint8Array(12)
+    new Uint8Array(16)
   )
 
   const msg = await crypto.subtle.encrypt(
