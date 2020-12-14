@@ -32,6 +32,7 @@ import View
 type alias Flags =
     { dataRootDomain : String
     , usedUsername : Maybe String
+    , version : String
     }
 
 
@@ -66,6 +67,7 @@ init flags url navKey =
     , page = page
     , url = url
     , usedUsername = flags.usedUsername
+    , version = flags.version
 
     -----------------------------------------
     -- Debouncers

@@ -4,14 +4,14 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Page
-import Radix exposing (Msg(..))
+import Radix exposing (Model, Msg(..))
 import Svg exposing (Svg)
 import Svg.Attributes
 import Tailwind as T
 
 
-logo : { usedUsername : Maybe String } -> Html Msg
-logo { usedUsername } =
+logo : Model -> Html Msg
+logo { usedUsername, version } =
     Html.span
         [ case usedUsername of
             Just _ ->
@@ -44,6 +44,7 @@ logo { usedUsername } =
         , Html.div
             [ A.style "font-size" "10px"
             , A.style "padding" "3px 4px 2px 5px"
+            , A.title ("Version " ++ version)
 
             --
             , T.absolute

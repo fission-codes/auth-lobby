@@ -61,7 +61,7 @@ formWithToppings : Maybe String -> Context -> Model -> Html Msg
 formWithToppings maybeError context model =
     Html.div
         [ T.flex_1 ]
-        [ Branding.logo { usedUsername = model.usedUsername }
+        [ Branding.logo model
         , form model.dataRootDomain maybeError context
         ]
 
@@ -248,7 +248,7 @@ usernameMessage dataRootDomain context =
 needsLink context model =
     Html.div
         [ T.flex_1 ]
-        [ Branding.logo { usedUsername = model.usedUsername }
+        [ Branding.logo model
         , S.messageBlock
             [ T.italic ]
             [ S.highlightBlock

@@ -33,7 +33,8 @@ async function bootElm() {
     flags: {
       dataRootDomain: DATA_ROOT_DOMAIN,
       url: location.href,
-      usedUsername
+      usedUsername,
+      version: VERSION
     }
   })
 

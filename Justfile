@@ -22,7 +22,7 @@ workbox_config 		:= "workbox.config.cjs"
 # ---
 
 
-@apply-config:
+@apply-config: insert-version
 	echo "🎛  Applying config \`config/{{config}}.json\`"
 	{{node_bin}}/mustache config/{{config}}.json {{dist_dir}}/index.html > {{dist_dir}}/index.applied.html
 	rm {{dist_dir}}/index.html
@@ -61,6 +61,13 @@ workbox_config 		:= "workbox.config.cjs"
 	echo "🌄  Copying images"
 	cp -RT node_modules/fission-kit/images/ {{dist_dir}}/images/
 	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
+
+
+insert-version:
+	#!/usr/bin/env node
+	const fs = require("fs")
+	const html = fs.readFileSync("{{dist_dir}}/index.html", { encoding: "utf8" })
+	fs.writeFileSync("{{dist_dir}}/index.html", html.replace("UNIX_TIMESTAMP", Date.now()))
 
 
 @install-deps:

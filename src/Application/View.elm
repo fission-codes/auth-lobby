@@ -117,7 +117,7 @@ choose model =
         ------------
         , T.dark__text_gray_400
         ]
-        [ Branding.logo { usedUsername = model.usedUsername }
+        [ Branding.logo model
 
         -----------------------------------------
         -- Message
@@ -194,7 +194,7 @@ authenticated : String -> Model -> Html Msg
 authenticated username model =
     Html.div
         [ T.text_center ]
-        [ Branding.logo { usedUsername = model.usedUsername }
+        [ Branding.logo model
 
         --
         , S.messageBlock
@@ -246,7 +246,7 @@ note : String -> Model -> Html Msg
 note text model =
     Html.div
         [ T.text_center ]
-        [ Branding.logo { usedUsername = model.usedUsername }
+        [ Branding.logo model
 
         --
         , S.messageBlock

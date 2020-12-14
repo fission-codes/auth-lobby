@@ -31,6 +31,7 @@ type alias Model =
     , navKey : Nav.Key
     , url : Url
     , usedUsername : Maybe String
+    , version : String
 
     -----------------------------------------
     -- Debouncers

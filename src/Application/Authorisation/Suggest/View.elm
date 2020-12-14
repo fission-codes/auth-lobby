@@ -31,7 +31,7 @@ view : Context -> Model -> Html Msg
 view context model =
     Html.div
         [ T.text_center ]
-        [ Branding.logo { usedUsername = model.usedUsername }
+        [ Branding.logo model
 
         -----------------------------------------
         -- Name & Duration
