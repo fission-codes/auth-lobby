@@ -6,17 +6,18 @@
 </head>
 <body>
 
-  <!-- <script>
-    const worker = new SharedWorker("worker.min.js")
-    window.onmessage = ({ ports }) => ports[0].postMessage("connect", [ worker.port ])
-  </script> -->
-
   <script>
-    const channel = new MessageChannel()
-    const worker = new Worker("worker.min.js")
+    if (typeof SharedWorker === "function") {
+      const worker = new SharedWorker("worker.min.js")
+      window.onmessage = ({ ports }) => ports[0].postMessage("connect", [ worker.port ])
 
-    worker.postMessage("setup", [ channel.port2 ])
-    window.onmessage = e => e.ports[0].postMessage("connect", [ channel.port1 ])
+    } else {
+      const channel = new MessageChannel()
+      const worker = new Worker("worker.min.js")
+      worker.postMessage("setup", [ channel.port2 ])
+      window.onmessage = e => e.ports[0].postMessage("connect", [ channel.port1 ])
+
+    }
   </script>
 
   <!-- Service worker -->

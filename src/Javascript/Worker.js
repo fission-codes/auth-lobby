@@ -35,12 +35,13 @@ importScripts("web_modules/ipfs.min.js")
 
 const main = async (port) => {
   const IPFS = self.Ipfs
+  self.initiated = true
 
   // Start listening to all the incoming connections (browsing contexts that
   // which run new SharedWorker...)
   // Note: It is important to start listening before we do any await to ensure
   // that connections aren't missed while awaiting.
-  // const connections = listen(self, "connect")
+  const connections = listen(self, "connect")
 
   // Start an IPFS node & create server that will expose it's API to all clients
   // over message channel.
@@ -55,12 +56,15 @@ const main = async (port) => {
   self.server = server
 
   // Connect every queued and future connection to the server.
-  // for await (const event of connections) {
-  //   const port = event.ports[0]
-  //   if (port) server.connect(port)
-  // }
+  if (port) {
+    server.connect(port)
+    return
+  }
 
-  server.connect(port)
+  for await (const event of connections) {
+    const p = event.ports[0]
+    if (p) server.connect(p)
+  }
 }
 
 
@@ -107,6 +111,9 @@ self.addEventListener("message", setup)
 
 
 function setup(event) {
-  main(event.ports[0])
+  if (!self.initiated) main(event.ports[0])
   self.removeEventListener("message", setup)
 }
+
+
+if (typeof SharedWorkerGlobalScope === "function") main()
