@@ -78,7 +78,7 @@ insert-version:
 	cp node_modules/webnative/index.umd.js web_modules/webnative.js
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
-	just download-web-module ipfs.min.js https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.52.1/index.min.js
+	just download-web-module ipfs.min.js https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.52.3/index.min.js
 
 
 @js:
