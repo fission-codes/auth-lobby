@@ -394,7 +394,10 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         audience: data.didThrowaway,
         lifetimeInSeconds: 60 * 5, // 5 minutes
         facts: [{ sessionKey }],
-        proofs: proof ? [ proof ] : []
+        proof
+
+        // TODO: UCAN v0.5
+        // proofs: proof ? [ proof ] : []
       })
 
       // Encode & encrypt UCAN
@@ -447,7 +450,10 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         audience: data.didInquirer,
         issuer: await wn.did.write(),
         lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
-        proofs: [ await localforage.getItem("ucan") ]
+        proof: await localforage.getItem("ucan")
+
+        // TODO: UCAN v0.5
+        // proofs: [ await localforage.getItem("ucan") ]
       })
 
       // Encode & encrypt
