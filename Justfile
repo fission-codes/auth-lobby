@@ -67,7 +67,9 @@ insert-version:
 	#!/usr/bin/env node
 	const fs = require("fs")
 	const html = fs.readFileSync("{{dist_dir}}/index.html", { encoding: "utf8" })
-	fs.writeFileSync("{{dist_dir}}/index.html", html.replace("UNIX_TIMESTAMP", Date.now()))
+	const timestamp = Math.floor(Date.now() / 1000).toString()
+
+	fs.writeFileSync("{{dist_dir}}/index.html", html.replace("UNIX_TIMESTAMP", timestamp))
 
 
 @install-deps:
