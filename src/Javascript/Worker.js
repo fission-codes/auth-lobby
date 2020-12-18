@@ -12,6 +12,7 @@ import { Server, IPFSService } from "ipfs-message-port-server"
 
 const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
 const DELEGATE_ADDR = "/dns4/ipfs.runfission.com/tcp/443/https"
+const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
 
 const OPTIONS = {
@@ -65,6 +66,29 @@ const main = async (port) => {
     const p = event.ports[0]
     if (p) server.connect(p)
   }
+
+  // Ensure permanent connection to Fission gateway
+  // TODO: This is a temporary solution while we wait for
+  //       https://github.com/libp2p/js-libp2p/issues/744
+  //       (see "Keep alive" bit)
+  setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
+}
+
+
+async function keepAlive() {
+  const timeoutId = setTimeout(reconnect, 120)
+
+  await self.ipfs.libp2p.ping(PEER_WSS).then(() => {
+    clearTimeout(timeoutId)
+  })
+
+  setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
+}
+
+
+async function reconnect() {
+  await self.ipfs.disconnect(PEER_WSS)
+  await self.ipfs.connect(PEER_WSS)
 }
 
 
