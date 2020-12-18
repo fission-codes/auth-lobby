@@ -231,8 +231,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   const ucanPromise = wn.ucan.build({
     potency: "APPEND",
     resource: "*",
-
-    proof: proof ? proof : undefined,
+    proof: proof || undefined,
 
     audience,
     issuer,
@@ -388,16 +387,11 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
       )
 
       // Make UCAN
-      const proof = await localforage.getItem("ucan")
       const ucan = await wn.ucan.build({
         issuer: await wn.did.ucan(),
         audience: data.didThrowaway,
         lifetimeInSeconds: 60 * 5, // 5 minutes
-        facts: [{ sessionKey }],
-        proof
-
-        // TODO: UCAN v0.5
-        // proofs: proof ? [ proof ] : []
+        facts: [{ sessionKey }]
       })
 
       // Encode & encrypt UCAN
@@ -450,7 +444,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         audience: data.didInquirer,
         issuer: await wn.did.write(),
         lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
-        proof: await localforage.getItem("ucan")
+        proof: (await localforage.getItem("ucan") || undefined)
 
         // TODO: UCAN v0.5
         // proofs: [ await localforage.getItem("ucan") ]
