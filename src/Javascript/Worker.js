@@ -58,6 +58,12 @@ const main = async (port) => {
 
   console.log("🚀 Started IPFS node")
 
+  // Ensure permanent connection to Fission gateway
+  // TODO: This is a temporary solution while we wait for
+  //       https://github.com/libp2p/js-libp2p/issues/744
+  //       (see "Keep alive" bit)
+  setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
+
   // Connect every queued and future connection to the server.
   if (port) {
     server.connect(port)
@@ -68,12 +74,6 @@ const main = async (port) => {
     const p = event.ports[0]
     if (p) server.connect(p)
   }
-
-  // Ensure permanent connection to Fission gateway
-  // TODO: This is a temporary solution while we wait for
-  //       https://github.com/libp2p/js-libp2p/issues/744
-  //       (see "Keep alive" bit)
-  setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
 }
 
 
