@@ -12,7 +12,7 @@ import { Server, IPFSService } from "ipfs-message-port-server"
 
 const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
 const DELEGATE_ADDR = "/dns4/ipfs.runfission.com/tcp/443/https"
-const KEEP_ALIVE_INTERVAL = 5 * 60 * 1000 // 5 minutes
+const KEEP_ALIVE_INTERVAL = 2 * 60 * 1000 // 2 minutes
 
 
 const OPTIONS = {
@@ -50,11 +50,13 @@ const main = async (port) => {
   const service = new IPFSService(ipfs)
   const server = new Server(service)
 
-  console.log("🚀 Started IPFS node")
-
   self.ipfs = ipfs
   self.service = service
   self.server = server
+
+  await reconnect()
+
+  console.log("🚀 Started IPFS node")
 
   // Connect every queued and future connection to the server.
   if (port) {
@@ -76,7 +78,7 @@ const main = async (port) => {
 
 
 async function keepAlive() {
-  const timeoutId = setTimeout(reconnect, 120)
+  const timeoutId = setTimeout(reconnect, 60 * 1000)
 
   await self.ipfs.libp2p.ping(PEER_WSS).then(() => {
     clearTimeout(timeoutId)
@@ -87,9 +89,12 @@ async function keepAlive() {
 
 
 async function reconnect() {
-  await self.ipfs.disconnect(PEER_WSS)
-  await self.ipfs.connect(PEER_WSS)
+  await self.ipfs.swarm.disconnect(PEER_WSS)
+  await self.ipfs.swarm.connect(PEER_WSS)
 }
+
+
+self.reconnect = reconnect
 
 
 /**
