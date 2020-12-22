@@ -12,7 +12,7 @@ import { Server, IPFSService } from "ipfs-message-port-server"
 
 const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
 const DELEGATE_ADDR = "/dns4/ipfs.runfission.com/tcp/443/https"
-const KEEP_ALIVE_INTERVAL = 2 * 60 * 1000 // 2 minutes
+const KEEP_ALIVE_INTERVAL = 2.5 * 60 * 1000 // 2.5 minutes
 
 
 const OPTIONS = {
@@ -80,11 +80,11 @@ const main = async (port) => {
 async function keepAlive() {
   const timeoutId = setTimeout(reconnect, 60 * 1000)
 
-  await self.ipfs.libp2p.ping(PEER_WSS).then(() => {
+  self.ipfs.libp2p.ping(PEER_WSS).then(() => {
     clearTimeout(timeoutId)
+  }).finally(() => {
+    setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
   })
-
-  setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
 }
 
 
