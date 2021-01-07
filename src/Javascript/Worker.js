@@ -71,7 +71,7 @@ const main = async (port) => {
   }
 
   for await (const event of connections) {
-    const p = event.ports[0]
+    const p = event.ports && event.ports[0]
     if (p) server.connect(p)
   }
 }
