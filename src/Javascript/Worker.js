@@ -82,7 +82,7 @@ async function keepAlive() {
 
   self.ipfs.libp2p.ping(PEER_WSS).then(() => {
     clearTimeout(timeoutId)
-  }).finally(() => {
+  }).catch(() => {}).finally(() => {
     setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
   })
 }
