@@ -140,7 +140,7 @@ self.addEventListener("message", setup)
 
 
 function setup(event) {
-  if (!self.initiated) main(event.ports[0])
+  if (!self.initiated) main(event.ports && event.ports[0])
   self.removeEventListener("message", setup)
 }
 
