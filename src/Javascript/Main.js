@@ -20,7 +20,8 @@ wn.setup.endpoints({
 })
 
 
-bootIpfs().then(bootElm)
+// bootIpfs().then(bootElm)
+bootElm()
 
 
 // ELM
@@ -192,9 +193,19 @@ async function createAccount(args) {
   if (success) {
     await localforage.setItem("usedUsername", args.username)
 
-    app.ports.gotCreateAccountSuccess.send(
-      null
-    )
+    if (!navigator.storage || !navigator.storage.persist) {
+      app.ports.gotCreateAccountSuccess.send(
+        null
+      )
+    } else if (await navigator.storage.persist()) {
+      app.ports.gotCreateAccountSuccess.send(
+        null
+      )
+    } else {
+      app.ports.gotCreateAccountFailure.send(
+        "I need permission from you to store data in your browser."
+      )
+    }
 
   } else {
     app.ports.gotCreateAccountFailure.send(
@@ -256,11 +267,18 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
  * You got linked 🎢
  */
 async function linkedDevice({ readKey, ucan, username }) {
+  if (!navigator.storage || !navigator.storage.persist) {
+    app.ports.gotLinked.send({ username })
+  } else if (await navigator.storage.persist()) {
+    app.ports.gotLinked.send({ username })
+  } else {
+    alert("I need permission to store data on this browser. Refresh the page to try again.")
+    return
+  }
+
   await localforage.setItem("readKey", readKey)
   await localforage.setItem("ucan", ucan)
   await localforage.setItem("usedUsername", username)
-
-  app.ports.gotLinked.send({ username })
 }
 
 
@@ -282,7 +300,7 @@ async function openChannel(maybeUsername) {
   resetChannelState()
 
   const rootDid = await lookupRootDid(maybeUsername).catch(_ => null)
-  const ipfsId = await ipfs.id().then(a => a.id)
+  const ipfsId = "doesntmatteratthemoment" // await ipfs.id().then(a => a.id)
   const topic = `deviceLink#${rootDid}`
 
   if (!rootDid) {
@@ -304,10 +322,6 @@ async function openChannel(maybeUsername) {
 
   cs.socket = new WebSocket(`wss://runfission.net/user/link/${rootDid}`)
   cs.socket.onmessage = channelMessage(rootDid, ipfsId)
-  cs.socket.onerror = () => {
-    if (cs.socket.closed) return
-    alert("Couldn't establish web socket")
-  }
 }
 
 
@@ -691,8 +705,12 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
 async function closeChannel() {
   console.log("Closing channel")
   // await ipfs.pubsub.unsubscribe(cs.topic)
-  cs.socket.close(1000)
-  cs.socket.closed = true
+
+  if (cs.socket) {
+    cs.socket.close(1000)
+    cs.socket.closed = true
+  }
+
   resetChannelState()
 }
 
