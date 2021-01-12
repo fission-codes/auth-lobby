@@ -202,8 +202,15 @@ async function createAccount(args) {
         null
       )
     } else {
-      app.ports.gotCreateAccountFailure.send(
-        "I need permission from you to store data in your browser."
+      // Ideally we should do:
+      // app.ports.gotCreateAccountFailure.send(
+      //   "I need permission from you to store data in your browser."
+      // )
+      //
+      // But currently there's a bug in incognito Chromium
+      // where `navigator.storage.persist()` doesn't show the popup.
+      app.ports.gotCreateAccountSuccess.send(
+        null
       )
     }
 
@@ -272,8 +279,12 @@ async function linkedDevice({ readKey, ucan, username }) {
   } else if (await navigator.storage.persist()) {
     app.ports.gotLinked.send({ username })
   } else {
-    alert("I need permission to store data on this browser. Refresh the page to try again.")
-    return
+    // Ideally we should do:
+    // alert("I need permission to store data on this browser. Refresh the page to try again.")
+    // return
+    //
+    // But currently there's a bug in incognito Chromium
+    // where `navigator.storage.persist()` doesn't show the popup.
   }
 
   await localforage.setItem("readKey", readKey)
