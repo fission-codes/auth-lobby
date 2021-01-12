@@ -18,9 +18,9 @@ const KEEP_ALIVE_INTERVAL = 2.5 * 60 * 1000 // 2.5 minutes
 const OPTIONS = {
   config: {
     Addresses: {
-      Delegates: [ DELEGATE_ADDR ]
+      Delegates: []
     },
-    Bootstrap: [ PEER_WSS ],
+    Bootstrap: [],
     Discovery: {
       webRTCStar: { enabled: false }
     }
@@ -54,7 +54,7 @@ const main = async (port) => {
   self.service = service
   self.server = server
 
-  await reconnect()
+  try { reconnect() } catch (e) {}
 
   console.log("🚀 Started IPFS node")
 
