@@ -1,6 +1,6 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/aed7844ccd76f6ca7feeca95981b47d4b1114a7c
-  ipfs-message-port-server: 0.4.3
+  ipfs-message-port-server: 'link:../../Code/js-ipfs/packages/ipfs-message-port-server'
   webnative: 0.21.1
 devDependencies:
   elm-tailwind-css: 1.0.1_tailwindcss@1.6.2
@@ -2645,16 +2645,6 @@ packages:
       npm: '>=3.0.0'
     resolution:
       integrity: sha512-lcmKsQAe51JsGLe55uY0zJFNNzLXcGPiaAU4aTO7qVu4/XfXGHrHunQgbQe93Eqq1qKi0JsCWXgDkX68ERHLKQ==
-  /ipfs-message-port-server/0.4.3:
-    dependencies:
-      ipfs-message-port-protocol: 0.4.3
-      it-all: 1.0.4
-    dev: false
-    engines:
-      node: '>=10.3.0'
-      npm: '>=3.0.0'
-    resolution:
-      integrity: sha512-xzadf8zJ+yz/ddUIsZY0ckOUKRJagRx2zGs+mLIDQTAY63cRfm3K4jzwW/TxC+9Sx2Lo9ORIEMORCH1Yh77Egw==
   /ipld-block/0.11.0:
     dependencies:
       cids: 1.0.2
@@ -2959,10 +2949,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
-  /it-all/1.0.4:
-    dev: false
-    resolution:
-      integrity: sha512-7K+gjHHzZ7t+bCkrtulYiow35k3UgqH7miC+iUa9RGiyDRXJ6hVDeFsDrnWrlscjrkLFOJRKHxNOke4FNoQnhw==
   /jest-worker/24.9.0:
     dependencies:
       merge-stream: 2.0.0
@@ -5330,7 +5316,7 @@ specifiers:
   elm-tailwind-css: ^1.0.1
   esbuild: ^0.8.2
   fission-kit: fission-suite/kit#aed7844ccd76f6ca7feeca95981b47d4b1114a7c
-  ipfs-message-port-server: 0.4.3
+  ipfs-message-port-server: 'file:../../Code/js-ipfs/packages/ipfs-message-port-server'
   mustache: ^4.0.1
   postcss-import: ^12.0.1
   tailwindcss: ^1.6.0
