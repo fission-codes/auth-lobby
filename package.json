@@ -3,7 +3,8 @@
   "type": "module",
   "dependencies": {
     "fission-kit": "fission-suite/kit#aed7844ccd76f6ca7feeca95981b47d4b1114a7c",
-    "ipfs-message-port-server": "file:../../Code/js-ipfs/packages/ipfs-message-port-server",
+    "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz",
+    "ipfs-message-port-server": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz",
     "webnative": "^0.21.2"
   },
   "devDependencies": {

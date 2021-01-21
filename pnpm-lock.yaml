@@ -1,7 +1,8 @@
 dependencies:
   fission-kit: github.com/fission-suite/kit/aed7844ccd76f6ca7feeca95981b47d4b1114a7c
-  ipfs-message-port-server: 'link:../../Code/js-ipfs/packages/ipfs-message-port-server'
-  webnative: 0.21.1
+  ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
+  ipfs-message-port-server: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
+  webnative: 0.21.2
 devDependencies:
   elm-tailwind-css: 1.0.1_tailwindcss@1.6.2
   esbuild: 0.8.2
@@ -1375,7 +1376,7 @@ packages:
       bignumber.js: 9.0.0
       buffer: 5.6.0
       commander: 2.20.3
-      ieee754: 1.1.13
+      ieee754: 1.2.1
       iso-url: 0.4.7
       json-text-sequence: 0.1.1
       readable-stream: 3.6.0
@@ -1609,6 +1610,18 @@ packages:
       npm: '>=3.0.0'
     resolution:
       integrity: sha512-ohCcYyEHh0Z5Hl+O1IML4kt6Kx5GPho1ybxtqK4zyk6DeV5CvOLoT/mqDh0cgKcAvsls3vcVa9HjZc7RQr3geA==
+  /cids/1.1.5:
+    dependencies:
+      multibase: 3.1.0
+      multicodec: 2.1.0
+      multihashes: 3.1.0
+      uint8arrays: 2.0.5
+    dev: false
+    engines:
+      node: '>=4.0.0'
+      npm: '>=3.0.0'
+    resolution:
+      integrity: sha512-i0V7tF2Jf78BKXyy2rpy1H/ozaJEP8b3Z7ZcHe9J86RRvJZ4e7daaJP3xwL09e14/Bl/mYX5WVc36fbQtjH7Sg==
   /class-is/1.1.0:
     dev: false
     resolution:
@@ -2539,10 +2552,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
-  /ieee754/1.1.13:
-    dev: false
-    resolution:
-      integrity: sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
   /ieee754/1.2.1:
     dev: false
     resolution:
@@ -2645,9 +2654,19 @@ packages:
       npm: '>=3.0.0'
     resolution:
       integrity: sha512-lcmKsQAe51JsGLe55uY0zJFNNzLXcGPiaAU4aTO7qVu4/XfXGHrHunQgbQe93Eqq1qKi0JsCWXgDkX68ERHLKQ==
+  /ipfs-message-port-protocol/0.5.0:
+    dependencies:
+      cids: 1.1.5
+      ipld-block: 0.11.0
+    dev: false
+    engines:
+      node: '>=10.3.0'
+      npm: '>=3.0.0'
+    resolution:
+      integrity: sha512-JF2YGTFLkzJErOU50diTyTvOpiIFeoOh9KZRig+a1VLUGoZrvwg0O8YwL6/A6KhyomQiMWeAfNnU3H0OkRMuDg==
   /ipld-block/0.11.0:
     dependencies:
-      cids: 1.0.2
+      cids: 1.1.5
     dev: false
     engines:
       node: '>=6.0.0'
@@ -2949,6 +2968,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
+  /it-all/1.0.4:
+    dev: false
+    resolution:
+      integrity: sha512-7K+gjHHzZ7t+bCkrtulYiow35k3UgqH7miC+iUa9RGiyDRXJ6hVDeFsDrnWrlscjrkLFOJRKHxNOke4FNoQnhw==
   /jest-worker/24.9.0:
     dependencies:
       merge-stream: 2.0.0
@@ -3421,7 +3444,7 @@ packages:
   /multibase/3.1.0:
     dependencies:
       '@multiformats/base-x': 4.0.1
-      web-encoding: 1.0.4
+      web-encoding: 1.0.6
     dev: false
     engines:
       node: '>=10.0.0'
@@ -3435,6 +3458,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-YDYeWn9iGa76hOHAyyZa0kbt3tr5FLg1ZXUHrZUJltjnxxdbTIbHnxWLd2zTcMOjdT3QyO+Xs4bQgJUcC2RWUA==
+  /multicodec/2.1.0:
+    dependencies:
+      uint8arrays: 1.1.0
+      varint: 6.0.0
+    dev: false
+    resolution:
+      integrity: sha512-7AYpK/avswOWvnqQ9/jOkQCS7Fp4aKxw5ojvn5gyK2VQTZz3YVXeLMzoIZDBy745JSfJMXkTS0ptnHci5Mt1mA==
   /multihashes/3.1.0:
     dependencies:
       multibase: 3.1.0
@@ -4919,10 +4949,17 @@ packages:
   /uint8arrays/1.1.0:
     dependencies:
       multibase: 3.1.0
-      web-encoding: 1.0.4
+      web-encoding: 1.0.6
     dev: false
     resolution:
       integrity: sha512-cLdlZ6jnFczsKf5IH1gPHTtcHtPGho5r4CvctohmQjw8K7Q3gFdfIGHxSTdTaCKrL4w09SsPRJTqRS0drYeszA==
+  /uint8arrays/2.0.5:
+    dependencies:
+      multibase: 3.1.0
+      web-encoding: 1.0.6
+    dev: false
+    resolution:
+      integrity: sha512-1HSktgwqtYIwVn1mg3GcnqKhHH9oC4kVgdD/43cxMWwhP8rihKcFPmToDzS1XtbvVvlR8XxTk/DUBf0C83qNIg==
   /unicode-canonical-property-names-ecmascript/1.0.4:
     dev: true
     engines:
@@ -5064,7 +5101,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-DcXs2lbVPzuJmn2kuDEwul2oZg7p4YMa5J2f0YzsOBHaAnBYGPNUB/rJ74DTjTKpw7F0+lSsVM8sFHE2UyBixg==
-  /webnative/0.21.1:
+  /web-encoding/1.0.6:
+    dev: false
+    resolution:
+      integrity: sha512-26wEnRPEFAc5d5lmH1Q/DuvWEYsRF1D2alX2jlKpdmqv7cj+BbANL7Xlcl9r4s72Eg9kItZa9RWVbBMC9dMv4w==
+  /webnative/0.21.2:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -5081,7 +5122,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-N4oawXhTa/2t+UnZmPtKTofaN2VRSZspdpcaPg6u5+u2IZNbtaRSlMO1uM6jlTk9fF/K7ELQv7S2q2MGc10nJg==
+      integrity: sha512-uDW1RF8auYQV70a3kWxbKoNoghClkAzDSXcag1uABqgSLMG9DO+tWrZGW05zQK+84rxOIxJhZAna79MFJs18iA==
   /which/1.3.1:
     dependencies:
       isexe: 2.0.0
@@ -5305,6 +5346,30 @@ packages:
       node: '>=10'
     resolution:
       integrity: sha512-WOkpgNhPTlE73h4VFAFsOnomJVaovO8VqLDzy5saChRBFQFBoMYirowyW+Q9HB4HFF4Z7VZTiG3iSzJJA29yRA==
+  '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz':
+    dependencies:
+      cids: 1.1.5
+      ipld-block: 0.11.0
+    dev: false
+    engines:
+      node: '>=10.3.0'
+      npm: '>=3.0.0'
+    name: ipfs-message-port-protocol
+    resolution:
+      tarball: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
+    version: 0.6.0-fission
+  '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz':
+    dependencies:
+      ipfs-message-port-protocol: 0.5.0
+      it-all: 1.0.4
+    dev: false
+    engines:
+      node: '>=10.3.0'
+      npm: '>=3.0.0'
+    name: ipfs-message-port-server
+    resolution:
+      tarball: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
+    version: 0.6.0-fission
   github.com/fission-suite/kit/aed7844ccd76f6ca7feeca95981b47d4b1114a7c:
     dev: false
     name: fission-kit
@@ -5316,11 +5381,12 @@ specifiers:
   elm-tailwind-css: ^1.0.1
   esbuild: ^0.8.2
   fission-kit: fission-suite/kit#aed7844ccd76f6ca7feeca95981b47d4b1114a7c
-  ipfs-message-port-server: 'file:../../Code/js-ipfs/packages/ipfs-message-port-server'
+  ipfs-message-port-protocol: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
+  ipfs-message-port-server: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   mustache: ^4.0.1
   postcss-import: ^12.0.1
   tailwindcss: ^1.6.0
   terser-dir: ^1.0.7
-  webnative: ^0.21.1
+  webnative: ^0.21.2
   workbox-cli: ^5.1.4
   workbox-strategies: ^5.1.4
