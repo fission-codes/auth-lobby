@@ -5,7 +5,7 @@
     "fission-kit": "fission-suite/kit#aed7844ccd76f6ca7feeca95981b47d4b1114a7c",
     "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz",
     "ipfs-message-port-server": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz",
-    "webnative": "^0.21.2"
+    "webnative": "^0.21.3"
   },
   "devDependencies": {
     "elm-tailwind-css": "^1.0.1",
@@ -16,5 +16,10 @@
     "terser-dir": "^1.0.7",
     "workbox-cli": "^5.1.4",
     "workbox-strategies": "^5.1.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz"
+    }
   }
 }
