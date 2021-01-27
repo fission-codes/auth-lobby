@@ -49,7 +49,6 @@ const main = async (port) => {
 
   // Fetch the list of peers
   peers = await localforage.getItem("ipfsPeers")
-  console.log("stored peers", peers)
 
   if (peers) {
     peers = peers.split(",")
