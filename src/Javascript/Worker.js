@@ -41,8 +41,15 @@ const main = async (port) => {
   const IPFS = self.Ipfs
   self.initiated = true
 
+  // Start listening to all the incoming connections (browsing contexts that
+  // which run new SharedWorker...)
+  // Note: It is important to start listening before we do any await to ensure
+  // that connections aren't missed while awaiting.
+  const connections = listen(self, "connect")
+
   // Fetch the list of peers
   peers = await localforage.getItem("ipfsPeers")
+  console.log("stored peers", peers)
 
   if (peers) {
     peers = peers.split(",")
@@ -60,12 +67,6 @@ const main = async (port) => {
   if (peers.length === 0) {
     throw new Error("💥 Couldn't start IPFS node, peer list is empty")
   }
-
-  // Start listening to all the incoming connections (browsing contexts that
-  // which run new SharedWorker...)
-  // Note: It is important to start listening before we do any await to ensure
-  // that connections aren't missed while awaiting.
-  const connections = listen(self, "connect")
 
   // Start an IPFS node & create server that will expose it's API to all clients
   // over message channel.
