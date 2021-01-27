@@ -7,13 +7,12 @@ Pretty much copied from an example on https://github.com/ipfs/js-ipfs
 
 */
 
+import localforage from "localforage"
 import { Server, IPFSService } from "ipfs-message-port-server"
 
 
-const PEER_WSS = "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw"
-const DELEGATE_ADDR = "/dns4/ipfs.runfission.com/tcp/443/https"
-const KEEP_ALIVE_INTERVAL = 1 * 60 * 1000 // 1 minute
-
+const KEEP_ALIVE_INTERVAL =
+  1 * 60 * 1000 // 1 minute
 
 const OPTIONS = {
   config: {
@@ -30,6 +29,10 @@ const OPTIONS = {
   }
 }
 
+let peers = Promise.resolve(
+  []
+)
+
 
 importScripts("web_modules/ipfs.min.js")
 
@@ -37,6 +40,26 @@ importScripts("web_modules/ipfs.min.js")
 const main = async (port) => {
   const IPFS = self.Ipfs
   self.initiated = true
+
+  // Fetch the list of peers
+  peers = await localforage.getItem("ipfsPeers")
+
+  if (peers) {
+    peers = peers.split(",")
+
+    fetchPeers().then(list =>
+      localforage.setItem("ipfsPeers", list.join(","))
+    )
+
+  } else {
+    peers = await fetchPeers()
+    localforage.setItem("ipfsPeers", peers.join(","))
+
+  }
+
+  if (peers.length === 0) {
+    throw new Error("💥 Couldn't start IPFS node, peer list is empty")
+  }
 
   // Start listening to all the incoming connections (browsing contexts that
   // which run new SharedWorker...)
@@ -54,7 +77,12 @@ const main = async (port) => {
   self.service = service
   self.server = server
 
-  try { reconnect() } catch (e) {}
+  peers.forEach(peer => {
+    ipfs.swarm
+      .connect(peer)
+      .then(() => console.log(`🪐 Connected to ${peer}`))
+      .catch(() => {})
+  })
 
   console.log("🚀 Started IPFS node")
 
@@ -62,7 +90,9 @@ const main = async (port) => {
   // TODO: This is a temporary solution while we wait for
   //       https://github.com/libp2p/js-libp2p/issues/744
   //       (see "Keep alive" bit)
-  setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
+  peers.forEach(peer => {
+    setTimeout(() => keepAlive(peer), KEEP_ALIVE_INTERVAL)
+  })
 
   // Connect every queued and future connection to the server.
   if (port) {
@@ -77,20 +107,34 @@ const main = async (port) => {
 }
 
 
-async function keepAlive() {
-  const timeoutId = setTimeout(reconnect, 30 * 1000)
+function fetchPeers() {
+  const peersUrl = location.host.startsWith("auth.")
+    ? location.protocol + "//" + location.host.replace(/^auth\./, "") + "/ipfs/peers"
+    : location.hostname === "localhost"
+      ? "https://runfission.net/ipfs/peers"
+      : "https://runfission.com/ipfs/peers"
 
-  self.ipfs.libp2p.ping(PEER_WSS).then(() => {
+  return fetch(peersUrl)
+    .then(r => r.json())
+    .then(r => r.filter(p => p.includes("/wss/")))
+    .catch(e => { throw new Error("💥 Couldn't start IPFS node, failed to fetch peer list") })
+}
+
+
+async function keepAlive(peer) {
+  const timeoutId = setTimeout(() => reconnect(peer), 30 * 1000)
+
+  self.ipfs.libp2p.ping(peer).then(() => {
     clearTimeout(timeoutId)
   }).catch(() => {}).finally(() => {
-    setTimeout(keepAlive, KEEP_ALIVE_INTERVAL)
+    setTimeout(() => keepAlive(peer), KEEP_ALIVE_INTERVAL)
   })
 }
 
 
-async function reconnect() {
-  await self.ipfs.swarm.disconnect(PEER_WSS)
-  await self.ipfs.swarm.connect(PEER_WSS)
+async function reconnect(peer) {
+  await self.ipfs.swarm.disconnect(peer)
+  await self.ipfs.swarm.connect(peer)
 }
 
 
