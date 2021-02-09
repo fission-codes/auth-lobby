@@ -108,9 +108,7 @@ const main = async (port) => {
 
 
 function fetchPeers() {
-  const peersUrl = location.host.startsWith("auth.")
-    ? location.protocol + "//" + location.host.replace(/^auth\./, "") + "/ipfs/peers"
-    : location.hostname === "localhost"
+  const peersUrl = location.hostname === "localhost" || location.hostname === "auth.runfission.net"
       ? "https://runfission.net/ipfs/peers"
       : "https://runfission.com/ipfs/peers"
 
