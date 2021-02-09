@@ -331,7 +331,9 @@ async function openChannel(maybeUsername) {
   //   channelMessage(rootDid, ipfsId)
   // )
 
-  cs.socket = new WebSocket(`wss://runfission.net/user/link/${rootDid}`)
+  const endpoint = API_ENDPOINT.replace(/^https?:\/\//, "wss://")
+
+  cs.socket = new WebSocket(`${endpoint}/user/link/${rootDid}`)
   cs.socket.onmessage = channelMessage(rootDid, ipfsId)
 }
 
