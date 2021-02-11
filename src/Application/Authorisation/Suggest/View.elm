@@ -206,6 +206,25 @@ view context model =
                 , Html.text "No"
                 ]
             ]
+
+        -----------------------------------------
+        -- As user
+        -----------------------------------------
+        , case model.usedUsername of
+            Just username ->
+                Html.div
+                    [ T.mt_10
+                    ]
+                    [ S.subtleFootNote
+                        [ Html.text "Logged in as "
+                        , Html.span
+                            [ T.border_b, T.border_gray_600 ]
+                            [ Html.text username ]
+                        ]
+                    ]
+
+            Nothing ->
+                Html.text ""
         ]
 
 
