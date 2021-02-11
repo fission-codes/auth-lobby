@@ -285,6 +285,7 @@ async function linkedDevice({ readKey, ucan, username }) {
     //
     // But currently there's a bug in incognito Chromium
     // where `navigator.storage.persist()` doesn't show the popup.
+    app.ports.gotLinked.send({ username })
   }
 
   await localforage.setItem("readKey", readKey)
