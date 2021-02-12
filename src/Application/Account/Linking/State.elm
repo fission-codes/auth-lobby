@@ -128,15 +128,6 @@ sendUcan exchange model =
                     model
                         |> Common.afterAccountCreation context
                         |> Return.command (makeCmd <| Just context.username)
-                        -- If redirecting elsewhere, close the pubsub channel.
-                        |> Return.command
-                            (case model.externalContext of
-                                NotAsked ->
-                                    Cmd.none
-
-                                _ ->
-                                    Ports.closeChannel ()
-                            )
 
                 _ ->
                     return

@@ -281,7 +281,7 @@ needsLink context model =
                     []
                     [ Html.div
                         [ T.mt_5 ]
-                        [ Html.text "Open this page on your other device and sign in with “"
+                        [ Html.text "Open this page on your other device and sign in with "
                         , Html.span
                             [ T.font_semibold
                             , T.text_black
@@ -291,7 +291,6 @@ needsLink context model =
                             , T.dark__text_white
                             ]
                             [ Html.text context.username ]
-                        , Html.text "”"
                         ]
 
                     --
