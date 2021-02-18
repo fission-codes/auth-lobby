@@ -34,7 +34,7 @@ workbox_config 		:= "workbox.config.cjs"
 	mkdir -p {{dist_dir}}
 
 
-@dev-build: clean css-large elm html js images static apply-config service-worker
+@dev-build: clean css-large elm html js images static apply-config service-worker translate-schemas
 	echo {{config}} &> /dev/null
 
 
@@ -114,9 +114,16 @@ insert-version:
 	echo "⛰  Copying some more static files"
 	cp -RT {{src_dir}}/Static/Favicons/ {{dist_dir}}/
 	cp -RT {{src_dir}}/Static/Manifests/ {{dist_dir}}/
+	cp -RT {{src_dir}}/Static/Themes/ {{dist_dir}}/themes/
 
 	mkdir -p {{dist_dir}}/fonts/
 	cp node_modules/fission-kit/fonts/**/*.woff2 {{dist_dir}}/fonts/
+
+
+@translate-schemas:
+	echo "🔮  Translating schemas into Elm code"
+	quicktype -s schema -o src/Library/Theme.elm --module Theme src/Schemas/Dawn/Theme.json
+	elm-format src/Library/Theme.elm --yes
 
 
 
@@ -211,7 +218,8 @@ main_elm := src_dir + "/Application/Main.elm"
 	just watch-css & \
 	just watch-elm & \
 	just watch-html & \
-	just watch-js
+	just watch-js & \
+	just watch-schemas
 
 
 @watch-css:
@@ -222,9 +230,13 @@ main_elm := src_dir + "/Application/Main.elm"
 	watchexec -p -w src -e elm -- just elm
 
 
+@watch-html:
+	watchexec -p -w src -e html -- just html apply-config
+
+
 @watch-js:
 	watchexec -p -w src -e js -- just js
 
 
-@watch-html:
-	watchexec -p -w src -e html -- just html apply-config
+@watch-schemas:
+	watchexec -p -w src/Schemas -e json -- just translate-schemas

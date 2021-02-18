@@ -5,13 +5,25 @@ import Html.Attributes as A
 import Html.Events as E
 import Page
 import Radix exposing (Model, Msg(..))
+import RemoteData
 import Svg exposing (Svg)
 import Svg.Attributes
 import Tailwind as T
+import Theme.Defaults
 
 
 logo : Model -> Html Msg
-logo { usedUsername, version } =
+logo { theme, usedUsername, version } =
+    let
+        maybeLogo =
+            RemoteData.unwrap Nothing .logo theme
+
+        isDefaultLogo =
+            maybeLogo == Nothing
+
+        themeLogo =
+            Maybe.withDefault Theme.Defaults.logo maybeLogo
+    in
     Html.span
         [ case usedUsername of
             Just _ ->
@@ -36,43 +48,70 @@ logo { usedUsername, version } =
         ------------
         , T.dark__text_gray_500
         ]
-        [ logoSvg
+        [ Html.img
+            [ A.attribute "style" (Maybe.withDefault "" themeLogo.styles)
+            , A.src themeLogo.lightScheme
+
+            --
+            , T.mx_auto
+            , T.w_full
+            , T.dark__hidden
+            ]
+            []
+
+        -- Dark mode
+        ------------
+        , Html.img
+            [ A.attribute "style" (Maybe.withDefault "" themeLogo.styles)
+            , A.src themeLogo.darkScheme
+
+            --
+            , T.hidden
+            , T.mx_auto
+            , T.w_full
+            , T.dark__block
+            ]
+            []
 
         -----------------------------------------
         -- Auth tag
         -----------------------------------------
-        , Html.div
-            [ A.style "font-size" "10px"
-            , A.style "padding" "3px 4px 2px 5px"
-            , A.title ("Version " ++ version)
+        , if isDefaultLogo then
+            Html.div
+                [ A.style "font-size" "10px"
+                , A.style "padding" "3px 4px 2px 5px"
+                , A.title ("Version " ++ version)
 
-            --
-            , T.absolute
-            , T.bg_purple
-            , T.font_display
-            , T.font_medium
-            , T.hidden
-            , T.neg_mr_1
-            , T.right_0
-            , T.rounded
-            , T.top_0
-            , T.text_xs
-            , T.text_white
-            , T.tracking_widest
-            , T.translate_x_10
-            , T.transform
-            , T.uppercase
+                --
+                , T.absolute
+                , T.bg_purple
+                , T.font_display
+                , T.font_medium
+                , T.hidden
+                , T.neg_mr_1
+                , T.right_0
+                , T.rounded
+                , T.top_0
+                , T.text_xs
+                , T.text_white
+                , T.tracking_widest
+                , T.translate_x_10
+                , T.transform
+                , T.uppercase
 
-            --
-            , T.sm__block
+                --
+                , T.sm__block
 
-            -- Dark mode
-            ------------
-            , T.dark__bg_purple_shade
-            , T.dark__text_purple_tint
-            ]
-            [ Html.text "Auth"
-            ]
+                -- Dark mode
+                ------------
+                , T.dark__bg_purple_shade
+                , T.dark__text_purple_tint
+                ]
+                [ Html.text "Auth"
+                ]
+
+          else
+            Html.text ""
         ]
 
 

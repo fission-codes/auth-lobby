@@ -14,11 +14,15 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Loading
+import Markdown.Parser
+import Markdown.Renderer
+import Markdown.Renderer.Custom
 import Page
 import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
 import Styling as S
 import Tailwind as T
+import Theme.Defaults
 
 
 
@@ -27,6 +31,19 @@ import Tailwind as T
 
 view : Model -> List (Html Msg)
 view model =
+    if RemoteData.isLoading model.theme then
+        [ Html.text "Just a moment, loading lobby theme." ]
+            |> Html.div [ T.italic, T.mt_3 ]
+            |> List.singleton
+            |> Loading.screen
+            |> List.singleton
+
+    else
+        view_ model
+
+
+view_ : Model -> List (Html Msg)
+view_ model =
     [ case model.externalContext of
         Failure _ ->
             External.Context.note model.externalContext
@@ -122,24 +139,43 @@ choose model =
         -----------------------------------------
         -- Message
         -----------------------------------------
-        , S.messageBlock
-            []
-            [ Html.text "It doesn't look like you've signed in on this device before."
-            , Html.br [ T.hidden, T.sm__block ] []
-            , Html.span [ T.sm__hidden ] [ Html.text " " ]
-            , Html.text "If you don't know what Fission is, learn more on "
-            , Html.a
-                [ A.href "https://fission.codes"
-                , T.text_gray_100
-                , T.underline
+        , let
+            deadEndsToString deadEnds =
+                deadEnds
+                    |> List.map Markdown.Parser.deadEndToString
+                    |> String.join "\n"
 
-                -- Dark mode
-                ------------
-                , T.dark__text_gray_500
-                ]
-                [ Html.text "our website" ]
-            , Html.text "."
-            ]
+            renderedMarkdown =
+                model.theme
+                    |> RemoteData.toMaybe
+                    |> Maybe.andThen .introduction
+                    |> Maybe.withDefault Theme.Defaults.introduction
+                    |> Markdown.Parser.parse
+                    |> Result.mapError deadEndsToString
+                    |> Result.andThen (Markdown.Renderer.render Markdown.Renderer.Custom.default)
+          in
+          S.messageBlock
+            []
+            (case renderedMarkdown of
+                Ok html ->
+                    html
+
+                Err err ->
+                    [ Html.em
+                        [ T.text_red ]
+                        [ Html.strong [] [ Html.text "Theme introduction markdown error:" ]
+                        , Html.br [] []
+                        , Html.text err
+                        , Html.br [] []
+                        , Html.br [] []
+                        , Html.span
+                            [ T.inline_flex, T.items_center ]
+                            [ S.buttonIcon FeatherIcons.alertTriangle
+                            , Html.text "No HTML is allowed."
+                            ]
+                        ]
+                    ]
+            )
 
         -----------------------------------------
         -- Buttons

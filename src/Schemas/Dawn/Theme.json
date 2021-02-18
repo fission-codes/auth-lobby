@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://auth.fission.codes/schemas/Theme.json",
+  "title": "Theme",
+  "description": "Style and text customisation options",
+  "type": "object",
+  "definitions": {
+
+    "color-scheme": {
+      "type": "object",
+      "properties": {
+        "accent": {
+          "description": "CSS color to be used as the accent",
+          "type": "string"
+        },
+        "tag": {
+          "description": "CSS background color for the auth tag on the default logo",
+          "type": "string"
+        }
+      },
+      "required": [ "accent" ]
+    },
+
+    "colors": {
+      "type": "object",
+      "properties": {
+        "dark-scheme": {
+          "description": "Colors for the dark color scheme",
+          "$ref": "#/definitions/color-scheme"
+        },
+        "light-scheme": {
+          "description": "Colors for the light color scheme",
+          "$ref": "#/definitions/color-scheme"
+        }
+      },
+      "required": [ "dark-scheme", "light-scheme" ]
+    }
+
+  },
+  "properties": {
+
+    "introduction": {
+      "description": "Markdown to be rendered on the welcome screen (choose between login or create account)",
+      "type": "string"
+    },
+
+    "logo": {
+      "description": "URL or IPFS CID pointing to an image",
+      "type": "object",
+      "properties": {
+        "dark-scheme": {
+          "description": "Image for the dark color scheme",
+          "type": "string"
+        },
+        "light-scheme": {
+          "description": "Image for the light color scheme",
+          "type": "string"
+        },
+        "styles": {
+          "description": "Additional CSS that can be added to the images (optional)",
+          "type": "string"
+        }
+      },
+      "required": [ "dark-scheme", "light-scheme" ]
+    }
+
+  }
+}

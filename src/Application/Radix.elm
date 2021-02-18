@@ -14,9 +14,11 @@ import Browser
 import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import External.Context as External
+import Http
 import Json.Decode as Json
 import Page exposing (Page)
 import RemoteData exposing (RemoteData)
+import Theme exposing (Theme)
 import Url exposing (Url)
 
 
@@ -25,10 +27,12 @@ import Url exposing (Url)
 
 
 type alias Model =
-    { dataRootDomain : String
+    { apiDomain : String
+    , dataRootDomain : String
     , externalContext : External.ParsedContext
     , page : Page
     , navKey : Nav.Key
+    , theme : RemoteData String Theme
     , url : Url
     , usedUsername : Maybe String
     , version : String
@@ -96,6 +100,8 @@ type Msg
       -- 🧿 Other things
       -----------------------------------------
     | CopyToClipboard String
+    | GotThemeViaHttp (Result Http.Error String)
+    | GotThemeViaIpfs (Result Http.Error String)
     | Leave
 
 
