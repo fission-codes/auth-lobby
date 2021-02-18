@@ -16,6 +16,7 @@ export default {
     colors: {
       ...kit.dasherizeObjectKeys(kit.colors),
 
+      "current-color": "currentColor",
       "inherit": "inherit",
       "transparent": "transparent"
     },

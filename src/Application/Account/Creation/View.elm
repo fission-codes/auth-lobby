@@ -130,18 +130,10 @@ form dataRootDomain maybeError context =
 
             --
             , if isKindOfValid then
-                T.bg_gray_200
+                T.bg_purple
 
               else
                 T.bg_red
-
-            -- Dark mode
-            ------------
-            , if isKindOfValid then
-                T.dark__bg_purple_shade
-
-              else
-                T.dark__bg_red
             ]
             [ Html.text "Get started" ]
 

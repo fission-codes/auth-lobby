@@ -1,8 +1,7 @@
 {
   "logo": {
-    "dark-scheme": "/images/logo-dark-scheme.svg",
-    "light-scheme": "/images/logo-light-scheme.svg",
-    "styles": "margin: 0 -30px; max-width: none; width: calc(100% + 30px * 2);"
+    "dark-scheme": "/images/logo-gradient-textonly.svg",
+    "light-scheme": "/images/logo-gradient-textonly.svg"
   },
   "introduction": "👋 It doesn't look like you've been here before.  \nLearn what Fission is about on [our website](https://fission.codes)."
 }

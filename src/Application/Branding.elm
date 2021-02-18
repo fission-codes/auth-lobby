@@ -84,11 +84,12 @@ logo { theme, usedUsername, version } =
 
                 --
                 , T.absolute
-                , T.bg_purple
+                , T.bg_gray_200
                 , T.font_display
                 , T.font_medium
                 , T.hidden
                 , T.neg_mr_1
+                , T.opacity_90
                 , T.right_0
                 , T.rounded
                 , T.top_0
@@ -104,8 +105,8 @@ logo { theme, usedUsername, version } =
 
                 -- Dark mode
                 ------------
-                , T.dark__bg_purple_shade
-                , T.dark__text_purple_tint
+                , T.dark__bg_gray_500
+                , T.dark__text_darkness_above
                 ]
                 [ Html.text "Auth"
                 ]

@@ -133,13 +133,9 @@ exchangeView fallbackView maybeExchange model =
                         [ E.onClick (SendLinkingUcan exchange)
 
                         --
-                        , T.bg_gray_200
+                        , T.bg_purple
                         , T.flex
                         , T.items_center
-
-                        -- Dark mode
-                        ------------
-                        , T.dark__bg_purple_shade
                         ]
                         [ S.buttonIcon FeatherIcons.check
                         , Html.text "Approve"
@@ -219,14 +215,10 @@ form context =
         -- Sign in
         ----------
         , S.button
-            [ T.bg_gray_200
+            [ T.bg_purple
             , T.block
             , T.mt_6
             , T.w_full
-
-            -- Dark mode
-            ------------
-            , T.dark__bg_purple_shade
             ]
             [ Html.text "Link account" ]
 
@@ -274,6 +266,7 @@ numberDisplay numbers =
                 Html.div
                     [ T.border_2
                     , T.border_gray_600
+                    , T.leading_normal
                     , T.mr_2
                     , T.pt_px
                     , T.rounded_md

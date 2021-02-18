@@ -13,6 +13,7 @@ import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Html.Extra as Html
 import Loading
 import Markdown.Parser
 import Markdown.Renderer
@@ -104,6 +105,62 @@ view_ model =
                             { defaultFailedState | required = True }
                                 |> Failure
                                 |> External.Context.note
+
+    -----------------------------------------
+    -- Fission Tag
+    -----------------------------------------
+    , case model.theme of
+        Success theme ->
+            case theme.logo of
+                Just _ ->
+                    Html.div
+                        [ T.flex
+                        , T.justify_center
+                        , T.mt_10
+                        , T.text_center
+                        ]
+                        [ Html.div
+                            [ T.border_t
+                            , T.border_gray_600
+                            , T.pt_5
+
+                            -- Dark mode
+                            ------------
+                            , T.dark__border_gray_100
+                            ]
+                            [ Html.a
+                                [ A.href "https://fission.codes"
+                                , A.target "_blank"
+
+                                --
+                                , T.inline_flex
+                                , T.items_center
+                                , T.justify_center
+                                , T.text_gray_400
+                                , T.text_xs
+                                ]
+                                [ Html.span
+                                    [ T.mr_px
+                                    ]
+                                    [ Html.text "Powered by" ]
+                                , Html.img
+                                    [ A.src "/images/badge-solid-faded.svg"
+                                    , A.width 14
+
+                                    --
+                                    , T.inline_block
+                                    , T.ml_1
+                                    ]
+                                    []
+                                ]
+                            ]
+                        ]
+
+                Nothing ->
+                    Html.nothing
+
+        _ ->
+            Html.nothing
     ]
         |> Html.div
             [ T.py_6
@@ -188,17 +245,13 @@ choose model =
             , T.mx_auto
             ]
             [ S.button
-                [ T.bg_gray_200
+                [ T.bg_purple
 
                 --
                 , Account.Creation.Context.default
                     |> Page.CreateAccount
                     |> GoToPage
                     |> E.onClick
-
-                -- Dark mode
-                ------------
-                , T.dark__bg_purple_shade
                 ]
                 [ Html.text "Create account" ]
 
@@ -238,7 +291,12 @@ authenticated username model =
             [ S.highlightBlock
                 [ T.relative ]
                 [ Html.span
-                    [ T.opacity_90 ]
+                    [ T.opacity_90
+
+                    -- Dark mode
+                    ------------
+                    , T.dark__opacity_60
+                    ]
                     [ Html.text "Authenticated as " ]
                 , Html.span
                     [ T.inline_block
@@ -247,7 +305,7 @@ authenticated username model =
 
                     -- Dark mode
                     ------------
-                    , T.dark__text_gray_700
+                    , T.dark__text_purple_tint
                     ]
                     [ Html.text username ]
                 ]

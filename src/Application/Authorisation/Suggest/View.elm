@@ -179,10 +179,6 @@ view context model =
                 , T.bg_purple
                 , T.flex
                 , T.items_center
-
-                -- Dark mode
-                ------------
-                , T.dark__bg_purple_shade
                 ]
                 [ S.buttonIcon FeatherIcons.check
                 , Html.text "Yes"

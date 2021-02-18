@@ -84,9 +84,6 @@ buttonWithNode node attributes =
             --
             , default_transition_duration
             , default_transition_easing
-
-            --
-            , T.focus__shadow_outline
             ]
         |> node
 
@@ -130,6 +127,28 @@ formError attributes =
             , T.mt_6
             , T.text_red
             , T.text_sm
+            ]
+        |> Html.div
+
+
+highlightBlock : Node msg
+highlightBlock attributes =
+    attributes
+        |> List.append
+            [ T.bg_purple_tint
+            , T.border_t
+            , T.border_transparent
+            , T.inline_block
+            , T.mb_6
+            , T.p_5
+            , T.rounded_md
+            , T.text_purple_shade
+
+            -- Dark mode
+            ------------
+            , T.dark__bg_purple_shade
+            , T.dark__bg_opacity_20
+            , T.dark__text_purple_tint
             ]
         |> Html.div
 
@@ -207,27 +226,6 @@ textField attributes =
             , T.dark__border_gray_200
             ]
         |> Html.input
-
-
-highlightBlock : Node msg
-highlightBlock attributes =
-    attributes
-        |> List.append
-            [ T.bg_purple_tint
-            , T.border_t
-            , T.border_transparent
-            , T.inline_block
-            , T.mb_6
-            , T.p_5
-            , T.rounded_md
-            , T.text_purple_shade
-
-            -- Dark mode
-            ------------
-            , T.dark__bg_darkness_above
-            , T.dark__text_purple_tint
-            ]
-        |> Html.div
 
 
 warning : List (Html msg) -> Html msg
