@@ -59,7 +59,7 @@ Possible cancellation reasons:
 
 ## Theming
 
-By passing a `theme` query parameter you can adjust the look and text of the lobby. Note that when setting a custom logo, there will be a subtle reference to Fission added, to indicate that this is still a Fission service.
+By passing a `theme` query parameter you can adjust the look and text of the lobby. Note that when setting a custom logo, there will be a subtle reference to Fission added, to indicate that this is still a Fission service. The `theme` query param should be a URL or IPFS CID pointing to a JSON file with the following format:
 
 ```json
 {
