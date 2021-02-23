@@ -2,6 +2,7 @@
 /elm-stuff
 /node_modules
 /package-lock.json
+/src/Library/Theme.elm
 /src/Library/Tailwind.elm
 /web_modules
 

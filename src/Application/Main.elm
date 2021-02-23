@@ -20,6 +20,8 @@ import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
 import Routing
+import Theme.Defaults
+import Theme.Url
 import Url exposing (Url)
 import Url.Parser as Url
 import View
@@ -30,7 +32,8 @@ import View
 
 
 type alias Flags =
-    { dataRootDomain : String
+    { apiDomain : String
+    , dataRootDomain : String
     , usedUsername : Maybe String
     , version : String
     }
@@ -58,13 +61,26 @@ init flags url navKey =
         externalContext =
             External.Context.extractFromUrl url
 
+        maybeThemePointer =
+            Theme.Url.extractPointer url
+
+        theme =
+            case maybeThemePointer of
+                Just _ ->
+                    Loading
+
+                Nothing ->
+                    NotAsked
+
         page =
             determineInitialPage flags url externalContext
     in
-    { dataRootDomain = flags.dataRootDomain
+    { apiDomain = flags.apiDomain
+    , dataRootDomain = flags.dataRootDomain
     , externalContext = externalContext
     , navKey = navKey
     , page = page
+    , theme = theme
     , url = url
     , usedUsername = flags.usedUsername
     , version = flags.version
@@ -87,6 +103,11 @@ init flags url navKey =
                 Nothing ->
                     Return.singleton
            )
+        |> Return.command
+            (maybeThemePointer
+                |> Maybe.map (Theme.Url.fetch flags.apiDomain)
+                |> Maybe.withDefault Cmd.none
+            )
 
 
 determineInitialPage : Flags -> Url -> External.Context.ParsedContext -> Page
@@ -222,6 +243,12 @@ update msg =
         -----------------------------------------
         CopyToClipboard a ->
             Other.copyToClipboard a
+
+        GotThemeViaHttp a ->
+            Other.gotThemeViaHttp a
+
+        GotThemeViaIpfs a ->
+            Other.gotThemeViaIpfs a
 
         Leave ->
             Other.leave

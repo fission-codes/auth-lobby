@@ -25,6 +25,7 @@ After that, you need at least one of these resources:
 You can define some optional parameters as well:
 * `lifetimeInSeconds`, how long an action should be authorised for. The default is one month.
 * `newUser`, `t` or `f`, if this parameter is given and the user has not signed in before, this will pre-select the appropriate screen for the user. If `newUser` is set to `t`, it'll show the create-account screen, and if set to `f`, it'll show the sign-in (aka. link) screen. If this parameter is not given at all, the user will be able to chose themselves.
+* `theme`, path or ipfs cid to a theme json file. See the [theming](#theming) section below for more info.
 
 ```shell
 https://auth.fission.codes
@@ -53,6 +54,36 @@ with the authorisation), the query parameter `cancelled=reason` will be added.
 
 Possible cancellation reasons:
 * `DENIED`, user chose to cancel the authorization
+
+
+
+## Theming
+
+By passing a `theme` query parameter you can adjust the look and text of the lobby. Note that when setting a custom logo, there will be a subtle reference to Fission added, to indicate that this is still a Fission service.
+
+```json
+{
+  "introduction": "MARKDOWN",
+  "logo": {
+    "dark-scheme": "URL_TO_IMAGE_OR_CID",
+    "light-scheme": "URL_TO_IMAGE_OR_CID",
+    "styles": "OPTIONAL_CSS"
+  }
+}
+```
+
+So for example:
+
+```json
+{
+  "introduction": "Learn more about Fission on our [website](https://fission.codes).",
+  "logo": {
+    "dark-scheme": "https://auth.fission.codes/images/logo-dark-scheme-textonly.svg",
+    "light-scheme": "https://auth.fission.codes/images/logo-light-scheme-textonly.svg",
+    "styles": "width: 120px; padding-bottom: 10px"
+  }
+}
+```
 
 
 

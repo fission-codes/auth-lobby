@@ -97,6 +97,9 @@ extractFromUrl url =
                     if String.contains "&username=" query then
                         NotAsked
 
+                    else if String.contains "theme=" query then
+                        NotAsked
+
                     else
                         Failure defaultFailedState
 

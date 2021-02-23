@@ -32,6 +32,7 @@ async function bootElm() {
 
   app = Elm.Main.init({
     flags: {
+      apiDomain: API_ENDPOINT.replace(/^https?:\/\//, ""),
       dataRootDomain: DATA_ROOT_DOMAIN,
       url: location.href,
       usedUsername,

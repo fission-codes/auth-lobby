@@ -28,6 +28,11 @@ body {
 }
 
 
+p.inline:not(:last-child):after {
+  content: " ";
+}
+
+
 
 /* Utilities
    ========= */
