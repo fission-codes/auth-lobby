@@ -259,15 +259,62 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
 
   const ucans = [ await ucanPromise ]
 
-  // encrypt symmetric key (url-safe base64)
-  const plainTextReadKey = await myReadKey()
+  // Load, or create, filesystem
+  const keyName = "wnfs__root"
   const ks = await wn.keystore.get()
+  await ks.importSymmKey(await myReadKey(), keyName)
+
+  const username = await localforage.getItem("usedUsername")
+  const dataRoot = await wn.dataRoot.lookup(username)
+  const fs = dataRoot
+    ? await wn.fs.fromCID(dataRoot, { keyName, localOnly: true })
+    : await freshFileSystem(keyName)
+
+  // Encrypt symmetric keys (url-safe base64)
+  let plainTextReadKeys = att.map(async a => {
+    // TODO: Waiting on API changes
+    const path = a.floofs
+    if (!path) return null
+
+    const pathExists = await fs.exists(path)
+    if (!pathExists) {
+      await fs.mkdir(path)
+      fs.proofs["*"] = proof ? wn.ucan.decode(proof) : null
+      await fs.publish()
+    }
+
+    if (path.startsWith("/public")) return null
+
+    return await fs
+      .get(path)
+      .then(f => [ path, f.key ])
+  })
+
+  plainTextReadKeys = await Promise.all(plainTextReadKeys)
+  plainTextReadKeys = plainTextReadKeys.filter(a => a != null)
+
   const { publicKey } = wn.did.didToPublicKey(didExchange)
-  const readKey = await ks.encrypt(plainTextReadKey, publicKey).then(makeBase64UrlSafe)
+  const readKeys = await Promise.all(plainTextReadKeys.map(async r =>
+    [ r[0]
+    , await ks.encrypt(r[1], publicKey).then(makeBase64UrlSafe)
+    ]
+  ))
 
   app.ports.gotUcansForApplication.send(
-    { readKey, ucans }
+    { readKeys: Object.fromEntries(readKeys), ucans }
   )
+}
+
+
+async function freshFileSystem(keyName) {
+  const fs = await wn.fs.empty({ keyName, localOnly: true })
+  await fs.mkdir("private/Apps")
+  await fs.mkdir("private/Audio")
+  await fs.mkdir("private/Documents")
+  await fs.mkdir("private/Photos")
+  await fs.mkdir("private/Video")
+  await fs.publish()
+  return fs
 }
 
 

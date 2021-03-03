@@ -1,6 +1,8 @@
 module Authorisation.State exposing (..)
 
+import Dict
 import External.Context as External
+import Json.Decode
 import Json.Encode as Json
 import List.Ext as List
 import Maybe.Extra as Maybe
@@ -78,15 +80,20 @@ deny model =
         |> return model
 
 
-gotUcansForApplication : { readKey : String, ucans : List String } -> Manager
-gotUcansForApplication { readKey, ucans } model =
+gotUcansForApplication : { readKeys : Json.Value, ucans : List String } -> Manager
+gotUcansForApplication { readKeys, ucans } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
 
+        keys =
+            readKeys
+                |> Json.Decode.decodeValue (Json.Decode.dict Json.Decode.string)
+                |> Result.withDefault Dict.empty
+
         redirection =
             { newUser = model.reCreateAccount == RemoteData.Success ()
-            , readKey = readKey
+            , readKeys = keys
             , ucans = ucans
             , username = username
             }
