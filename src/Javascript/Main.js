@@ -273,7 +273,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   // Encrypt symmetric keys (url-safe base64)
   let plainTextReadKeys = att.map(async a => {
     // TODO: Waiting on API changes
-    const path = a.floofs
+    const path = a.wnfs || a.floofs
     if (!path) return null
 
     const pathExists = await fs.exists(path)
