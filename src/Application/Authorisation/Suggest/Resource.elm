@@ -1,4 +1,4 @@
-module Authorisation.Suggest.Resource exposing (FileSystemRoot(..), applicationFolder, custom, everything, fileSystemPath, fissionApp, fissionDomain)
+module Authorisation.Suggest.Resource exposing (FileSystemRoot(..), application, applicationFolder, custom, everything, fileSystemPath)
 
 import FeatherIcons
 import Html exposing (Html)
@@ -32,10 +32,35 @@ everything =
 -- 🛠
 
 
+application : String -> Html Msg
+application identifier =
+    case identifier of
+        "*" ->
+            resource
+                [ resourceIcon FeatherIcons.zap
+                , Html.span
+                    []
+                    [ Html.strong [] [ Html.text "All " ]
+                    , Html.text "your Fission apps and the ability to create new ones"
+                    ]
+                ]
+
+        appDomain ->
+            resource
+                [ resourceIcon FeatherIcons.zap
+                , Html.span
+                    []
+                    [ Html.text "The "
+                    , Html.strong [] [ Html.text appDomain ]
+                    , Html.text " application"
+                    ]
+                ]
+
+
 applicationFolder : String -> Html Msg
 applicationFolder appName =
     resource
-        [ resourceIcon FeatherIcons.box
+        [ resourceIcon FeatherIcons.package
         , Html.span
             []
             [ Html.text "The "
@@ -95,30 +120,6 @@ fileSystemPath root path =
                     , Html.text " file system"
                     ]
                 ]
-
-
-fissionApp : String -> Html Msg
-fissionApp name =
-    resource
-        [ resourceIcon FeatherIcons.box
-        , Html.span
-            []
-            [ Html.text "Your Fission app "
-            , Html.strong [] [ Html.text name ]
-            ]
-        ]
-
-
-fissionDomain : String -> Html Msg
-fissionDomain domain =
-    resource
-        [ resourceIcon FeatherIcons.globe
-        , Html.span
-            []
-            [ Html.text "Your Fission user domain "
-            , Html.strong [] [ Html.text domain ]
-            ]
-        ]
 
 
 

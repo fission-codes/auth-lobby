@@ -18,7 +18,7 @@ type FilesystemPart
 
 
 fsResourceKey =
-    -- TODO: Waiting on API change,
+    -- TODO: Waiting on SDK changes,
     --       should be `wnfs`
     "floofs"
 

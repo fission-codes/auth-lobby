@@ -28,12 +28,16 @@ allow model =
                 resources =
                     []
                         -----------------------------------------
+                        -- App
+                        -----------------------------------------
+                        |> identity
+                        -----------------------------------------
                         -- App Folder (Private)
                         -----------------------------------------
                         |> Maybe.unwrap
                             identity
                             (Ucan.AppFolder >> Ucan.fsResource host >> (::))
-                            context.app
+                            context.appFolder
                         -----------------------------------------
                         -- Private paths
                         -----------------------------------------

@@ -18,9 +18,10 @@ __UI for [auth.fission.codes](https://auth.fission.codes)__
 * `redirectTo`, the url the user will redirected to
 
 After that, you need at least one of these resources:
+* `app`, ask if the user wants to grant access to a specific Fission app (you may pass this param multiple times). You can also ask the user for access to all their apps (not their data), this will show a warning to the user.
 * `appFolder`, ask if the user wants to grant access to the private application folder.
-* `privatePath`, request access to a private path (you may pass multiple).
-* `publicPath`, request access to a public path (you may pass multiple).
+* `privatePath`, request access to a private path (you may pass this param multiple times).
+* `publicPath`, request access to a public path (you may pass this param multiple times).
 
 You can define some optional parameters as well:
 * `lifetimeInSeconds`, how long an action should be authorised for. The default is one month.
