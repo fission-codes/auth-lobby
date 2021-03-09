@@ -60,7 +60,7 @@ type Msg
       -----------------------------------------
     | AllowAuthorisation
     | DenyAuthorisation
-    | GotUcansForApplication { readKeys : Json.Value, ucans : List String }
+    | GotUcansForApplication { classified : String, ucans : List String }
       -----------------------------------------
       -- Create
       -----------------------------------------

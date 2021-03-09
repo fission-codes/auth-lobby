@@ -43,8 +43,8 @@ https://auth.fission.codes
 
 🎒 _When redirecting back it'll add the query params:_
 
+* `classified`, url-safe base64 encrypted json object containing private filesystem information.
 * `newUser`, `t` or `f`, whether the user has just created an account or not.
-* `readKey`, the aes key to use with the user's file system (encrypted in url-safe base64)
 * `ucans`, a list of tokens authorising the application to perform actions.  
   The tokens are separated by a comma, but make sure to decode the query parameter first.
 * `username`, the username that was chosen by the user.

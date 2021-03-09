@@ -112,8 +112,8 @@ extractFromUrl url =
 redirectCommand :
     Result
         String
-        { newUser : Bool
-        , readKeys : Dict String String
+        { classified : String
+        , newUser : Bool
         , ucans : List String
         , username : String
         }
@@ -150,16 +150,9 @@ redirectCommand result remoteData =
                     |> Maybe.withDefault []
                     |> List.append
                         (case result of
-                            Ok { newUser, readKeys, ucans, username } ->
-                                let
-                                    keys =
-                                        readKeys
-                                            |> Json.Encode.dict identity Json.Encode.string
-                                            |> Json.Encode.encode 0
-                                            |> (\s -> Maybe.withDefault s <| Base64.fromString s)
-                                in
-                                [ "newUser=" ++ ifThenElse newUser "t" "f"
-                                , "readKeys=" ++ Url.percentEncode keys
+                            Ok { classified, newUser, ucans, username } ->
+                                [ "classified=" ++ Url.percentEncode classified
+                                , "newUser=" ++ ifThenElse newUser "t" "f"
                                 , "ucans=" ++ Url.percentEncode (String.join "," ucans)
                                 , "username=" ++ Url.percentEncode username
                                 ]

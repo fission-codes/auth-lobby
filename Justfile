@@ -77,7 +77,7 @@ insert-version:
 	pnpm install
 	rm -rf web_modules
 	mkdir -p web_modules
-	cp node_modules/webnative/index.umd.js web_modules/webnative.js
+	cp ../webnative/dist/index.umd.js web_modules/webnative.js
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
 	just download-web-module ipfs.min.js https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.53.2/index.min.js

@@ -80,20 +80,15 @@ deny model =
         |> return model
 
 
-gotUcansForApplication : { readKeys : Json.Value, ucans : List String } -> Manager
-gotUcansForApplication { readKeys, ucans } model =
+gotUcansForApplication : { classified : String, ucans : List String } -> Manager
+gotUcansForApplication { classified, ucans } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
 
-        keys =
-            readKeys
-                |> Json.Decode.decodeValue (Json.Decode.dict Json.Decode.string)
-                |> Result.withDefault Dict.empty
-
         redirection =
-            { newUser = model.reCreateAccount == RemoteData.Success ()
-            , readKeys = keys
+            { classified = classified
+            , newUser = model.reCreateAccount == RemoteData.Success ()
             , ucans = ucans
             , username = username
             }

@@ -75,7 +75,7 @@ port gotLinked : ({ username : String } -> msg) -> Sub msg
 port gotLinkExchangeError : (String -> msg) -> Sub msg
 
 
-port gotUcansForApplication : ({ readKeys : Json.Value, ucans : List String } -> msg) -> Sub msg
+port gotUcansForApplication : ({ classified : String, ucans : List String } -> msg) -> Sub msg
 
 
 port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg
