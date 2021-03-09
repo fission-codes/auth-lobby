@@ -554,6 +554,9 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
     ////////////////////////////////////////////
     // 🔏 (Linking, Pt. 3)
     ////////////////////////////////////////////
+
+    console.debug("🔏 Linking, Pt. 3")
+
     if (cs.temporaryRsaPair) {
       const json = JSON.parse(string)
       const iv = base64ToArrayBuffer(json.iv)
@@ -564,6 +567,8 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       }
 
       // Extract session key
+      console.debug("Extract session key")
+
       const rawSessionKey = await crypto.subtle.decrypt(
         {
           name: "RSA-OAEP"
@@ -573,6 +578,8 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       )
 
       // Import session key
+      console.debug("Import session key")
+
       const sessionKey = await crypto.subtle.importKey(
         "raw",
         rawSessionKey,
@@ -585,6 +592,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       cs.temporaryRsaPair = null
 
       // Extract UCAN
+      console.debug("Extract UCAN")
       const encodedUcan = arrayBufferToString(await crypto.subtle.decrypt(
         {
           name: "AES-GCM",
@@ -615,6 +623,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       }
 
       // Extract session key
+      console.debug("Extract session key")
       const sessionKeyFromFact = ucan.payload.fct[0] && ucan.payload.fct[0].sessionKey
 
       if (!sessionKeyFromFact) {
@@ -622,6 +631,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       }
 
       // Compare session keys
+      console.debug("Compare session keys")
       const sessionKeyWeAlreadyGot = arrayBufferToBase64(rawSessionKey)
 
       if (sessionKeyFromFact !== sessionKeyWeAlreadyGot) {
@@ -629,6 +639,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       }
 
       // Carry on with challenge
+      console.debug("Carry on with challenge")
       return Array.from(crypto.getRandomValues(
         new Uint8Array(6)
       )).map(n => {
@@ -639,12 +650,16 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
     // 🔐 (Linking, Pt. 4+)
     ////////////////////////////////////////////
     } else if (cs.sessionKey) {
+      console.debug("🔐 Linking, Pt. 4+")
       const { iv, msg } = JSON.parse(string)
+
+      console.debug("msg: " + msg)
 
       if (!iv) {
         throw new Error("I tried to decrypt some data (with AES) but the `iv` was missing from the message")
       }
 
+      console.debug("decrypting msg")
       const buffer = await crypto.subtle.decrypt(
         {
           name: "AES-GCM",
