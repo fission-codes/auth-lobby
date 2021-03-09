@@ -265,10 +265,9 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   const ucans = [ await ucanPromise ]
 
   // Load, or create, filesystem
-  const keyName = "wnfs__root"
+  const keyName = "wnfs__readKey__" + await wn.keystore.sha256Str("/private")
   const ks = await wn.keystore.get()
   await ks.importSymmKey(await myReadKey(), keyName)
-  window.ks = ks
 
   const username = await localforage.getItem("usedUsername")
   const dataRoot = await wn.dataRoot.lookup(username)
