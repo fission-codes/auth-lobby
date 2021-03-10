@@ -180,24 +180,49 @@ view context model =
             , T.justify_center
             , T.mt_10
             ]
-            [ S.button
-                [ E.onClick AllowAuthorisation
-                , A.disabled isLoading
+            [ if isLoading then
+                Html.div
+                    [ T.border
+                    , T.border_dashed
+                    , T.border_gray_500
+                    , T.border_opacity_60
+                    , T.italic
+                    , T.leading_relaxed
+                    , T.px_4
+                    , T.py_3
+                    , T.rounded_md
+                    , T.text_sm
 
-                --
-                , ifThenElse isError T.bg_red T.bg_purple
-                , T.flex
-                , T.items_center
-                ]
-                [ if isLoading then
-                    Loading.animationWithAttributes
-                        [ T.mr_2, T.opacity_60 ]
-                        { size = 16 }
+                    -- Dark mode
+                    ------------
+                    , T.dark__border_gray_200
+                    , T.dark__border_opacity_60
+                    ]
+                    [ Html.span
+                        [ T.flex
+                        , T.items_center
+                        , T.pt_px
+                        ]
+                        [ Loading.animationWithAttributes
+                            [ T.mr_2, T.opacity_60 ]
+                            { size = 16 }
+                        , Html.text "Warming up filesystem"
+                        ]
+                    ]
 
-                  else
-                    S.buttonIcon FeatherIcons.check
-                , Html.text "Yes"
-                ]
+              else
+                S.button
+                    [ E.onClick AllowAuthorisation
+                    , A.disabled isLoading
+
+                    --
+                    , ifThenElse isError T.bg_red T.bg_purple
+                    , T.flex
+                    , T.items_center
+                    ]
+                    [ S.buttonIcon FeatherIcons.check
+                    , Html.text "Yes"
+                    ]
 
             --
             , S.button
@@ -206,9 +231,9 @@ view context model =
 
                 --
                 , T.bg_gray_400
-                , T.flex
                 , T.items_center
                 , T.ml_3
+                , ifThenElse isLoading T.hidden T.flex
 
                 -- Dark mode
                 ------------
