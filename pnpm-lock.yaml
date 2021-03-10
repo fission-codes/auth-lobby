@@ -3,7 +3,7 @@ dependencies:
   ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
   ipfs-message-port-server: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   localforage: 1.9.0
-  webnative: 0.21.3
+  webnative: 0.22.0-alpha
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
   esbuild: 0.8.2
@@ -2483,7 +2483,7 @@ packages:
   /fission-bloom-filters/1.4.0:
     dependencies:
       is-buffer: 2.0.4
-      lodash: 4.17.19
+      lodash: 4.17.21
       lodash.eq: 4.0.0
       lodash.indexof: 4.0.5
       reflect-metadata: 0.1.13
@@ -2943,7 +2943,7 @@ packages:
       cids: 1.1.5
       class-is: 1.1.0
       multicodec: 2.1.0
-      multihashing-async: 2.0.1
+      multihashing-async: 2.1.0
       protons: 2.0.0
       reset: 0.1.0
       run: 1.4.0
@@ -3537,10 +3537,10 @@ packages:
     resolution:
       integrity: sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
   /lodash/4.17.19:
+    dev: true
     resolution:
       integrity: sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
   /lodash/4.17.21:
-    dev: true
     resolution:
       integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
   /log-symbols/4.0.0:
@@ -3841,20 +3841,6 @@ packages:
       npm: '>=6.0.0'
     resolution:
       integrity: sha512-AP4IoV/YzkNrfbQKZE3OMPibrmy350OmCd6cJkwyM8oExaXIlOY4UnOOVSQtAEuq/LR01XfXKCESidzZvSwHCQ==
-  /multihashing-async/2.0.1:
-    dependencies:
-      blakejs: 1.1.0
-      err-code: 2.0.3
-      js-sha3: 0.8.0
-      multihashes: 3.1.2
-      murmurhash3js-revisited: 3.0.0
-      uint8arrays: 1.1.0
-    dev: false
-    engines:
-      node: '>=10.0.0'
-      npm: '>=6.0.0'
-    resolution:
-      integrity: sha512-LZcH8PqW4iEKymaJ3RpsgpSJhXF29kAvO02ccqbysiXkQhZpVce8rrg+vzRKWO89hhyIBnQHI2e/ZoRVxmiJ2Q==
   /multihashing-async/2.1.0:
     dependencies:
       blakejs: 1.1.0
@@ -5885,7 +5871,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative/0.21.3:
+  /webnative/0.22.0-alpha:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -5903,7 +5889,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-kaVLPVoQEnB4/ERoBWkwgk7JGG/lFLNDizSDDxXMsZx/tYVa3xHFQBw61XU9BDgLyfpAanxH3ZCdncIiO8kvgA==
+      integrity: sha512-sDrbUaKmkivmflzzKJbkgu5PGpde2sWonEkivB7b3UjYGDdqWpJnE7nf4Pkqph7Z4hqjpIM2MJuL9TrEp7gQwA==
   /whatwg-url/7.1.0:
     dependencies:
       lodash.sortby: 4.7.0
@@ -6185,6 +6171,6 @@ specifiers:
   postcss-import: ^12.0.1
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: ^0.21.3
+  webnative: ^0.22.0-alpha
   workbox-cli: ^6.1.1
   workbox-strategies: ^6.1.1

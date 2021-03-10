@@ -2,6 +2,7 @@ module Authorisation.Suggest.View exposing (view)
 
 import Authorisation.Suggest.Resource as Resource
 import Branding
+import Common exposing (ifThenElse)
 import Dict
 import External.Context exposing (Context, defaultFailedState)
 import FeatherIcons
@@ -29,6 +30,13 @@ import Time.Distance.I18n
 
 view : Context -> Model -> Html Msg
 view context model =
+    let
+        isError =
+            RemoteData.isFailure model.reLinkApp
+
+        isLoading =
+            RemoteData.isLoading model.reLinkApp
+    in
     Html.div
         [ T.text_center ]
         [ Branding.logo model
@@ -172,27 +180,60 @@ view context model =
             , T.justify_center
             , T.mt_10
             ]
-            [ S.button
-                [ E.onClick AllowAuthorisation
+            [ if isLoading then
+                Html.div
+                    [ T.border
+                    , T.border_dashed
+                    , T.border_gray_500
+                    , T.border_opacity_60
+                    , T.italic
+                    , T.leading_relaxed
+                    , T.px_4
+                    , T.py_3
+                    , T.rounded_md
+                    , T.text_sm
 
-                --
-                , T.bg_purple
-                , T.flex
-                , T.items_center
-                ]
-                [ S.buttonIcon FeatherIcons.check
-                , Html.text "Yes"
-                ]
+                    -- Dark mode
+                    ------------
+                    , T.dark__border_gray_200
+                    , T.dark__border_opacity_60
+                    ]
+                    [ Html.span
+                        [ T.flex
+                        , T.items_center
+                        , T.pt_px
+                        ]
+                        [ Loading.animationWithAttributes
+                            [ T.mr_2, T.opacity_60 ]
+                            { size = 16 }
+                        , Html.text "Warming up filesystem"
+                        ]
+                    ]
+
+              else
+                S.button
+                    [ E.onClick AllowAuthorisation
+                    , A.disabled isLoading
+
+                    --
+                    , ifThenElse isError T.bg_red T.bg_purple
+                    , T.flex
+                    , T.items_center
+                    ]
+                    [ S.buttonIcon FeatherIcons.check
+                    , Html.text "Yes"
+                    ]
 
             --
             , S.button
                 [ E.onClick DenyAuthorisation
+                , A.disabled isLoading
 
                 --
                 , T.bg_gray_400
-                , T.flex
                 , T.items_center
                 , T.ml_3
+                , ifThenElse isLoading T.hidden T.flex
 
                 -- Dark mode
                 ------------
@@ -202,6 +243,18 @@ view context model =
                 , Html.text "No"
                 ]
             ]
+
+        -----------------------------------------
+        -- Errors
+        -----------------------------------------
+        , case model.reLinkApp of
+            Failure error ->
+                Html.div
+                    [ T.mt_5, T.text_red, T.text_sm ]
+                    [ Html.text error ]
+
+            _ ->
+                Html.nothing
 
         -----------------------------------------
         -- As user

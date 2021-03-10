@@ -19,6 +19,10 @@ wn.setup.endpoints({
   user: DATA_ROOT_DOMAIN
 })
 
+wn.setup.debug({
+  enabled: true
+})
+
 
 // bootIpfs().then(bootElm)
 bootElm()
@@ -232,6 +236,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   const issuer = await wn.did.write()
   const proof = await localforage.getItem("ucan")
 
+  // Build UCAN
   const att = attenuation.map(a => {
     const [key, value] = a.resource
     return { [key]: value, "cap": a.capability }
@@ -259,15 +264,123 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
 
   const ucans = [ await ucanPromise ]
 
-  // encrypt symmetric key (url-safe base64)
-  const plainTextReadKey = await myReadKey()
+  // Load, or create, filesystem
+  const keyName = "wnfs__readKey__" + await wn.keystore.sha256Str("/private")
   const ks = await wn.keystore.get()
-  const { publicKey } = wn.did.didToPublicKey(didExchange)
-  const readKey = await ks.encrypt(plainTextReadKey, publicKey).then(makeBase64UrlSafe)
+  await ks.importSymmKey(await myReadKey(), keyName)
 
-  app.ports.gotUcansForApplication.send(
-    { readKey, ucans }
+  const username = await localforage.getItem("usedUsername")
+  const dataRoot = await wn.dataRoot.lookup(username)
+
+  const permissions = {
+    fs: {
+      privatePaths: [ "/" ],
+      publicPaths: [ "/" ]
+    }
+  }
+
+  let madeFsChanges = dataRoot
+    ? false
+    : true
+
+  const fs = dataRoot
+    ? await wn.fs.fromCID(dataRoot, { keyName, permissions, localOnly: true })
+    : await freshFileSystem({ keyName, permissions })
+
+  // Ensure all necessary filesystem parts
+  const fsUcan = await wn.ucan.build({
+    potency: "APPEND",
+    resource: "*",
+    proof: proof || undefined,
+
+    audience: issuer,
+    issuer
+  })
+
+  let secrets = await att.reduce(async (acc, a) => {
+    const col = await acc
+
+    // TODO: Waiting on API changes
+    const path = a.wnfs || a.floofs
+    if (!path) return col
+    if (path.startsWith("/public")) return col
+
+    const pathExists = await fs.exists(path)
+
+    if (!pathExists) {
+      await fs.mkdir(path, { localOnly: true })
+      madeFsChanges = true
+    }
+
+    return {
+      ...col,
+      [path]: await fs.get(path).then(f => {
+        return {
+          key: f.key,
+          bareNameFilter: f.header.bareNameFilter
+        }
+      })
+    }
+
+  }, Promise.resolve({}))
+
+  // Update user's data root if need be
+  if (madeFsChanges) {
+    const cid = await fs.root.put()
+    const res = await wn.dataRoot.update(cid, fsUcan)
+    if (!res.success) return app.ports.gotLinkAppError.send("Failed to update data root 😰")
+  }
+
+  // Session key
+  const sessionKey = await crypto.subtle.generateKey(
+    {
+      name: "AES-GCM",
+      length: 256
+    },
+    true,
+    [ "encrypt", "decrypt" ]
   )
+
+  const sessionKeyBuffer = await crypto.subtle.exportKey("raw", sessionKey)
+  const sessionKeyBase64 = arrayBufferToBase64(sessionKeyBuffer)
+
+  // Classified
+  const iv = crypto.getRandomValues(
+    new Uint8Array(16)
+  )
+
+  const encryptedSecrets = await crypto.subtle.encrypt(
+    {
+      name: "AES-GCM",
+      iv: iv
+    },
+    sessionKey,
+    stringToArrayBuffer(JSON.stringify(secrets))
+  )
+
+  const { publicKey } = wn.did.didToPublicKey(didExchange)
+  const classified = makeBase64UrlSafe(btoa(JSON.stringify({
+    sessionKey: await ks.encrypt(sessionKeyBase64, publicKey),
+    iv: arrayBufferToBase64(iv),
+    secrets: arrayBufferToBase64(encryptedSecrets)
+  })))
+
+  // Send everything back to Elm
+  app.ports.gotUcansForApplication.send(
+    { classified, ucans }
+  )
+}
+
+
+async function freshFileSystem({ keyName, permissions }) {
+  const fs = await wn.fs.empty({ keyName, permissions, localOnly: true })
+  await fs.mkdir("private/Apps")
+  await fs.mkdir("private/Audio")
+  await fs.mkdir("private/Documents")
+  await fs.mkdir("private/Photos")
+  await fs.mkdir("private/Video")
+  await fs.publish()
+  return fs
 }
 
 

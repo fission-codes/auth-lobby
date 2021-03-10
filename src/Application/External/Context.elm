@@ -1,5 +1,6 @@
 module External.Context exposing (..)
 
+import Base64
 import Browser.Navigation as Nav
 import Common exposing (ifThenElse)
 import Dict exposing (Dict)
@@ -7,6 +8,7 @@ import FeatherIcons
 import Html exposing (Html, text)
 import Icons
 import Json.Decode
+import Json.Encode
 import Maybe.Extra as Maybe
 import RemoteData exposing (RemoteData(..))
 import Result.Extra as Result
@@ -110,8 +112,8 @@ extractFromUrl url =
 redirectCommand :
     Result
         String
-        { newUser : Bool
-        , readKey : String
+        { classified : String
+        , newUser : Bool
         , ucans : List String
         , username : String
         }
@@ -148,9 +150,9 @@ redirectCommand result remoteData =
                     |> Maybe.withDefault []
                     |> List.append
                         (case result of
-                            Ok { newUser, readKey, ucans, username } ->
-                                [ "newUser=" ++ ifThenElse newUser "t" "f"
-                                , "readKey=" ++ Url.percentEncode readKey
+                            Ok { classified, newUser, ucans, username } ->
+                                [ "classified=" ++ Url.percentEncode classified
+                                , "newUser=" ++ ifThenElse newUser "t" "f"
                                 , "ucans=" ++ Url.percentEncode (String.join "," ucans)
                                 , "username=" ++ Url.percentEncode username
                                 ]

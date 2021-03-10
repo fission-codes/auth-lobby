@@ -46,6 +46,7 @@ type alias Model =
     -- Remote Data
     -----------------------------------------
     , reCreateAccount : RemoteData String ()
+    , reLinkApp : RemoteData String ()
     }
 
 
@@ -60,7 +61,8 @@ type Msg
       -----------------------------------------
     | AllowAuthorisation
     | DenyAuthorisation
-    | GotUcansForApplication { readKey : String, ucans : List String }
+    | GotLinkAppError String
+    | GotUcansForApplication { classified : String, ucans : List String }
       -----------------------------------------
       -- Create
       -----------------------------------------

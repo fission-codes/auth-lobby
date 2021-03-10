@@ -1,6 +1,8 @@
 module Authorisation.State exposing (..)
 
+import Dict
 import External.Context as External
+import Json.Decode
 import Json.Encode as Json
 import List.Ext as List
 import Maybe.Extra as Maybe
@@ -58,7 +60,9 @@ allow model =
                         )
                         resources
             in
-            ( model
+            ( { model
+                | reLinkApp = RemoteData.Loading
+              }
             , Ports.linkApp
                 { attenuation = attenuation
                 , didWrite = context.didWrite
@@ -78,15 +82,20 @@ deny model =
         |> return model
 
 
-gotUcansForApplication : { readKey : String, ucans : List String } -> Manager
-gotUcansForApplication { readKey, ucans } model =
+gotLinkAppError : String -> Manager
+gotLinkAppError err model =
+    Return.singleton { model | reLinkApp = RemoteData.Failure err }
+
+
+gotUcansForApplication : { classified : String, ucans : List String } -> Manager
+gotUcansForApplication { classified, ucans } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
 
         redirection =
-            { newUser = model.reCreateAccount == RemoteData.Success ()
-            , readKey = readKey
+            { classified = classified
+            , newUser = model.reCreateAccount == RemoteData.Success ()
             , ucans = ucans
             , username = username
             }
