@@ -94,6 +94,7 @@ init flags url navKey =
     -- Remote Data
     -----------------------------------------
     , reCreateAccount = RemoteData.NotAsked
+    , reLinkApp = RemoteData.NotAsked
     }
         |> -- If authenticated, wait for incoming linking requests.
            (case flags.usedUsername of
@@ -159,6 +160,9 @@ update msg =
 
         DenyAuthorisation ->
             Authorisation.deny
+
+        GotLinkAppError a ->
+            Authorisation.gotLinkAppError a
 
         GotUcansForApplication a ->
             Authorisation.gotUcansForApplication a
@@ -265,6 +269,7 @@ subscriptions _ =
         , Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotLinked GotLinked
+        , Ports.gotLinkAppError GotLinkAppError
         , Ports.gotLinkExchangeError GotLinkExchangeError
         , Ports.gotUcansForApplication GotUcansForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability

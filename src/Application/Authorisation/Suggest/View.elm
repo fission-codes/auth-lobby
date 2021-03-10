@@ -2,6 +2,7 @@ module Authorisation.Suggest.View exposing (view)
 
 import Authorisation.Suggest.Resource as Resource
 import Branding
+import Common exposing (ifThenElse)
 import Dict
 import External.Context exposing (Context, defaultFailedState)
 import FeatherIcons
@@ -29,6 +30,13 @@ import Time.Distance.I18n
 
 view : Context -> Model -> Html Msg
 view context model =
+    let
+        isError =
+            RemoteData.isFailure model.reLinkApp
+
+        isLoading =
+            RemoteData.isLoading model.reLinkApp
+    in
     Html.div
         [ T.text_center ]
         [ Branding.logo model
@@ -174,19 +182,27 @@ view context model =
             ]
             [ S.button
                 [ E.onClick AllowAuthorisation
+                , A.disabled isLoading
 
                 --
-                , T.bg_purple
+                , ifThenElse isError T.bg_red T.bg_purple
                 , T.flex
                 , T.items_center
                 ]
-                [ S.buttonIcon FeatherIcons.check
+                [ if isLoading then
+                    Loading.animationWithAttributes
+                        [ T.mr_2, T.opacity_60 ]
+                        { size = 16 }
+
+                  else
+                    S.buttonIcon FeatherIcons.check
                 , Html.text "Yes"
                 ]
 
             --
             , S.button
                 [ E.onClick DenyAuthorisation
+                , A.disabled isLoading
 
                 --
                 , T.bg_gray_400
@@ -202,6 +218,18 @@ view context model =
                 , Html.text "No"
                 ]
             ]
+
+        -----------------------------------------
+        -- Errors
+        -----------------------------------------
+        , case model.reLinkApp of
+            Failure error ->
+                Html.div
+                    [ T.mt_5, T.text_red, T.text_sm ]
+                    [ Html.text error ]
+
+            _ ->
+                Html.nothing
 
         -----------------------------------------
         -- As user

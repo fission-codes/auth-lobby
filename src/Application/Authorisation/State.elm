@@ -60,7 +60,9 @@ allow model =
                         )
                         resources
             in
-            ( model
+            ( { model
+                | reLinkApp = RemoteData.Loading
+              }
             , Ports.linkApp
                 { attenuation = attenuation
                 , didWrite = context.didWrite
@@ -78,6 +80,11 @@ deny model =
     model.externalContext
         |> External.redirectCommand (Err "DENIED")
         |> return model
+
+
+gotLinkAppError : String -> Manager
+gotLinkAppError err model =
+    Return.singleton { model | reLinkApp = RemoteData.Failure err }
 
 
 gotUcansForApplication : { classified : String, ucans : List String } -> Manager

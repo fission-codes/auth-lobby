@@ -327,7 +327,8 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   // Update user's data root if need be
   if (madeFsChanges) {
     const cid = await fs.root.put()
-    await wn.dataRoot.update(cid, fsUcan)
+    const res = await wn.dataRoot.update(cid, fsUcan)
+    if (!res.success) return app.ports.gotLinkAppError.send("Failed to update data root 😰")
   }
 
   // Session key
