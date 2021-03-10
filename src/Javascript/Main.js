@@ -348,13 +348,13 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
   const topic = `deviceLink#${rootDid}`
   // const publish = a => ipfs.pubsub.publish(topic, a)
   const publish = a => {
-    if (cs.debug) console.log("Outgoing message (encrypted if needed):", a)
+    logGeneric("Outgoing message (encrypted if needed):", a)
 
     const binary = typeof a === "string"
       ? stringToArrayBuffer(a)
       : a
 
-    if (cs.debug) console.log("Outgoing message (raw):", binary)
+    logGeneric("Outgoing message (raw):", binary)
 
     cs.socket.send(binary)
   }
@@ -539,10 +539,10 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
   // Ignore our own messages, so stop here
   if (from === ipfsId) {
     return
-  } else if (cs.debug) {
-    console.log("Incoming message (raw):", data)
-    console.log("Incoming message (transformed):", string)
   }
+
+  logGeneric("Incoming message (raw):", data)
+  logGeneric("Incoming message (transformed):", string)
 
   // Stop interval for broadcast
   if (cs.pingIntervalId) {
@@ -554,6 +554,9 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
     ////////////////////////////////////////////
     // 🔏 (Linking, Pt. 3)
     ////////////////////////////////////////////
+
+    logDebug("🔏 Linking, Pt. 3")
+
     if (cs.temporaryRsaPair) {
       const json = JSON.parse(string)
       const iv = base64ToArrayBuffer(json.iv)
@@ -563,7 +566,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
         throw new Error("Already got a session key")
       }
 
-      // Extract session key
+      logDebug("Extract session key")
       const rawSessionKey = await crypto.subtle.decrypt(
         {
           name: "RSA-OAEP"
@@ -572,7 +575,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
         base64ToArrayBuffer(json.sessionKey)
       )
 
-      // Import session key
+      logDebug("Import session key")
       const sessionKey = await crypto.subtle.importKey(
         "raw",
         rawSessionKey,
@@ -584,7 +587,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       cs.sessionKey = sessionKey
       cs.temporaryRsaPair = null
 
-      // Extract UCAN
+      logDebug("Extract UCAN")
       const encodedUcan = arrayBufferToString(await crypto.subtle.decrypt(
         {
           name: "AES-GCM",
@@ -614,21 +617,21 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
         throw new Error("Invalid closed UCAN")
       }
 
-      // Extract session key
+      logDebug("Extract session key")
       const sessionKeyFromFact = ucan.payload.fct[0] && ucan.payload.fct[0].sessionKey
 
       if (!sessionKeyFromFact) {
         throw new Error("Session key is missing from closed UCAN")
       }
 
-      // Compare session keys
+      logDebug("Compare session keys")
       const sessionKeyWeAlreadyGot = arrayBufferToBase64(rawSessionKey)
 
       if (sessionKeyFromFact !== sessionKeyWeAlreadyGot) {
         throw new Error("Closed UCAN session key does not match the one we already have")
       }
 
-      // Carry on with challenge
+      logDebug("Carry on with challenge")
       return Array.from(crypto.getRandomValues(
         new Uint8Array(6)
       )).map(n => {
@@ -639,12 +642,16 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
     // 🔐 (Linking, Pt. 4+)
     ////////////////////////////////////////////
     } else if (cs.sessionKey) {
+      logDebug("🔐 Linking, Pt. 4+")
       const { iv, msg } = JSON.parse(string)
+
+      logDebug("msg: " + msg)
 
       if (!iv) {
         throw new Error("I tried to decrypt some data (with AES) but the `iv` was missing from the message")
       }
 
+      logDebug("decrypting msg")
       const buffer = await crypto.subtle.decrypt(
         {
           name: "AES-GCM",
@@ -676,7 +683,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       console.warn("Got invalid channel message")
     }
 
-    if (cs.debug) console.warn(err)
+    logWarn(err)
   }
 
   if (!decryptedMessage) return
@@ -718,7 +725,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
  * Close the channel.
  */
 async function closeChannel() {
-  console.log("Closing channel")
+  logDebug("Closing channel")
   // await ipfs.pubsub.unsubscribe(cs.topic)
 
   if (cs.socket) {
@@ -813,7 +820,6 @@ function copyToClipboard(text) {
   else console.log(`Missing clipboard api, tried to copy: "${text}"`)
 }
 
-
 async function isValidUcan(encodedUcan) {
   const [encodedHeader, encodedPayload] = encodedUcan.split(".")
   const ucan = wn.ucan.decode(encodedUcan)
@@ -842,4 +848,25 @@ async function isValidUcan(encodedUcan) {
 
 function makeBase64UrlSafe(base64) {
   return base64.replace(/\//g, "_").replace(/\+/g, "-").replace(/=+$/, "")
+}
+
+// LOGGING
+// =======
+
+function logGeneric(...args) {
+  if (cs.debug) {
+    console.log.apply(this, args)
+  }
+}
+
+function logDebug(...args) {
+  if (cs.debug) {
+    console.debug.apply(this, args)
+  }
+}
+
+function logInfo(...args) {
+  if (cs.debug) {
+    console.info.apply(this, args)
+  }
 }
