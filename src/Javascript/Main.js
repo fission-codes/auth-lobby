@@ -265,27 +265,22 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   const ucans = [ await ucanPromise ]
 
   // Load, or create, filesystem
-  const keyName = "wnfs__readKey__" + await wn.keystore.sha256Str("/private")
-  const ks = await wn.keystore.get()
-  await ks.importSymmKey(await myReadKey(), keyName)
-
   const username = await localforage.getItem("usedUsername")
   const dataRoot = await wn.dataRoot.lookup(username)
+  const privatePaths = att.reduce((acc, a) => {
+    const path = a.wnfs || a.floofs
+    if (!path) return acc
+    if (path.startsWith("/public")) return acc
+    return [ ...acc, path ]
+  }, [])
 
-  const permissions = {
-    fs: {
-      privatePaths: [ "/" ],
-      publicPaths: [ "/" ]
-    }
-  }
+  const permissions = { fs: { privatePaths: [ "/" ] }}
 
-  let madeFsChanges = dataRoot
-    ? false
-    : true
+  let madeFsChanges = dataRoot ? false : true
 
   const fs = dataRoot
-    ? await wn.fs.fromCID(dataRoot, { keyName, permissions, localOnly: true })
-    : await freshFileSystem({ keyName, permissions })
+    ? await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
+    : await freshFileSystem({ permissions })
 
   // Ensure all necessary filesystem parts
   const fsUcan = await wn.ucan.build({
@@ -297,14 +292,8 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
     issuer
   })
 
-  let secrets = await att.reduce(async (acc, a) => {
-    const col = await acc
-
-    // TODO: Waiting on API changes
-    const path = a.wnfs || a.floofs
-    if (!path) return col
-    if (path.startsWith("/public")) return col
-
+  let secrets = await privatePaths.reduce(async (promise, path) => {
+    const acc = await promise
     const pathExists = await fs.exists(path)
 
     if (!pathExists) {
@@ -313,7 +302,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
     }
 
     return {
-      ...col,
+      ...acc,
       [path]: await fs.get(path).then(f => {
         return {
           key: f.key,
@@ -359,6 +348,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   )
 
   const { publicKey } = wn.did.didToPublicKey(didExchange)
+  const ks = await wn.keystore.get()
   const classified = makeBase64UrlSafe(btoa(JSON.stringify({
     sessionKey: await ks.encrypt(sessionKeyBase64, publicKey),
     iv: arrayBufferToBase64(iv),
@@ -372,14 +362,18 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
 }
 
 
-async function freshFileSystem({ keyName, permissions }) {
-  const fs = await wn.fs.empty({ keyName, permissions, localOnly: true })
+async function freshFileSystem({ permissions }) {
+  const fs = await wn.fs.empty({
+    permissions,
+    rootKey: await myReadKey(),
+    localOnly: true
+  })
+
   await fs.mkdir("private/Apps")
   await fs.mkdir("private/Audio")
   await fs.mkdir("private/Documents")
   await fs.mkdir("private/Photos")
   await fs.mkdir("private/Video")
-  await fs.publish()
   return fs
 }
 
