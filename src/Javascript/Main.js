@@ -262,7 +262,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
     lifetimeInSeconds,
   })
 
-  const ucans = [ await ucanPromise ]
+  const ucans = [ wn.ucan.encode(await ucanPromise) ]
 
   // Load, or create, filesystem
   const username = await localforage.getItem("usedUsername")
@@ -536,7 +536,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
       // const encodedUcan = wn.ucan.encode(ucan)
 
       const { iv, msg } = await encryptWithAes(
-        stringToArrayBuffer(ucan)
+        stringToArrayBuffer(wn.ucan.encode(ucan))
       )
 
       // Publish
@@ -590,7 +590,7 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
       const { iv, msg } = await encryptWithAes(
         // TODO: Waiting for API changes
         // wn.ucan.encode(ucan)
-        jsonBuffer({ readKey, ucan: ucan })
+        jsonBuffer({ readKey, ucan: wn.ucan.encode(ucan) })
       )
 
       // Publish
