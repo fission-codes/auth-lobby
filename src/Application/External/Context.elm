@@ -25,7 +25,7 @@ import Url.Parser.Query as Query
 
 
 type alias Context =
-    { app : Maybe String
+    { appFolder : Maybe String
     , didExchange : String
     , didWrite : String
     , lifetimeInSeconds : Int
@@ -33,6 +33,7 @@ type alias Context =
     , privatePaths : List String
     , publicPaths : List String
     , redirectTo : Url
+    , web : List String
     }
 
 
@@ -76,7 +77,7 @@ extractFromUrl url =
             case c.redirectTo of
                 Just redirectTo ->
                     Success
-                        { app = c.app
+                        { appFolder = c.appFolder
                         , didExchange = c.didExchange
                         , didWrite = c.didWrite
                         , lifetimeInSeconds = c.lifetimeInSeconds
@@ -84,6 +85,7 @@ extractFromUrl url =
                         , privatePaths = c.privatePaths
                         , publicPaths = c.publicPaths
                         , redirectTo = redirectTo
+                        , web = c.web
                         }
 
                 Nothing ->
@@ -251,12 +253,17 @@ semibold t =
 -- ㊙️
 
 
+apply : Query.Parser a -> Query.Parser (a -> b) -> Query.Parser b
+apply argParser funcParser =
+    Query.map2 (<|) funcParser argParser
+
+
 queryStringParser =
-    Query.map8
-        (\app pri pub lif new ->
+    Query.map
+        (\fol app pri pub lif new ->
             Maybe.map3
                 (\didExchange didWrite red ->
-                    { app = app
+                    { appFolder = fol
                     , didExchange = didExchange
                     , didWrite = didWrite
                     , lifetimeInSeconds = Maybe.withDefault (60 * 60 * 24 * 30) lif
@@ -264,17 +271,19 @@ queryStringParser =
                     , privatePaths = pri
                     , publicPaths = pub
                     , redirectTo = Url.fromString red
+                    , web = app
                     }
                 )
         )
         -- Optional, pt. 1
         (Query.string "appFolder")
-        (Query.custom "privatePath" identity)
-        (Query.custom "publicPath" identity)
+        |> apply (Query.custom "app" identity)
+        |> apply (Query.custom "privatePath" identity)
+        |> apply (Query.custom "publicPath" identity)
         -- Optional, pt. 2
-        (Query.int "lifetimeInSeconds")
-        (Query.string "newUser")
+        |> apply (Query.int "lifetimeInSeconds")
+        |> apply (Query.string "newUser")
         -- Required
-        (Query.string "didExchange")
-        (Query.string "didWrite")
-        (Query.string "redirectTo")
+        |> apply (Query.string "didExchange")
+        |> apply (Query.string "didWrite")
+        |> apply (Query.string "redirectTo")

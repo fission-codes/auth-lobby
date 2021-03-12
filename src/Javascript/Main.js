@@ -244,7 +244,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
 
   // TODO: Waiting on API changes
   // const ucanPromise = wn.ucan.build({
-  //   attenuations: [ att ],
+  //   attenuations: att,
   //   proofs: proof ? [ proof ] : [],
   //
   //   audience,
@@ -252,17 +252,25 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   //   lifetimeInSeconds
   // })
 
-  const ucanPromise = wn.ucan.build({
-    potency: "APPEND",
-    resource: "*",
-    proof: proof || undefined,
+  let ucans = att.map(a =>
+    wn.ucan.build({
+      potency: "APPEND",
+      resource: (() => {
+        if (a.floofs) return { floofs: a.floofs }
+        else if (a.wnfs) return { wnfs: a.wnfs }
+        else if (a.web) return { app: a.app }
+        else return {}
+      })(),
+      proof: proof || undefined,
 
-    audience,
-    issuer,
-    lifetimeInSeconds,
-  })
+      audience,
+      issuer,
+      lifetimeInSeconds,
+    }).then(wn.ucan.encode)
+  )
 
-  const ucans = [ wn.ucan.encode(await ucanPromise) ]
+  ucans = await Promise.all(ucans)
+  ucans = ucans.filter(a => a)
 
   // Load, or create, filesystem
   const username = await localforage.getItem("usedUsername")

@@ -18,9 +18,7 @@ type FilesystemPart
 
 
 fsResourceKey =
-    -- TODO: Waiting on API change,
-    --       should be `wnfs`
-    "floofs"
+    "wnfs"
 
 
 {-| <https://whitepaper.fission.codes/access-control/ucan/webnative-attenuation#capabilities>
