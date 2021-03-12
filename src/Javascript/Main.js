@@ -961,19 +961,17 @@ function makeBase64UrlSafe(base64) {
 // =======
 
 function logGeneric(...args) {
-  if (cs.debug) {
-    console.log.apply(this, args)
-  }
+  if (cs.debug) console.log.apply(this, args)
 }
 
 function logDebug(...args) {
-  if (cs.debug) {
-    console.debug.apply(this, args)
-  }
+  if (cs.debug) console.debug.apply(this, args)
 }
 
 function logInfo(...args) {
-  if (cs.debug) {
-    console.info.apply(this, args)
-  }
+  if (cs.debug) console.info.apply(this, args)
+}
+
+function logWarn(...args) {
+  if (cs.debug) console.warn.apply(this, args)
 }
