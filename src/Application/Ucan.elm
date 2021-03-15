@@ -36,6 +36,11 @@ fsCapabilities =
 -- 🛠
 
 
+appResource : String -> ( String, String )
+appResource =
+    Tuple.pair "app"
+
+
 fsResource : String -> FilesystemPart -> ( String, String )
 fsResource host part =
     let
