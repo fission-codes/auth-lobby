@@ -33,6 +33,7 @@ type alias Context =
     , privatePaths : List String
     , publicPaths : List String
     , redirectTo : Url
+    , redirectToProtocol : String
     , web : List String
     }
 
@@ -74,8 +75,8 @@ extractFromUrl url =
     in
     case maybeContext of
         Just c ->
-            case c.redirectTo of
-                Just redirectTo ->
+            case ( c.redirectTo, c.redirectToProtocol ) of
+                ( Just redirectTo, Just redirectToProtocol ) ->
                     Success
                         { appFolder = c.appFolder
                         , didExchange = c.didExchange
@@ -85,10 +86,11 @@ extractFromUrl url =
                         , privatePaths = c.privatePaths
                         , publicPaths = c.publicPaths
                         , redirectTo = redirectTo
+                        , redirectToProtocol = redirectToProtocol
                         , web = c.web
                         }
 
-                Nothing ->
+                _ ->
                     Failure
                         { defaultFailedState | invalidRedirectTo = True }
 
@@ -135,6 +137,11 @@ redirectCommand result remoteData =
             remoteData
                 |> RemoteData.map .redirectTo
                 |> RemoteData.withDefault defaultUrl
+
+        redirectProtocol =
+            remoteData
+                |> RemoteData.map .redirectToProtocol
+                |> RemoteData.withDefault "https"
     in
     redirectUrl
         |> (\u ->
@@ -165,6 +172,8 @@ redirectCommand result remoteData =
                     |> (\q -> { u | query = Just q })
            )
         |> Url.toString
+        |> String.dropLeft 5
+        |> String.append redirectProtocol
         |> Nav.load
 
 
@@ -261,6 +270,23 @@ queryStringParser =
         (\fol app pri pub lif new ->
             Maybe.map3
                 (\didExchange didWrite red ->
+                    let
+                        protocolEndIndex =
+                            red
+                                |> String.indices "://"
+                                |> List.head
+
+                        protocol =
+                            Maybe.map
+                                (\i -> String.left i red)
+                                protocolEndIndex
+
+                        redirectTo =
+                            Maybe.map
+                                -- Temporary solution for unsupported protocols
+                                (\i -> "https" ++ String.dropLeft i red)
+                                protocolEndIndex
+                    in
                     { appFolder = fol
                     , didExchange = didExchange
                     , didWrite = didWrite
@@ -268,7 +294,8 @@ queryStringParser =
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
                     , privatePaths = pri
                     , publicPaths = pub
-                    , redirectTo = Url.fromString red
+                    , redirectTo = Maybe.andThen Url.fromString redirectTo
+                    , redirectToProtocol = protocol
                     , web = app
                     }
                 )
