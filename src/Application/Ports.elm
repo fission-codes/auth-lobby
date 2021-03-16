@@ -78,7 +78,7 @@ port gotLinkAppError : (String -> msg) -> Sub msg
 port gotLinkExchangeError : (String -> msg) -> Sub msg
 
 
-port gotUcansForApplication : ({ classified : String, ucans : List String } -> msg) -> Sub msg
+port gotUcansForApplication : ({ cid : String } -> msg) -> Sub msg
 
 
 port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg

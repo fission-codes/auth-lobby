@@ -300,7 +300,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
     issuer
   })
 
-  let secrets = await privatePaths.reduce(async (promise, path) => {
+  let fsSecrets = await privatePaths.reduce(async (promise, path) => {
     const acc = await promise
     const pathExists = await fs.exists(path)
 
@@ -352,20 +352,27 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
       iv: iv
     },
     sessionKey,
-    stringToArrayBuffer(JSON.stringify(secrets))
+    stringToArrayBuffer(JSON.stringify({
+      fs: fsSecrets,
+      ucans: ucans
+    }))
   )
 
   const { publicKey } = wn.did.didToPublicKey(didExchange)
   const ks = await wn.keystore.get()
-  const classified = makeBase64UrlSafe(btoa(JSON.stringify({
-    sessionKey: await ks.encrypt(sessionKeyBase64, publicKey),
+  const classified = JSON.stringify({
     iv: arrayBufferToBase64(iv),
-    secrets: arrayBufferToBase64(encryptedSecrets)
-  })))
+    secrets: arrayBufferToBase64(encryptedSecrets),
+    sessionKey: await ks.encrypt(sessionKeyBase64, publicKey)
+  })
+
+  // Add to ipfs
+  const { cid } = await webnative.ipfs.add(classified)
+  console.log(cid)
 
   // Send everything back to Elm
   app.ports.gotUcansForApplication.send(
-    { classified, ucans }
+    { cid }
   )
 }
 

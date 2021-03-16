@@ -44,11 +44,13 @@ https://auth.fission.codes
 
 🎒 _When redirecting back it'll add the query params:_
 
-* `classified`, url-safe base64 encrypted json object containing private filesystem information.
-* `newUser`, `t` or `f`, whether the user has just created an account or not.
-* `ucans`, a list of tokens authorising the application to perform actions.  
-  The tokens are separated by a comma, but make sure to decode the query parameter first.
 * `username`, the username that was chosen by the user.
+* `newUser`, `t` or `f`, whether the user has just created an account or not.
+* `authorised`, an IPFS CID pointing to a JSON file with the following data:
+  * `iv`, initialisation vector used during the AES encryption.
+  * `secrets.fs`, AES encrypted json object containing private filesystem information.
+  * `secrets.ucans`, AES encrypted list of tokens authorising the application to perform actions.
+  * `sessionKey`, RSA encrypted AES key using [keystore-idb](https://github.com/fission-suite/keystore-idb/).
 
 When the user decides to go back to the app for some reason (eg. not agreeing  
 with the authorisation), the query parameter `cancelled=reason` will be added.

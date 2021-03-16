@@ -95,16 +95,15 @@ gotLinkAppError err model =
     Return.singleton { model | reLinkApp = RemoteData.Failure err }
 
 
-gotUcansForApplication : { classified : String, ucans : List String } -> Manager
-gotUcansForApplication { classified, ucans } model =
+gotUcansForApplication : { cid : String } -> Manager
+gotUcansForApplication { cid } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
 
         redirection =
-            { classified = classified
+            { cid = cid
             , newUser = model.reCreateAccount == RemoteData.Success ()
-            , ucans = ucans
             , username = username
             }
     in

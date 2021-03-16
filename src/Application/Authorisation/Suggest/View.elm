@@ -183,7 +183,7 @@ view context model =
                     , T.border_gray_500
                     , T.border_opacity_60
                     , T.italic
-                    , T.leading_relaxed
+                    , T.leading_loose
                     , T.px_4
                     , T.py_3
                     , T.rounded_md

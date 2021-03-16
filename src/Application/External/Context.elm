@@ -114,9 +114,8 @@ extractFromUrl url =
 redirectCommand :
     Result
         String
-        { classified : String
+        { cid : String
         , newUser : Bool
-        , ucans : List String
         , username : String
         }
     -> ParsedContext
@@ -152,10 +151,9 @@ redirectCommand result remoteData =
                     |> Maybe.withDefault []
                     |> List.append
                         (case result of
-                            Ok { classified, newUser, ucans, username } ->
-                                [ "classified=" ++ Url.percentEncode classified
+                            Ok { cid, newUser, username } ->
+                                [ "authorised=" ++ Url.percentEncode cid
                                 , "newUser=" ++ ifThenElse newUser "t" "f"
-                                , "ucans=" ++ Url.percentEncode (String.join "," ucans)
                                 , "username=" ++ Url.percentEncode username
                                 ]
 

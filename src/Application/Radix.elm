@@ -62,7 +62,7 @@ type Msg
     | AllowAuthorisation
     | DenyAuthorisation
     | GotLinkAppError String
-    | GotUcansForApplication { classified : String, ucans : List String }
+    | GotUcansForApplication { cid : String }
       -----------------------------------------
       -- Create
       -----------------------------------------
