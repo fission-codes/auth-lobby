@@ -1,5 +1,5 @@
 module.exports = {
-  cacheId: "fission-suite/auth-lobby",
+  cacheId: "UNIX_TIMESTAMP",
   clientsClaim: true,
   globDirectory: "build/",
   globPatterns: [ "**/*" ],

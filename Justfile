@@ -67,9 +67,11 @@ insert-version:
 	#!/usr/bin/env node
 	const fs = require("fs")
 	const html = fs.readFileSync("{{dist_dir}}/index.html", { encoding: "utf8" })
+	const work = fs.readFileSync("{{workbox_config}}", { encoding: "utf8" })
 	const timestamp = Math.floor(Date.now() / 1000).toString()
 
 	fs.writeFileSync("{{dist_dir}}/index.html", html.replace("UNIX_TIMESTAMP", timestamp))
+	fs.writeFileSync("{{dist_dir}}/{{workbox_config}}", work.replace("UNIX_TIMESTAMP", timestamp))
 
 
 @install-deps:
@@ -102,12 +104,12 @@ insert-version:
 		-- --compress --mangle
 
 
-@production-build: clean css-large production-elm html css-small js images static minify-js production-service-worker
-	just config=production apply-config
+@production-build: clean css-large production-elm html css-small js images static minify-js
+	just config=production apply-config production-service-worker
 
 
-@staging-build: clean css-large production-elm html css-small js images static minify-js production-service-worker
-	just config=default apply-config
+@staging-build: clean css-large production-elm html css-small js images static minify-js
+	just config=default apply-config production-service-worker
 
 
 @static:
@@ -201,12 +203,12 @@ main_elm := src_dir + "/Application/Main.elm"
 
 @service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=development pnpx workbox generateSW {{workbox_config}}
+	NODE_ENV=development pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 @production-service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=production pnpx workbox generateSW {{workbox_config}}
+	NODE_ENV=production pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 
