@@ -234,7 +234,10 @@ async function createAccount(args) {
 async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }) {
   const audience = didWrite
   const issuer = await wn.did.write()
-  const proof = await localforage.getItem("ucan")
+
+  // Proof
+  let proof = await localforage.getItem("ucan")
+  proof = proof ? wn.ucan.decode(proof) : undefined
 
   // Build UCAN
   const att = attenuation.map(a => {
@@ -261,7 +264,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
         else if (a.web) return { app: a.app }
         else return {}
       })(),
-      proof: proof || undefined,
+      proof,
 
       audience,
       issuer,
@@ -285,16 +288,20 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   const permissions = { fs: { privatePaths: [ "/" ] }}
 
   let madeFsChanges = dataRoot ? false : true
+  let fs
 
-  const fs = dataRoot
-    ? await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
-    : await freshFileSystem({ permissions })
+  if (dataRoot) {
+    await wn.fs.storeRootKey(await myReadKey())
+    fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
+  } else {
+    fs = await freshFileSystem({ permissions })
+  }
 
   // Ensure all necessary filesystem parts
   const fsUcan = await wn.ucan.build({
     potency: "APPEND",
     resource: "*",
-    proof: proof || undefined,
+    proof,
 
     audience: issuer,
     issuer
@@ -590,12 +597,16 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
     case "READ_KEY_&_UCAN": return await (async () => {
       const readKey = await myReadKey()
 
+      // Proof
+      let proof = await localforage.getItem("ucan")
+      proof = proof ? wn.ucan.decode(proof) : undefined
+
       // UCAN
       const ucan = await wn.ucan.build({
         audience: data.didInquirer,
         issuer: await wn.did.write(),
         lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
-        proof: (await localforage.getItem("ucan") || undefined)
+        proof,
 
         // TODO: UCAN v0.5
         // proofs: [ await localforage.getItem("ucan") ]
