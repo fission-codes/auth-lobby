@@ -291,7 +291,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   let fs
 
   if (dataRoot) {
-    await wn.fs.storeRootKey(await myReadKey())
+    await wn.lobby.storeFileSystemRootKey(await myReadKey())
     fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
   } else {
     fs = await freshFileSystem({ permissions })

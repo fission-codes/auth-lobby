@@ -6,7 +6,7 @@
     "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz",
     "ipfs-message-port-server": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz",
     "localforage": "^1.9.0",
-    "webnative": "0.22.0-alpha-8"
+    "webnative": "0.22.0-alpha-9"
   },
   "devDependencies": {
     "elm-tailwind-css": "^1.1.1",
