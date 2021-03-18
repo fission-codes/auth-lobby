@@ -172,7 +172,7 @@ redirectCommand result remoteData =
                     |> (\q -> { u | query = Just q })
            )
         |> Url.toString
-        |> String.dropLeft 5
+        |> String.dropLeft 8
         |> String.append redirectProtocol
         |> Nav.load
 
@@ -272,9 +272,9 @@ queryStringParser =
                 (\didExchange didWrite red ->
                     let
                         protocolEndIndex =
-                            red
-                                |> String.indices "://"
-                                |> List.head
+                            Maybe.or
+                                (Maybe.map ((+) 4) <| List.head <| String.indices ":///" red)
+                                (Maybe.map ((+) 3) <| List.head <| String.indices "://" red)
 
                         protocol =
                             Maybe.map
@@ -284,7 +284,11 @@ queryStringParser =
                         redirectTo =
                             Maybe.map
                                 -- Temporary solution for unsupported protocols
-                                (\i -> "https" ++ String.dropLeft i red)
+                                (\i ->
+                                    red
+                                        |> String.dropLeft i
+                                        |> String.append "https://"
+                                )
                                 protocolEndIndex
                     in
                     { appFolder = fol
