@@ -37,22 +37,22 @@ application identifier =
     case identifier of
         "*" ->
             resource
-                [ resourceIcon FeatherIcons.zap
+                [ resourceIcon FeatherIcons.coffee
                 , Html.span
                     []
                     [ Html.strong [] [ Html.text "All " ]
-                    , Html.text "your Fission apps and the ability to create new ones"
+                    , Html.text "your Fission applications"
                     ]
                 ]
 
         appDomain ->
             resource
-                [ resourceIcon FeatherIcons.zap
+                [ resourceIcon FeatherIcons.coffee
                 , Html.span
                     []
-                    [ Html.text "The "
+                    [ Html.text "Your "
                     , Html.strong [] [ Html.text appDomain ]
-                    , Html.text " application"
+                    , Html.text " Fission application"
                     ]
                 ]
 

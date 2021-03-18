@@ -255,22 +255,20 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   //   lifetimeInSeconds
   // })
 
-  let ucans = att.map(a =>
-    wn.ucan.build({
+  let ucans = att.map(async a => {
+    const { cap, ...resource } = { ...a }
+    const ucan = await wn.ucan.build({
       potency: "APPEND",
-      resource: (() => {
-        if (a.floofs) return { floofs: a.floofs }
-        else if (a.wnfs) return { wnfs: a.wnfs }
-        else if (a.web) return { app: a.app }
-        else return {}
-      })(),
+      resource,
       proof,
 
       audience,
       issuer,
       lifetimeInSeconds,
-    }).then(wn.ucan.encode)
-  )
+    })
+
+    return wn.ucan.encode(ucan)
+  })
 
   ucans = await Promise.all(ucans)
   ucans = ucans.filter(a => a)
