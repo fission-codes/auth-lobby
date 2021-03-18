@@ -375,7 +375,6 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
 
   // Add to ipfs
   const { cid } = await webnative.ipfs.add(classified)
-  console.log(cid)
 
   // Send everything back to Elm
   app.ports.gotUcansForApplication.send(

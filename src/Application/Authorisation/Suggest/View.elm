@@ -199,10 +199,19 @@ view context model =
                         , T.items_center
                         , T.pt_px
                         ]
-                        [ Loading.animationWithAttributes
-                            [ T.mr_2, T.opacity_60 ]
-                            { size = 16 }
-                        , Html.text "Warming up filesystem"
+                        [ Html.img
+                            [ A.src "/images/fire.gif"
+                            , A.height 18
+                            , A.width 18
+
+                            --
+                            , T.mr_1
+                            , T.neg_mt_1
+                            ]
+                            []
+                        , Html.span
+                            [ T.pl_1 ]
+                            [ Html.text "Warming up filesystem" ]
                         ]
                     ]
 
