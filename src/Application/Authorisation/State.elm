@@ -1,5 +1,7 @@
 module Authorisation.State exposing (..)
 
+import Authorisation.Suggest.Params as Suggest
+import Common exposing (ifThenElse)
 import Dict
 import External.Context as External
 import Json.Decode
@@ -76,6 +78,9 @@ allow model =
                 , didWrite = context.didWrite
                 , didExchange = context.didExchange
                 , lifetimeInSeconds = context.lifetimeInSeconds
+
+                -- TODO: Remove backwards compatibility
+                , oldFlow = context.oldFlow
                 }
             )
 
@@ -95,18 +100,37 @@ gotLinkAppError err model =
     Return.singleton { model | reLinkApp = RemoteData.Failure err }
 
 
-gotUcansForApplication : { cid : String } -> Manager
-gotUcansForApplication { cid } model =
+gotUcansForApplication : Suggest.Params -> Manager
+gotUcansForApplication { cid, readKey, ucan } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
 
+        newUser =
+            model.reCreateAccount == RemoteData.Success ()
+
         redirection =
-            { cid = cid
-            , newUser = model.reCreateAccount == RemoteData.Success ()
-            , username = username
-            }
+            case ( cid, Maybe.map2 Tuple.pair readKey ucan ) of
+                ( Just c, _ ) ->
+                    [ ( "authorised", c )
+                    ]
+
+                -- TODO: Remove backwards compatibility
+                ( _, Just ( rk, uc ) ) ->
+                    [ ( "readKey", rk )
+                    , ( "ucans", uc )
+                    ]
+
+                _ ->
+                    []
     in
     model.externalContext
-        |> External.redirectCommand (Ok redirection)
+        |> External.redirectCommand
+            (redirection
+                |> List.append
+                    [ ( "newUser", ifThenElse newUser "t" "f" )
+                    , ( "username", username )
+                    ]
+                |> Ok
+            )
         |> return model

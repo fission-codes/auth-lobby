@@ -10,6 +10,7 @@ A root or point of origin.
 import Account.Creation.Context as Creation
 import Account.Linking.Context as Linking
 import Account.Linking.Exchange as Linking
+import Authorisation.Suggest.Params as Suggest
 import Browser
 import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
@@ -62,7 +63,7 @@ type Msg
     | AllowAuthorisation
     | DenyAuthorisation
     | GotLinkAppError String
-    | GotUcansForApplication { cid : String }
+    | GotUcansForApplication Suggest.Params
       -----------------------------------------
       -- Create
       -----------------------------------------

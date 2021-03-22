@@ -35,6 +35,9 @@ type alias Context =
     , redirectTo : Url
     , redirectToProtocol : String
     , web : List String
+
+    -- TODO: Remove backwards compatibility
+    , oldFlow : Bool
     }
 
 
@@ -88,6 +91,9 @@ extractFromUrl url =
                         , redirectTo = redirectTo
                         , redirectToProtocol = redirectToProtocol
                         , web = c.web
+
+                        -- TODO: Remove backwards compatibility
+                        , oldFlow = c.oldFlow
                         }
 
                 _ ->
@@ -114,12 +120,7 @@ extractFromUrl url =
 
 
 redirectCommand :
-    Result
-        String
-        { cid : String
-        , newUser : Bool
-        , username : String
-        }
+    Result String (List ( String, String ))
     -> ParsedContext
     -> Cmd msg
 redirectCommand result remoteData =
@@ -142,6 +143,14 @@ redirectCommand result remoteData =
             remoteData
                 |> RemoteData.map .redirectToProtocol
                 |> RemoteData.withDefault "https"
+
+        params =
+            case result of
+                Ok dict ->
+                    dict
+
+                Err cancellationReason ->
+                    [ ( "cancelled", cancellationReason ) ]
     in
     redirectUrl
         |> (\u ->
@@ -157,16 +166,9 @@ redirectCommand result remoteData =
                     |> Maybe.map (String.split "&")
                     |> Maybe.withDefault []
                     |> List.append
-                        (case result of
-                            Ok { cid, newUser, username } ->
-                                [ "authorised=" ++ Url.percentEncode cid
-                                , "newUser=" ++ ifThenElse newUser "t" "f"
-                                , "username=" ++ Url.percentEncode username
-                                ]
-
-                            Err cancellationReason ->
-                                [ "cancelled=" ++ Url.percentEncode cancellationReason
-                                ]
+                        (List.map
+                            (\( a, b ) -> Url.percentEncode a ++ "=" ++ Url.percentEncode b)
+                            params
                         )
                     |> String.join "&"
                     |> (\q -> { u | query = Just q })
@@ -267,7 +269,7 @@ apply argParser funcParser =
 
 queryStringParser =
     Query.map
-        (\fol app pri pub lif new ->
+        (\fol app pri pub lif new newFlow ->
             Maybe.map3
                 (\didExchange didWrite red ->
                     let
@@ -301,6 +303,12 @@ queryStringParser =
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
                     , web = app
+
+                    -- TODO: Remove backwards compatibility
+                    , oldFlow =
+                        newFlow
+                            |> Maybe.map (String.toLower >> (/=) "t")
+                            |> Maybe.withDefault True
                     }
                 )
         )
@@ -312,6 +320,7 @@ queryStringParser =
         -- Optional, pt. 2
         |> apply (Query.int "lifetimeInSeconds")
         |> apply (Query.string "newUser")
+        |> apply (Query.string "newFlow")
         -- Required
         |> apply (Query.string "didExchange")
         |> apply (Query.string "didWrite")

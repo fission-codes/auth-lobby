@@ -1,5 +1,6 @@
 port module Ports exposing (..)
 
+import Authorisation.Suggest.Params as Suggest
 import Json.Decode as Json
 
 
@@ -31,6 +32,9 @@ port linkApp :
     , didWrite : String
     , didExchange : String
     , lifetimeInSeconds : Int
+
+    -- TODO: Remove backwards compatibility
+    , oldFlow : Bool
     }
     -> Cmd msg
 
@@ -78,7 +82,7 @@ port gotLinkAppError : (String -> msg) -> Sub msg
 port gotLinkExchangeError : (String -> msg) -> Sub msg
 
 
-port gotUcansForApplication : ({ cid : String } -> msg) -> Sub msg
+port gotUcansForApplication : (Suggest.Params -> msg) -> Sub msg
 
 
 port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg

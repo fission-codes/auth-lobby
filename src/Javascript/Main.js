@@ -231,7 +231,7 @@ async function createAccount(args) {
 // LINK
 // ----
 
-async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }) {
+async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, oldFlow }) {
   const audience = didWrite
   const issuer = await wn.did.write()
 
@@ -374,10 +374,28 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds }
   // Add to ipfs
   const { cid } = await webnative.ipfs.add(classified)
 
-  // Send everything back to Elm
-  app.ports.gotUcansForApplication.send(
-    { cid }
-  )
+  // TODO: Remove backwards compatibility
+  if (oldFlow) {
+    const oldUcan = await wn.ucan.build({
+      potency: "APPEND",
+      resource: "*",
+      proof: proof || undefined,
+
+      audience,
+      issuer,
+      lifetimeInSeconds,
+    })
+
+    const plainTextReadKey = await myReadKey()
+    const readKey = await ks.encrypt(plainTextReadKey, publicKey).then(makeBase64UrlSafe)
+
+    app.ports.gotUcansForApplication.send({ cid: null, readKey, ucan: wn.ucan.encode(oldUcan) })
+
+  } else {
+    // Send everything back to Elm
+    app.ports.gotUcansForApplication.send({ cid, readKey: null, ucan: null })
+
+  }
 }
 
 
