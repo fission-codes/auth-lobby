@@ -12,6 +12,7 @@ import Json.Encode
 import Maybe.Extra as Maybe
 import RemoteData exposing (RemoteData(..))
 import Result.Extra as Result
+import Semver
 import Styling as S
 import Tailwind as T
 import Url exposing (Url)
@@ -269,7 +270,7 @@ apply argParser funcParser =
 
 queryStringParser =
     Query.map
-        (\fol app pri pub lif new newFlow ->
+        (\fol app pri pub lif new sdk ->
             Maybe.map3
                 (\didExchange didWrite red ->
                     let
@@ -306,8 +307,9 @@ queryStringParser =
 
                     -- TODO: Remove backwards compatibility
                     , oldFlow =
-                        newFlow
-                            |> Maybe.map (String.toLower >> (/=) "t")
+                        sdk
+                            |> Maybe.andThen Semver.parse
+                            |> Maybe.map (\version -> Semver.lessThan version newFlowSdkVersion)
                             |> Maybe.withDefault True
                     }
                 )
@@ -320,8 +322,12 @@ queryStringParser =
         -- Optional, pt. 2
         |> apply (Query.int "lifetimeInSeconds")
         |> apply (Query.string "newUser")
-        |> apply (Query.string "newFlow")
+        |> apply (Query.string "sdk")
         -- Required
         |> apply (Query.string "didExchange")
         |> apply (Query.string "didWrite")
         |> apply (Query.string "redirectTo")
+
+
+newFlowSdkVersion =
+    Semver.version 0 22 0 [] []

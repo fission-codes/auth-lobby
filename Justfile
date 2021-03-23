@@ -176,7 +176,7 @@ main_css := src_dir + "/Css/Main.css"
 	echo "🛳  Deploying to staging"
 	just staging-build
 	cp fission.yaml.staging fission.yaml
-	{{fission_cmd}} up
+	{{fission_cmd}} up --remote staging
 	rm fission.yaml
 
 
