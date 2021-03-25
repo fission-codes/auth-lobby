@@ -3,7 +3,7 @@ dependencies:
   ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
   ipfs-message-port-server: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   localforage: 1.9.0
-  webnative: 0.23.0-alpha-3
+  webnative: 0.23.0
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
   esbuild: 0.8.2
@@ -5813,7 +5813,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative/0.23.0-alpha-3:
+  /webnative/0.23.0:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -5831,7 +5831,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-l9aehZEO2E5PTw03FW19vE5Q7jPY9GrCPCVN7Ap5WuTpesWRAu7LcdjGpC2QgFayasaQ8Sk3CEVekVDHLafhEw==
+      integrity: sha512-sQkqUcs4sEyWpypIpIt/5TXnarvK0ma9crwlto7Ln+e6DZtX16G5wlA6n5GVJQaLx2SHDeGvCWpgjVW6VT+EcQ==
   /whatwg-url/7.1.0:
     dependencies:
       lodash.sortby: 4.7.0
@@ -6113,6 +6113,6 @@ specifiers:
   postcss-import: ^12.0.1
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.23.0-alpha-3
+  webnative: 0.23.0
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
