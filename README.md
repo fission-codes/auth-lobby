@@ -26,6 +26,7 @@ After that, you need at least one of these resources:
 You can define some optional parameters as well:
 * `lifetimeInSeconds`, how long an action should be authorised for. The default is one month.
 * `newUser`, `t` or `f`, if this parameter is given and the user has not signed in before, this will pre-select the appropriate screen for the user. If `newUser` is set to `t`, it'll show the create-account screen, and if set to `f`, it'll show the sign-in (aka. link) screen. If this parameter is not given at all, the user will be able to chose themselves.
+* `sdk`, the sdk version used. This is temporarily optional for backwards compatibility.
 * `theme`, path or ipfs cid to a theme json file. See the [theming](#theming) section below for more info.
 
 ```shell
@@ -33,6 +34,7 @@ https://auth.fission.codes
 
 & did=did:key:z13V3Sog2YaUKhd...
 & redirectTo=https://my.app/
+& sdk=0.23.0
 
 & appFolder=Creator/My App              # `private/Apps/Creator/My App`
 & privatePath=Documents/Invoices        # `private/Documents/Invoices`
