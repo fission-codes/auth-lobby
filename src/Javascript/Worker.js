@@ -78,21 +78,10 @@ const main = async (port) => {
   self.server = server
 
   peers.forEach(peer => {
-    ipfs.swarm
-      .connect(peer)
-      .then(() => console.log(`🪐 Connected to ${peer}`))
-      .catch(() => {})
+    tryConnecting(peer)
   })
 
   console.log("🚀 Started IPFS node")
-
-  // Ensure permanent connection to Fission gateway
-  // TODO: This is a temporary solution while we wait for
-  //       https://github.com/libp2p/js-libp2p/issues/744
-  //       (see "Keep alive" bit)
-  peers.forEach(peer => {
-    setTimeout(() => keepAlive(peer), KEEP_ALIVE_INTERVAL)
-  })
 
   // Connect every queued and future connection to the server.
   if (port) {
@@ -133,6 +122,28 @@ async function keepAlive(peer) {
 async function reconnect(peer) {
   await self.ipfs.swarm.disconnect(peer)
   await self.ipfs.swarm.connect(peer)
+}
+
+
+async function tryConnecting(peer) {
+  self
+    .ipfs.libp2p.ping(peer)
+    .then(() => {
+      return ipfs.swarm
+        .connect(peer, 15 * 1000)
+        .then(() => {
+          console.log(`🪐 Connected to ${peer}`)
+
+          // Ensure permanent connection to Fission gateway
+          // TODO: This is a temporary solution while we wait for
+          //       https://github.com/libp2p/js-libp2p/issues/744
+          //       (see "Keep alive" bit)
+          setTimeout(() => keepAlive(peer), KEEP_ALIVE_INTERVAL)
+        })
+    })
+    .catch(() => {
+      console.log(`🪓 Could not connect to ${peer}`)
+    })
 }
 
 
