@@ -367,7 +367,6 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
   // Add to ipfs
   await fs.write(SESSION_PATH, classified)
 
-  const ipfs = await wn.ipfs.get()
   const cid = await fs.root.prettyTree
     .get(SESSION_PATH.replace(/^\/public/, ""))
     .then(f => f.put())
