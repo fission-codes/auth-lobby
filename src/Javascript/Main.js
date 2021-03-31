@@ -24,8 +24,21 @@ wn.setup.debug({
 })
 
 
-// bootIpfs().then(bootElm)
-bootElm()
+;(async () => {
+  const ucan = await localforage.getItem("ucan")
+
+  if (ucan && !wn.ucan.isValid(ucan)) {
+    alert("⚠️ Invalid authentication session.\n\nSorry for the inconvenience, we made some mistakes in September 2020 causing linked devices to have invalid sessions. You can recover your account by returning to the browser/device you originally signed up with (that would be the browser with the same account that doesn't give you this message).")
+
+    await localforage.removeItem("readKey")
+    await localforage.removeItem("ucan")
+    await localforage.removeItem("usedUsername")
+    await wn.keystore.clear()
+  }
+
+  // bootIpfs().then(bootElm)
+  bootElm()
+})()
 
 
 // ELM
