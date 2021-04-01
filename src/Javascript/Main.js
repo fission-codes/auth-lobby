@@ -30,10 +30,8 @@ wn.setup.debug({
   if (ucan && !wn.ucan.isValid(ucan)) {
     alert("⚠️ Invalid authentication session.\n\nSorry for the inconvenience, we made some mistakes in September 2020 causing linked devices to have invalid sessions. You can recover your account by returning to the browser/device you originally signed up with (that would be the browser with the same account that doesn't give you this message).")
 
-    await localforage.removeItem("readKey")
-    await localforage.removeItem("ucan")
-    await localforage.removeItem("usedUsername")
-    await wn.keystore.clear()
+    await webnative.keystore.clear()
+    await localforage.clear()
   }
 
   // bootIpfs().then(bootElm)
@@ -177,10 +175,8 @@ async function lookupRootDid(maybeUsername) {
  */
 async function leave() {
   if (window.confirm("Are you sure you want to remove this device? If you're not authenticated on any other devices, you will lose access to your account!")) {
-    await localforage.removeItem("readKey")
-    await localforage.removeItem("ucan")
-    await localforage.removeItem("usedUsername")
     await webnative.keystore.clear()
+    await localforage.clear()
 
     location.reload()
   }
