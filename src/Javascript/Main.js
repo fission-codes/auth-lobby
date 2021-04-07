@@ -758,12 +758,7 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
 
       const ucan = wn.ucan.decode(encodedUcan)
 
-      // TODO: (next UCAN version)
-      // if (await wn.ucan.isValid(ucan) === false) {
-      //   throw new Error("Invalid closed UCAN")
-      // }
-
-      if (!isValidUcan(encodedUcan)) {
+      if (await wn.ucan.isValid(ucan) === false) {
         throw new Error("Invalid closed UCAN")
       }
 
@@ -978,32 +973,6 @@ function copyToClipboard(text) {
   if (navigator.clipboard) navigator.clipboard.writeText(text)
   else console.log(`Missing clipboard api, tried to copy: "${text}"`)
 }
-
-async function isValidUcan(encodedUcan) {
-  const [encodedHeader, encodedPayload] = encodedUcan.split(".")
-  const ucan = wn.ucan.decode(encodedUcan)
-
-  const a = await wn.did.verifySignedData({
-    charSize: 8,
-    data: `${encodedHeader}.${encodedPayload}`,
-    did: ucan.payload.iss,
-    signature: ucan.signature || ""
-  })
-
-  if (!a) return a
-
-  // Verify proofs
-  if (!ucan.payload.prf) return a
-
-  const decodedProof = wn.ucan.decode(ucan.payload.prf)
-  const b = decodedProof.payload.aud === ucan.payload.iss
-
-  if (!b) return b
-
-  const c = await isValidUcan(ucan.payload.prf)
-  return c
-}
-
 
 function makeBase64UrlSafe(base64) {
   return base64.replace(/\//g, "_").replace(/\+/g, "-").replace(/=+$/, "")
