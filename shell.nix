@@ -18,6 +18,7 @@ in
       pkgs.elmPackages.elm
       pkgs.nodejs-14_x
       pkgs.nodePackages.pnpm
+      pkgs.elmPackages.elm-format
 
     ];
   }

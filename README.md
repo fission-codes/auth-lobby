@@ -114,6 +114,9 @@ This project uses Nix to manage the project's environment. If you'd like to buil
 # Install javascript dependencies
 just install-deps
 
+# Translate schemas into Elm code
+just translate-schemas
+
 # Build, serve, watch
 just
 
