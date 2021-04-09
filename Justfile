@@ -124,7 +124,7 @@ insert-version:
 
 @translate-schemas:
 	echo "🔮  Translating schemas into Elm code"
-	quicktype -s schema -o src/Library/Theme.elm --module Theme src/Schemas/Dawn/Theme.json
+	./node_modules/quicktype/dist/cli/index.js -s schema -o src/Library/Theme.elm --module Theme src/Schemas/Dawn/Theme.json
 	elm-format src/Library/Theme.elm --yes
 
 
