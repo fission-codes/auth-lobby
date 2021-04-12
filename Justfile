@@ -34,7 +34,7 @@ workbox_config 		:= "workbox.config.cjs"
 	mkdir -p {{dist_dir}}
 
 
-@dev-build: clean css-large elm html js images static apply-config service-worker translate-schemas
+@dev-build: clean css-large translate-schemas elm html js images static apply-config service-worker
 	echo {{config}} &> /dev/null
 
 
@@ -104,11 +104,11 @@ insert-version:
 		-- --compress --mangle
 
 
-@production-build: clean css-large production-elm html css-small js images static minify-js
+@production-build: clean css-large translate-schemas production-elm html css-small js images static minify-js
 	just config=production apply-config production-service-worker
 
 
-@staging-build: clean css-large production-elm html css-small js images static minify-js
+@staging-build: clean css-large translate-schemas production-elm html css-small js images static minify-js
 	just config=default apply-config production-service-worker
 
 
