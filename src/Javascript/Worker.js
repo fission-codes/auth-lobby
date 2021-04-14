@@ -83,6 +83,11 @@ const main = async (port) => {
 
   console.log("🚀 Started IPFS node")
 
+  // Monitor bitswap automatically if on localhost and staging environment
+  if ([ "localhost", "auth.runfission.net" ].includes(self.location.hostname)) {
+    monitorBitswap()
+  }
+
   // Connect every queued and future connection to the server.
   if (port) {
     server.connect(port)
@@ -148,6 +153,99 @@ async function tryConnecting(peer) {
 
 
 self.reconnect = reconnect
+
+
+
+// 🔮
+
+
+let monitor
+
+
+async function asyncIteratorToArray(it) {
+  const chunks = []
+
+  for await (const chunk of it) {
+    chunks.push(chunk)
+  }
+
+  return chunks
+}
+
+
+async function monitorBitswap(verbose) {
+  const cids = {}
+  const seen = []
+
+  verbose = verbose === undefined ? false : true
+
+  console.log("🕵️‍♀️ Monitoring IPFS bitswap requests")
+  await stopMonitoringBitswap()
+
+  monitor = setInterval(async () => {
+    const peerList = await Promise.resolve(peers)
+
+    peerList.map(async peer => {
+      const peerId = peer.split("/").reverse()[0]
+      const wantList = await ipfs.bitswap.wantlistForPeer(peerId, { timeout: 120 * 1000 })
+
+      wantList.forEach(async cid => {
+        const c = cid.toString()
+        const s = peerId + "-" + c
+
+        if (!seen.includes(s)) {
+          const seenCid = !!cids[c]
+          const emoji = seenCid ? "📡" : "🔮"
+          const msg = `${emoji} Peer ${peerId} requested CID ${c}`
+
+          cids[c] = (cids[c] || 0) + 1
+
+          if (seenCid) {
+            if (verbose) console.log(msg + ` (#${cids[c]})`)
+            return
+          } else {
+            console.log(msg)
+          }
+
+          const start = performance.now()
+          seen.push(s)
+
+          const dag = await ipfs.dag.get(cid)
+          const end = performance.now()
+          const diff = end - start
+          const loaded = `loaded locally in ${diff.toFixed(2)} ms`
+
+          if (dag.value.Links) {
+            console.log(`🧱 ${c} is a 👉 DAG structure (${loaded})`)
+            ;(console.table || console.log)(
+              dag.value.Links.map(l => {
+                return { name: l.Name, cid: l.Hash.toString() }
+              })
+            )
+
+          } else {
+            console.log(`📦 ${c} is 👉 Data (${loaded})`)
+            console.log(dag.value)
+
+          }
+        }
+      })
+    })
+  }, 20)
+}
+
+
+async function stopMonitoringBitswap() {
+  if (monitor) clearInterval(monitor)
+}
+
+
+self.monitorBitswap = monitorBitswap
+self.stopMonitoringBitswap = stopMonitoringBitswap
+
+
+
+// 🚀
 
 
 /**
