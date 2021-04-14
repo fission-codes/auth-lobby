@@ -82,7 +82,7 @@ insert-version:
 	cp ./node_modules/webnative/dist/index.umd.js web_modules/webnative.js
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
-	just download-web-module ipfs.min.js https://cdnjs.cloudflare.com/ajax/libs/ipfs/0.54.4/index.min.js
+	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.54.4/dist/index.min.js
 
 
 @js:
@@ -98,7 +98,7 @@ insert-version:
 	{{node_bin}}/terser-dir \
 		{{dist_dir}} \
 		--each --extension .js \
-		--patterns "**/*.js, !**/*.min.js" \
+		--pattern "**/*.js, !**/*.min.js" \
 		--pseparator ", " \
 		--output {{dist_dir}} \
 		-- --compress --mangle
