@@ -249,7 +249,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
 
   // Proof
   let proof = await localforage.getItem("ucan")
-  proof = proof ? wn.ucan.decode(proof) : undefined
+  proof = proof ? wn.ucan.decode(proof) : null
 
   // Build UCAN
   const att = attenuation.map(a => {
