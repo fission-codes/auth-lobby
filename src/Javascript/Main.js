@@ -27,7 +27,7 @@ wn.setup.debug({
 ;(async () => {
   const ucan = await localforage.getItem("ucan")
 
-  if (ucan && !wn.ucan.isValid(ucan)) {
+  if (ucan && !wn.ucan.isValid(wn.ucan.decode(ucan))) {
     alert("⚠️ Invalid authentication session.\n\nSorry for the inconvenience, we made some mistakes in September 2020 causing linked devices to have invalid sessions. You can recover your account by returning to the browser/device you originally signed up with (that would be the browser with the same account that doesn't give you this message).")
 
     await webnative.keystore.clear()
