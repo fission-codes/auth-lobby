@@ -243,7 +243,7 @@ async function createAccount(args) {
 const SESSION_PATH = "/public/Apps/Fission/Lobby/Session"
 
 
-async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, oldFlow }) {
+async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, oldFlow, sharedRepo }) {
   const audience = didWrite
   const issuer = await wn.did.write()
 
@@ -296,7 +296,9 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
   }, [])
 
   const permissions = { fs: { privatePaths: [ "/" ] }}
+
   let fs
+  let madeFsChanges = false
 
   if (dataRoot) {
     await wn.lobby.storeFileSystemRootKey(await myReadKey())
@@ -321,6 +323,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
 
     if (!pathExists) {
       await fs.mkdir(path, { localOnly: true })
+      madeFsChanges = true
     }
 
     return {
@@ -374,16 +377,26 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
   })
 
   // Add to ipfs
-  await fs.write(SESSION_PATH, classified)
+  let cid
 
-  const cid = await fs.root.prettyTree
-    .get(SESSION_PATH.replace(/^\/public/, ""))
-    .then(f => f.put())
+  if (sharedRepo) {
+    cid = await webnative.ipfs.add(classified).then(r => r.cid)
+  } else {
+    await fs.write(SESSION_PATH, classified)
+
+    const cid = await fs.root.prettyTree
+      .get(SESSION_PATH.replace(/^\/public/, ""))
+      .then(f => f.put())
+
+    madeFsChanges = true
+  }
 
   // Update user's data root if need be
-  const rootCid = await fs.root.put()
-  const res = await wn.dataRoot.update(rootCid, fsUcan)
-  if (!res.success) return app.ports.gotLinkAppError.send("Failed to update data root 😰")
+  if (madeFsChanges) {
+    const rootCid = await fs.root.put()
+    const res = await wn.dataRoot.update(rootCid, fsUcan)
+    if (!res.success) return app.ports.gotLinkAppError.send("Failed to update data root 😰")
+  }
 
   // TODO: Remove backwards compatibility
   if (oldFlow) {
