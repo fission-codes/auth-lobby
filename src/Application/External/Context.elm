@@ -301,8 +301,8 @@ queryStringParser =
                     , didWrite = didWrite
                     , lifetimeInSeconds = Maybe.withDefault (60 * 60 * 24 * 30) lif
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
-                    , privatePaths = pri
-                    , publicPaths = pub
+                    , privatePaths = confirmPaths pri
+                    , publicPaths = confirmPaths pub
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
                     , sharedRepo = Maybe.unwrap False ((==) "t") sha
@@ -331,6 +331,22 @@ queryStringParser =
         |> apply (Query.string "didExchange")
         |> apply (Query.string "didWrite")
         |> apply (Query.string "redirectTo")
+
+
+confirmPaths : List String -> List String
+confirmPaths =
+    List.filterMap
+        (\p ->
+            let
+                path =
+                    String.trim p
+            in
+            if String.isEmpty path then
+                Nothing
+
+            else
+                Just path
+        )
 
 
 newFlowSdkVersion =
