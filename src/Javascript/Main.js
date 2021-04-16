@@ -322,7 +322,11 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
     const pathExists = await fs.exists(path)
 
     if (!pathExists) {
-      await fs.mkdir(path, { localOnly: true })
+      if (path.endsWith("/")) {
+        await fs.mkdir(path, { localOnly: true })
+      } else {
+        await fs.write(path, "", { localOnly: true })
+      }
       madeFsChanges = true
     }
 
