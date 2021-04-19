@@ -47,7 +47,7 @@ fsResource host part =
         path =
             case part of
                 AppFolder p ->
-                    "private/Apps/" ++ removeLeadingForwardSlash p
+                    "private/Apps/" ++ removeLeadingForwardSlash p ++ "/"
 
                 PrivatePath p ->
                     "private/" ++ removeLeadingForwardSlash p
@@ -56,7 +56,6 @@ fsResource host part =
                     "public/" ++ removeLeadingForwardSlash p
     in
     path
-        |> removeForwardSlashSuffix
         |> String.append "/"
         -- TODO: Waiting on API change
         --       |> String.append host
@@ -71,15 +70,6 @@ removeLeadingForwardSlash : String -> String
 removeLeadingForwardSlash str =
     if String.startsWith "/" str then
         String.dropLeft 1 str
-
-    else
-        str
-
-
-removeForwardSlashSuffix : String -> String
-removeForwardSlashSuffix str =
-    if String.endsWith "/" str then
-        String.dropRight 1 str
 
     else
         str

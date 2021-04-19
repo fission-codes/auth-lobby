@@ -329,6 +329,8 @@ async function linkApp({
     const acc = await promise
     const pathExists = await fs.exists(path)
 
+    console.log("👉", path)
+
     if (!pathExists) {
       if (!canPermissionFiles || path.endsWith("/")) {
         await fs.mkdir(path, { localOnly: true })
@@ -429,7 +431,6 @@ async function linkApp({
 
   } else {
     // Send everything back to Elm
-    console.log(cid)
     app.ports.gotUcansForApplication.send({ cid, readKey: null, ucan: null })
 
   }
