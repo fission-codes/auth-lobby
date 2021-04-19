@@ -303,7 +303,7 @@ async function linkApp({
     return [ ...acc, path ]
   }, [])
 
-  const permissions = { fs: { privatePaths: [ "/" ] }}
+  const permissions = { fs: { private: { directories: [ "/" ] }}}
 
   let fs
   let madeFsChanges = false
@@ -329,8 +329,6 @@ async function linkApp({
     const acc = await promise
     const pathExists = await fs.exists(path)
 
-    console.log("👉", path)
-
     if (!pathExists) {
       if (!canPermissionFiles || path.endsWith("/")) {
         await fs.mkdir(path, { localOnly: true })
@@ -340,9 +338,13 @@ async function linkApp({
       madeFsChanges = true
     }
 
+    const adjustedPath = canPermissionFiles
+      ? path
+      : path.replace(/\/$/, "")
+
     return {
       ...acc,
-      [path]: await fs.get(path).then(f => {
+      [adjustedPath]: await fs.get(path).then(f => {
         return {
           key: f.key,
           bareNameFilter: f.header.bareNameFilter
