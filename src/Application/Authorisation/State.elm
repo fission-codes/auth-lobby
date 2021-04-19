@@ -12,6 +12,7 @@ import Ports
 import Radix exposing (..)
 import RemoteData
 import Return exposing (return)
+import Semver
 import Ucan
 
 
@@ -75,6 +76,10 @@ allow model =
               }
             , Ports.linkApp
                 { attenuation = attenuation
+                , canPermissionFiles =
+                    context.sdkVersion
+                        |> Maybe.map (\v -> Semver.greaterThan v (Semver.version 0 23 99 [] []))
+                        |> Maybe.withDefault False
                 , didWrite = context.didWrite
                 , didExchange = context.didExchange
                 , lifetimeInSeconds = context.lifetimeInSeconds

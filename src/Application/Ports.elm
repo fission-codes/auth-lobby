@@ -29,6 +29,7 @@ port linkApp :
             { capability : String
             , resource : ( String, String )
             }
+    , canPermissionFiles : Bool
     , didWrite : String
     , didExchange : String
     , lifetimeInSeconds : Int

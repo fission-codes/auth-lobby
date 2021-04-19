@@ -243,7 +243,15 @@ async function createAccount(args) {
 const SESSION_PATH = "/public/Apps/Fission/Lobby/Session"
 
 
-async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, oldFlow, sharedRepo }) {
+async function linkApp({
+  canPermissionFiles,
+  didWrite,
+  didExchange,
+  attenuation,
+  lifetimeInSeconds,
+  oldFlow,
+  sharedRepo
+}) {
   const audience = didWrite
   const issuer = await wn.did.write()
 
@@ -322,7 +330,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
     const pathExists = await fs.exists(path)
 
     if (!pathExists) {
-      if (path.endsWith("/")) {
+      if (!canPermissionFiles || path.endsWith("/")) {
         await fs.mkdir(path, { localOnly: true })
       } else {
         await fs.write(path, "", { localOnly: true })
@@ -388,7 +396,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
   } else {
     await fs.write(SESSION_PATH, classified)
 
-    const cid = await fs.root.prettyTree
+    cid = await fs.root.prettyTree
       .get(SESSION_PATH.replace(/^\/public/, ""))
       .then(f => f.put())
 
@@ -421,6 +429,7 @@ async function linkApp({ didWrite, didExchange, attenuation, lifetimeInSeconds, 
 
   } else {
     // Send everything back to Elm
+    console.log(cid)
     app.ports.gotUcansForApplication.send({ cid, readKey: null, ucan: null })
 
   }

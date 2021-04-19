@@ -35,6 +35,7 @@ type alias Context =
     , publicPaths : List String
     , redirectTo : Url
     , redirectToProtocol : String
+    , sdkVersion : Maybe Semver.Version
     , sharedRepo : Bool
     , web : List String
 
@@ -92,6 +93,7 @@ extractFromUrl url =
                         , publicPaths = c.publicPaths
                         , redirectTo = redirectTo
                         , redirectToProtocol = redirectToProtocol
+                        , sdkVersion = c.sdkVersion
                         , sharedRepo = c.sharedRepo
                         , web = c.web
 
@@ -295,6 +297,9 @@ queryStringParser =
                                         |> String.append "https://"
                                 )
                                 protocolEndIndex
+
+                        sdkVersion =
+                            Maybe.andThen Semver.parse sdk
                     in
                     { appFolder = fol
                     , didExchange = didExchange
@@ -305,13 +310,13 @@ queryStringParser =
                     , publicPaths = confirmPaths pub
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
+                    , sdkVersion = sdkVersion
                     , sharedRepo = Maybe.unwrap False ((==) "t") sha
                     , web = app
 
                     -- TODO: Remove backwards compatibility
                     , oldFlow =
-                        sdk
-                            |> Maybe.andThen Semver.parse
+                        sdkVersion
                             |> Maybe.map (\version -> Semver.lessThan version newFlowSdkVersion)
                             |> Maybe.withDefault True
                     }
