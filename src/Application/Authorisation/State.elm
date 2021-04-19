@@ -78,6 +78,7 @@ allow model =
                 , didWrite = context.didWrite
                 , didExchange = context.didExchange
                 , lifetimeInSeconds = context.lifetimeInSeconds
+                , sharedRepo = context.sharedRepo
 
                 -- TODO: Remove backwards compatibility
                 , oldFlow = context.oldFlow

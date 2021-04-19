@@ -35,6 +35,7 @@ type alias Context =
     , publicPaths : List String
     , redirectTo : Url
     , redirectToProtocol : String
+    , sharedRepo : Bool
     , web : List String
 
     -- TODO: Remove backwards compatibility
@@ -91,6 +92,7 @@ extractFromUrl url =
                         , publicPaths = c.publicPaths
                         , redirectTo = redirectTo
                         , redirectToProtocol = redirectToProtocol
+                        , sharedRepo = c.sharedRepo
                         , web = c.web
 
                         -- TODO: Remove backwards compatibility
@@ -270,7 +272,7 @@ apply argParser funcParser =
 
 queryStringParser =
     Query.map
-        (\fol app pri pub lif new sdk ->
+        (\fol app pri pub lif new sdk sha ->
             Maybe.map3
                 (\didExchange didWrite red ->
                     let
@@ -299,10 +301,11 @@ queryStringParser =
                     , didWrite = didWrite
                     , lifetimeInSeconds = Maybe.withDefault (60 * 60 * 24 * 30) lif
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
-                    , privatePaths = pri
-                    , publicPaths = pub
+                    , privatePaths = confirmPaths pri
+                    , publicPaths = confirmPaths pub
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
+                    , sharedRepo = Maybe.unwrap False ((==) "t") sha
                     , web = app
 
                     -- TODO: Remove backwards compatibility
@@ -323,10 +326,27 @@ queryStringParser =
         |> apply (Query.int "lifetimeInSeconds")
         |> apply (Query.string "newUser")
         |> apply (Query.string "sdk")
+        |> apply (Query.string "sharedRepo")
         -- Required
         |> apply (Query.string "didExchange")
         |> apply (Query.string "didWrite")
         |> apply (Query.string "redirectTo")
+
+
+confirmPaths : List String -> List String
+confirmPaths =
+    List.filterMap
+        (\p ->
+            let
+                path =
+                    String.trim p
+            in
+            if String.isEmpty path then
+                Nothing
+
+            else
+                Just path
+        )
 
 
 newFlowSdkVersion =
