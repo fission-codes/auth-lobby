@@ -90,7 +90,11 @@ insert-version:
 	rm -rf {{dist_dir}}/web_modules
 	cp -rf web_modules {{dist_dir}}/web_modules
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
-	{{node_bin}}/esbuild --bundle --outfile={{dist_dir}}/worker.min.js {{src_dir}}/Javascript/Worker.js
+	{{node_bin}}/esbuild \
+		--bundle \
+		--define:API_ENDPOINT="$(jq .API_ENDPOINT config/{{config}}.json)" \
+		--outfile={{dist_dir}}/worker.min.js \
+		{{src_dir}}/Javascript/Worker.js
 
 
 @minify-js:
@@ -104,11 +108,13 @@ insert-version:
 		-- --compress --mangle
 
 
-@production-build: clean css-large translate-schemas production-elm html css-small js images static minify-js
+@production-build:
+	just config=production clean css-large translate-schemas production-elm html css-small js images static minify-js
 	just config=production apply-config production-service-worker
 
 
-@staging-build: clean css-large translate-schemas production-elm html css-small js images static minify-js
+@staging-build:
+	just config=default clean css-large translate-schemas production-elm html css-small js images static minify-js
 	just config=default apply-config production-service-worker
 
 

@@ -11,6 +11,8 @@ import localforage from "localforage"
 import { Server, IPFSService } from "ipfs-message-port-server"
 
 
+self.apiEndpoint = API_ENDPOINT
+
 const KEEP_ALIVE_INTERVAL =
   1 * 60 * 1000 // 1 minute
 
@@ -107,9 +109,7 @@ const main = async (port) => {
 
 
 function fetchPeers() {
-  const peersUrl = location.hostname === "localhost" || location.hostname === "auth.runfission.net"
-      ? "https://runfission.net/ipfs/peers"
-      : "https://runfission.com/ipfs/peers"
+  const peersUrl = `${self.apiEndpoint}/ipfs/peers`
 
   return fetch(peersUrl)
     .then(r => r.json())

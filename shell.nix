@@ -13,6 +13,7 @@ in
       pkgs.devd
       pkgs.just
       pkgs.watchexec
+      pkgs.jq
 
       # Language Specific
       pkgs.elmPackages.elm
