@@ -26,6 +26,11 @@ const OPTIONS = {
   },
   preload: {
     enabled: false
+  },
+  libp2p: {
+    config: {
+      peerDiscovery: { autoDial: false }
+    }
   }
 }
 
