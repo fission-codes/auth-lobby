@@ -108,11 +108,13 @@ insert-version:
 		-- --compress --mangle
 
 
-@production-build: clean css-large translate-schemas production-elm html css-small js images static minify-js
+@production-build:
+	just config=production clean css-large translate-schemas production-elm html css-small js images static minify-js
 	just config=production apply-config production-service-worker
 
 
-@staging-build: clean css-large translate-schemas production-elm html css-small js images static minify-js
+@staging-build:
+	just config=default clean css-large translate-schemas production-elm html css-small js images static minify-js
 	just config=default apply-config production-service-worker
 
 
