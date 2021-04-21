@@ -1,0 +1,52 @@
+Arguments: 
+  /nix/store/ypb3w98w6sar7cixgzanv4axnc3gr9j0-nodejs-14.15.4/bin/node /nix/store/ar34zp26f5sxvzdqf6kyiiv93d8sla0x-yarn-1.22.10/bin/yarn install
+
+PATH: 
+  /nix/store/awff13wyxw5r7707mj9yn9i6wyhiab4v-bash-interactive-4.4-p23/bin:/nix/store/3r4cnlfrr4pmdkca36592mg4916vm428-clang-wrapper-7.1.0/bin:/nix/store/1pf2sj7rp2wazrzb450kcpiigi8m6z82-clang-7.1.0/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/zfx9b0dkr3b04dx0lb7k2ryig0h04plh-cctools-binutils-darwin-wrapper-949.0.1/bin:/nix/store/rih2pjsr7p9dwwa6j3kdvpw4gdka7ik6-cctools-binutils-darwin-949.0.1/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/893h4bn5ic28qsxfnmp5y1mdwsshcs3h-curl-7.74.0-dev/bin:/nix/store/m41ckcvz0qr7hjf4sq9w7s783458nzn1-nghttp2-1.41.0-bin/bin:/nix/store/19kly91lfq94f7acq14767700rqwwcxz-libkrb5-1.18-dev/bin:/nix/store/vfwlbx9nz6w7r1shydm6dwcz6326dbrk-libkrb5-1.18/bin:/nix/store/0nsa3ih7702ij34kclm3cpl3vmikgkcr-openssl-1.1.1i-bin/bin:/nix/store/p7wnd9q0vvpfpm4v6cmxhrq2iv6dxmaq-curl-7.74.0-bin/bin:/nix/store/nhjx4lmwz2fqjqffl2i0w11zlssfl1bq-devd-0.9/bin:/nix/store/vrxgayra63srz7pg32f0q11yimq3nxma-just-0.8.3/bin:/nix/store/m87vh7wp7rh79kxqzxd3v3agmrvcl3kk-watchexec-1.14.1/bin:/nix/store/msxm3ssbk0anbmdqlb6cvfxlpjwpys67-jq-1.6-bin/bin:/nix/store/zlz6qfd687szsh0629pz0akb100krdag-elm-0.19.1/bin:/nix/store/ypb3w98w6sar7cixgzanv4axnc3gr9j0-nodejs-14.15.4/bin:/nix/store/k5d9jgvvab9n39hy7gslr1f8slvkzayi-node_pnpm-5.14.3/bin:/nix/store/zhddm311s87nafsv6k39pmq1hnmgpmv2-elm-format-0.8.4/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/q1kcsx96nqr11lbzm5j7vnqhkim03syp-findutils-4.7.0/bin:/nix/store/3fvanh6lp4cimxy3l10mjhiijiqzisic-diffutils-3.7/bin:/nix/store/z7l0bq1fcz60v6h57xb4ad8wllma29hm-gnused-4.8/bin:/nix/store/47i2968jigckis49wgk1k1271dasjrz1-gnugrep-3.6/bin:/nix/store/sbjrzw1h529szdnypkalivarllcbj7zh-gawk-5.1.0/bin:/nix/store/3xfgx6c6y39pzrr6v4fbsifr5ga25z9b-gnutar-1.32/bin:/nix/store/v14kf9ixn5zbygh3vwij6cdr8x070h4z-gzip-1.10/bin:/nix/store/javc44l83416mp8m0d7w0zkxnxvnscky-bzip2-1.0.6.0.1-bin/bin:/nix/store/887s15ivmsxkbs9b2yklc0a41k4wwsnw-gnumake-4.3/bin:/nix/store/fb2pkc446jgwxn98hgabhsjkj7scb57y-bash-4.4-p23/bin:/nix/store/9mlh23a4ax1xnhhm1bp6agqn8ks1n48d-patch-2.7.6/bin:/nix/store/n79yia82bnf16y93nb3mr67ygdv6hdhh-xz-5.2.5-bin/bin:/nix/store/3r4cnlfrr4pmdkca36592mg4916vm428-clang-wrapper-7.1.0/bin:/nix/store/1pf2sj7rp2wazrzb450kcpiigi8m6z82-clang-7.1.0/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/zfx9b0dkr3b04dx0lb7k2ryig0h04plh-cctools-binutils-darwin-wrapper-949.0.1/bin:/nix/store/rih2pjsr7p9dwwa6j3kdvpw4gdka7ik6-cctools-binutils-darwin-949.0.1/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/893h4bn5ic28qsxfnmp5y1mdwsshcs3h-curl-7.74.0-dev/bin:/nix/store/m41ckcvz0qr7hjf4sq9w7s783458nzn1-nghttp2-1.41.0-bin/bin:/nix/store/19kly91lfq94f7acq14767700rqwwcxz-libkrb5-1.18-dev/bin:/nix/store/vfwlbx9nz6w7r1shydm6dwcz6326dbrk-libkrb5-1.18/bin:/nix/store/0nsa3ih7702ij34kclm3cpl3vmikgkcr-openssl-1.1.1i-bin/bin:/nix/store/p7wnd9q0vvpfpm4v6cmxhrq2iv6dxmaq-curl-7.74.0-bin/bin:/nix/store/nhjx4lmwz2fqjqffl2i0w11zlssfl1bq-devd-0.9/bin:/nix/store/vrxgayra63srz7pg32f0q11yimq3nxma-just-0.8.3/bin:/nix/store/m87vh7wp7rh79kxqzxd3v3agmrvcl3kk-watchexec-1.14.1/bin:/nix/store/msxm3ssbk0anbmdqlb6cvfxlpjwpys67-jq-1.6-bin/bin:/nix/store/zlz6qfd687szsh0629pz0akb100krdag-elm-0.19.1/bin:/nix/store/ypb3w98w6sar7cixgzanv4axnc3gr9j0-nodejs-14.15.4/bin:/nix/store/k5d9jgvvab9n39hy7gslr1f8slvkzayi-node_pnpm-5.14.3/bin:/nix/store/zhddm311s87nafsv6k39pmq1hnmgpmv2-elm-format-0.8.4/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/q1kcsx96nqr11lbzm5j7vnqhkim03syp-findutils-4.7.0/bin:/nix/store/3fvanh6lp4cimxy3l10mjhiijiqzisic-diffutils-3.7/bin:/nix/store/z7l0bq1fcz60v6h57xb4ad8wllma29hm-gnused-4.8/bin:/nix/store/47i2968jigckis49wgk1k1271dasjrz1-gnugrep-3.6/bin:/nix/store/sbjrzw1h529szdnypkalivarllcbj7zh-gawk-5.1.0/bin:/nix/store/3xfgx6c6y39pzrr6v4fbsifr5ga25z9b-gnutar-1.32/bin:/nix/store/v14kf9ixn5zbygh3vwij6cdr8x070h4z-gzip-1.10/bin:/nix/store/javc44l83416mp8m0d7w0zkxnxvnscky-bzip2-1.0.6.0.1-bin/bin:/nix/store/887s15ivmsxkbs9b2yklc0a41k4wwsnw-gnumake-4.3/bin:/nix/store/fb2pkc446jgwxn98hgabhsjkj7scb57y-bash-4.4-p23/bin:/nix/store/9mlh23a4ax1xnhhm1bp6agqn8ks1n48d-patch-2.7.6/bin:/nix/store/n79yia82bnf16y93nb3mr67ygdv6hdhh-xz-5.2.5-bin/bin:/nix/store/3r4cnlfrr4pmdkca36592mg4916vm428-clang-wrapper-7.1.0/bin:/nix/store/1pf2sj7rp2wazrzb450kcpiigi8m6z82-clang-7.1.0/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/zfx9b0dkr3b04dx0lb7k2ryig0h04plh-cctools-binutils-darwin-wrapper-949.0.1/bin:/nix/store/rih2pjsr7p9dwwa6j3kdvpw4gdka7ik6-cctools-binutils-darwin-949.0.1/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/893h4bn5ic28qsxfnmp5y1mdwsshcs3h-curl-7.74.0-dev/bin:/nix/store/m41ckcvz0qr7hjf4sq9w7s783458nzn1-nghttp2-1.41.0-bin/bin:/nix/store/19kly91lfq94f7acq14767700rqwwcxz-libkrb5-1.18-dev/bin:/nix/store/vfwlbx9nz6w7r1shydm6dwcz6326dbrk-libkrb5-1.18/bin:/nix/store/0nsa3ih7702ij34kclm3cpl3vmikgkcr-openssl-1.1.1i-bin/bin:/nix/store/p7wnd9q0vvpfpm4v6cmxhrq2iv6dxmaq-curl-7.74.0-bin/bin:/nix/store/nhjx4lmwz2fqjqffl2i0w11zlssfl1bq-devd-0.9/bin:/nix/store/vrxgayra63srz7pg32f0q11yimq3nxma-just-0.8.3/bin:/nix/store/m87vh7wp7rh79kxqzxd3v3agmrvcl3kk-watchexec-1.14.1/bin:/nix/store/msxm3ssbk0anbmdqlb6cvfxlpjwpys67-jq-1.6-bin/bin:/nix/store/zlz6qfd687szsh0629pz0akb100krdag-elm-0.19.1/bin:/nix/store/ypb3w98w6sar7cixgzanv4axnc3gr9j0-nodejs-14.15.4/bin:/nix/store/k5d9jgvvab9n39hy7gslr1f8slvkzayi-node_pnpm-5.14.3/bin:/nix/store/zhddm311s87nafsv6k39pmq1hnmgpmv2-elm-format-0.8.4/bin:/nix/store/la203av8kn0ys79yykjbwkiip7li95c1-coreutils-8.32/bin:/nix/store/q1kcsx96nqr11lbzm5j7vnqhkim03syp-findutils-4.7.0/bin:/nix/store/3fvanh6lp4cimxy3l10mjhiijiqzisic-diffutils-3.7/bin:/nix/store/z7l0bq1fcz60v6h57xb4ad8wllma29hm-gnused-4.8/bin:/nix/store/47i2968jigckis49wgk1k1271dasjrz1-gnugrep-3.6/bin:/nix/store/sbjrzw1h529szdnypkalivarllcbj7zh-gawk-5.1.0/bin:/nix/store/3xfgx6c6y39pzrr6v4fbsifr5ga25z9b-gnutar-1.32/bin:/nix/store/v14kf9ixn5zbygh3vwij6cdr8x070h4z-gzip-1.10/bin:/nix/store/javc44l83416mp8m0d7w0zkxnxvnscky-bzip2-1.0.6.0.1-bin/bin:/nix/store/887s15ivmsxkbs9b2yklc0a41k4wwsnw-gnumake-4.3/bin:/nix/store/fb2pkc446jgwxn98hgabhsjkj7scb57y-bash-4.4-p23/bin:/nix/store/9mlh23a4ax1xnhhm1bp6agqn8ks1n48d-patch-2.7.6/bin:/nix/store/n79yia82bnf16y93nb3mr67ygdv6hdhh-xz-5.2.5-bin/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/Users/expede/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/expede/.local/bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  14.15.4
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: ENOENT: no such file or directory, copyfile '/Users/expede/Library/Caches/Yarn/v6/npm-meow-8.1.2-bcbe45bda0ee1729d350c03cffc8395a36c4e897-integrity/node_modules/meow/index.d.ts' -> '/Users/expede/Documents/Work/Fission/auth-lobby/node_modules/elm-tailwind-css/node_modules/meow/index.d.ts'
+
+npm manifest: 
+  {
+    "private": true,
+    "type": "module",
+    "dependencies": {
+      "fission-kit": "fission-suite/kit#aed7844ccd76f6ca7feeca95981b47d4b1114a7c",
+      "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz",
+      "ipfs-message-port-server": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz",
+      "localforage": "^1.9.0",
+      "webnative": "0.24.0-alpha-8"
+    },
+    "devDependencies": {
+      "elm-tailwind-css": "^1.1.1",
+      "esbuild": "^0.8.2",
+      "mustache": "^4.0.1",
+      "postcss-import": "^12.0.1",
+      "quicktype": "https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz",
+      "tailwindcss": "^2.0.3",
+      "terser-dir": "^1.0.7",
+      "workbox-cli": "^6.1.2",
+      "workbox-strategies": "^6.1.2"
+    },
+    "pnpm": {
+      "overrides": {
+        "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz"
+      }
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

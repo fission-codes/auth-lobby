@@ -22,4 +22,8 @@ in
       pkgs.elmPackages.elm-format
 
     ];
+
+    shellHook = ''
+      ${pkgs.just}/bin/just install-deps
+    '';
   }
