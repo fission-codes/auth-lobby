@@ -257,7 +257,6 @@ async function linkApp({
 
   // Proof
   let proof = await localforage.getItem("ucan")
-  proof = proof ? wn.ucan.decode(proof) : null
 
   // Build UCAN
   const att = attenuation.map(a => {
@@ -285,7 +284,12 @@ async function linkApp({
       audience,
       issuer,
       lifetimeInSeconds,
+
+      addSignature: false
     })
+
+    // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
+    if (!canPermissionFiles) await backwardsCompatUcan(ucan)
 
     return wn.ucan.encode(ucan)
   })
@@ -324,6 +328,9 @@ async function linkApp({
     audience: issuer,
     issuer
   })
+
+  // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
+  if (!canPermissionFiles) await backwardsCompatUcan(fsUcan)
 
   let fsSecrets = await privatePaths.reduce(async (promise, path) => {
     const acc = await promise
@@ -410,7 +417,7 @@ async function linkApp({
   // Update user's data root if need be
   if (madeFsChanges) {
     const rootCid = await fs.root.put()
-    const res = await wn.dataRoot.update(rootCid, fsUcan)
+    const res = await wn.dataRoot.update(rootCid, wn.ucan.encode(fsUcan))
     if (!res.success) return app.ports.gotLinkAppError.send("Failed to update data root 😰")
   }
 
@@ -419,11 +426,11 @@ async function linkApp({
     const oldUcan = await wn.ucan.build({
       potency: "APPEND",
       resource: "*",
-      proof: proof || undefined,
 
       audience,
       issuer,
       lifetimeInSeconds,
+      proof
     })
 
     const plainTextReadKey = await myReadKey()
@@ -654,13 +661,13 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
 
       // Proof
       let proof = await localforage.getItem("ucan")
-      proof = proof ? wn.ucan.decode(proof) : undefined
 
       // UCAN
       const ucan = await wn.ucan.build({
         audience: data.didInquirer,
         issuer: await wn.did.write(),
         lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
+        potency: "SUPER_USER",
         proof,
 
         // TODO: UCAN v0.5
@@ -997,6 +1004,14 @@ function stringToArrayBuffer(str) {
 
 // OTHER
 // =====
+
+async function backwardsCompatUcan(ucan) {
+  ucan.payload.prf = ucan.payload.prf === null
+    ? undefined
+    : ucan.payload.prf
+
+  ucan.signature = await wn.ucan.sign(ucan.header, ucan.payload)
+}
 
 function copyToClipboard(text) {
   if (navigator.clipboard) navigator.clipboard.writeText(text)
