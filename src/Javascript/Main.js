@@ -674,6 +674,9 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         // proofs: [ await localforage.getItem("ucan") ]
       })
 
+      // TODO: Remove when people aren't using webnative version < 0.24 anymore
+      await backwardsCompatUcan(ucan)
+
       // Encode & encrypt
       const { iv, msg } = await encryptWithAes(
         // TODO: Waiting for API changes
