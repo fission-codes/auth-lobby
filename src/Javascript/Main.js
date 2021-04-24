@@ -806,8 +806,8 @@ function channelMessage(rootDid, ipfsId) { return async function({ from, data })
       //   throw new Error("Invalid closed UCAN")
       // }
 
-      if (ucan.payload.prf) {
-        throw new Error("Invalid closed UCAN")
+      if (ucan.payload.ptc) {
+        throw new Error("Invalid closed UCAN: must not have any potency")
       }
 
       logDebug("Extract session key")
