@@ -283,9 +283,7 @@ async function linkApp({
 
       audience,
       issuer,
-      lifetimeInSeconds,
-
-      addSignature: false
+      lifetimeInSeconds
     })
 
     // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
