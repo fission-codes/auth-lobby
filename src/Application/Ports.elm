@@ -34,6 +34,7 @@ port linkApp :
     , didExchange : String
     , lifetimeInSeconds : Int
     , sharedRepo : Bool
+    , raw : Maybe String
 
     -- TODO: Remove backwards compatibility
     , oldFlow : Bool
