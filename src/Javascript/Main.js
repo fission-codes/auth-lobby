@@ -255,6 +255,8 @@ async function linkApp({
   const audience = didWrite
   const issuer = await wn.did.write()
 
+  const raw = []
+
   // Proof
   let proof = await localforage.getItem("ucan")
 
@@ -293,6 +295,19 @@ async function linkApp({
 
     return wn.ucan.encode(ucan)
   })
+  .concat(
+    raw.map(async a => {
+      const ucan = await wn.ucan.build({
+        potency: a.ptc,
+        resource: a.rsc,
+        expiration: a.exp,
+        proof,
+        audience,
+        issuer,
+      })
+      return wn.ucan.encode(ucan)
+    })
+  )
 
   ucans = await Promise.all(ucans)
   ucans = ucans.filter(a => a)

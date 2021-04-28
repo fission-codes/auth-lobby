@@ -33,6 +33,7 @@ type alias Context =
     , newUser : Maybe Bool
     , privatePaths : List String
     , publicPaths : List String
+    , raw : String
     , redirectTo : Url
     , redirectToProtocol : String
     , sdkVersion : Maybe Semver.Version
@@ -91,6 +92,7 @@ extractFromUrl url =
                         , newUser = c.newUser
                         , privatePaths = c.privatePaths
                         , publicPaths = c.publicPaths
+                        , raw = c.raw
                         , redirectTo = redirectTo
                         , redirectToProtocol = redirectToProtocol
                         , sdkVersion = c.sdkVersion
