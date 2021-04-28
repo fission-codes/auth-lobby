@@ -84,6 +84,7 @@ allow model =
                 , didExchange = context.didExchange
                 , lifetimeInSeconds = context.lifetimeInSeconds
                 , sharedRepo = context.sharedRepo
+                , raw = context.raw
 
                 -- TODO: Remove backwards compatibility
                 , oldFlow = context.oldFlow
