@@ -33,7 +33,7 @@ type alias Context =
     , newUser : Maybe Bool
     , privatePaths : List String
     , publicPaths : List String
-    , raw : String
+    , raw : Maybe String
     , redirectTo : Url
     , redirectToProtocol : String
     , sdkVersion : Maybe Semver.Version
@@ -276,7 +276,7 @@ apply argParser funcParser =
 
 queryStringParser =
     Query.map
-        (\fol app pri pub lif new sdk sha ->
+        (\fol app pri pub raw lif new sdk sha ->
             Maybe.map3
                 (\didExchange didWrite red ->
                     let
@@ -310,6 +310,7 @@ queryStringParser =
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
                     , privatePaths = confirmPaths pri
                     , publicPaths = confirmPaths pub
+                    , raw = raw
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
                     , sdkVersion = sdkVersion
@@ -329,6 +330,7 @@ queryStringParser =
         |> apply (Query.custom "app" identity)
         |> apply (Query.custom "privatePath" identity)
         |> apply (Query.custom "publicPath" identity)
+        |> apply (Query.string "raw")
         -- Optional, pt. 2
         |> apply (Query.int "lifetimeInSeconds")
         |> apply (Query.string "newUser")

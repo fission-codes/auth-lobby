@@ -112,6 +112,12 @@ view context model =
                     (Resource.fileSystemPath Resource.Public)
                     context.publicPaths
                 )
+            |> List.append
+                [ Maybe.unwrap
+                    Html.nothing
+                    (Resource.custom "Filecoin")
+                    context.raw
+                ]
             |> Html.ul
                 [ T.italic
                 , T.leading_snug

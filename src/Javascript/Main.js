@@ -250,12 +250,11 @@ async function linkApp({
   attenuation,
   lifetimeInSeconds,
   oldFlow,
-  sharedRepo
+  sharedRepo,
+  raw 
 }) {
   const audience = didWrite
   const issuer = await wn.did.write()
-
-  const raw = []
 
   // Proof
   let proof = await localforage.getItem("ucan")
