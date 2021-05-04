@@ -240,7 +240,7 @@ async function createAccount(args) {
 // LINK
 // ----
 
-const SESSION_PATH = "/public/Apps/Fission/Lobby/Session"
+const SESSION_PATH = wn.path.file("public", "Apps", "Fission", "Lobby", "Session")
 
 
 async function linkApp({
@@ -274,6 +274,7 @@ async function linkApp({
   //   lifetimeInSeconds
   // })
 
+
   let ucans = att.map(async a => {
     const { cap, ...resource } = { ...a }
     const ucan = await wn.ucan.build({
@@ -302,10 +303,10 @@ async function linkApp({
     const path = a.wnfs || a.floofs
     if (!path) return acc
     if (path.startsWith("/public")) return acc
-    return [ ...acc, path ]
+    return [ ...acc, wn.path.fromPosix(path) ]
   }, [])
 
-  const permissions = { fs: { private: { directories: [ "/" ] }}}
+  const permissions = { fs: { private: [ wn.path.root() ] }}
 
   let fs
   let madeFsChanges = false
@@ -335,7 +336,7 @@ async function linkApp({
     const pathExists = await fs.exists(path)
 
     if (!pathExists) {
-      if (!canPermissionFiles || path.endsWith("/")) {
+      if (!canPermissionFiles || wn.path.isDirectory(path)) {
         await fs.mkdir(path, { localOnly: true })
       } else {
         await fs.write(path, "", { localOnly: true })
@@ -406,7 +407,7 @@ async function linkApp({
     await fs.write(SESSION_PATH, classified)
 
     cid = await fs.root.prettyTree
-      .get(SESSION_PATH.replace(/^\/public/, ""))
+      .get(wn.path.unwrap(SESSION_PATH).slice(1))
       .then(f => f.put())
 
     madeFsChanges = true
@@ -451,11 +452,11 @@ async function freshFileSystem({ permissions }) {
     localOnly: true
   })
 
-  await fs.mkdir("private/Apps")
-  await fs.mkdir("private/Audio")
-  await fs.mkdir("private/Documents")
-  await fs.mkdir("private/Photos")
-  await fs.mkdir("private/Video")
+  await fs.mkdir(wn.path.directory("private", "Apps"))
+  await fs.mkdir(wn.path.directory("private", "Audio"))
+  await fs.mkdir(wn.path.directory("private", "Documents"))
+  await fs.mkdir(wn.path.directory("private", "Photos"))
+  await fs.mkdir(wn.path.directory("private", "Video"))
   return fs
 }
 
