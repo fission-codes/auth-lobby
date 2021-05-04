@@ -344,9 +344,10 @@ async function linkApp({
       madeFsChanges = true
     }
 
+    const posixPath = wn.path.toPosix(path)
     const adjustedPath = canPermissionFiles
-      ? path
-      : path.replace(/\/$/, "")
+      ? posixPath
+      : posixPath.replace(/\/$/, "")
 
     return {
       ...acc,
