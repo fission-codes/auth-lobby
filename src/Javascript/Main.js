@@ -265,6 +265,8 @@ async function linkApp({
     return { [key]: value, "cap": a.capability }
   })
 
+  const parsedRaw = raw && raw !== null ? JSON.parse(wn.machinery.base64.urlDecode(raw)) : []
+
   // TODO: Waiting on API changes
   // const ucanPromise = wn.ucan.build({
   //   attenuations: att,
@@ -284,9 +286,7 @@ async function linkApp({
 
       audience,
       issuer,
-      lifetimeInSeconds,
-
-      addSignature: false
+      lifetimeInSeconds
     })
 
     // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
@@ -295,7 +295,7 @@ async function linkApp({
     return wn.ucan.encode(ucan)
   })
   .concat(
-    raw.map(async a => {
+    parsedRaw.map(async a => {
       const ucan = await wn.ucan.build({
         potency: a.ptc,
         resource: a.rsc,
