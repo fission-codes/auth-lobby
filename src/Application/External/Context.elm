@@ -19,6 +19,7 @@ import Url exposing (Url)
 import Url.Builder
 import Url.Parser as Url exposing (..)
 import Url.Parser.Query as Query
+import UrlBase64
 
 
 
@@ -33,7 +34,7 @@ type alias Context =
     , newUser : Maybe Bool
     , privatePaths : List String
     , publicPaths : List String
-    , raw : Maybe String
+    , raw : Maybe (Result String String)
     , redirectTo : Url
     , redirectToProtocol : String
     , sdkVersion : Maybe Semver.Version
@@ -302,6 +303,16 @@ queryStringParser =
 
                         sdkVersion =
                             Maybe.andThen Semver.parse sdk
+
+                        decodedRaw =
+                            Maybe.map
+                                (UrlBase64.decode
+                                    (\base64str ->
+                                        Result.fromMaybe "[]" <|
+                                            Base64.toString base64str
+                                    )
+                                )
+                                raw
                     in
                     { appFolder = fol
                     , didExchange = didExchange
@@ -310,7 +321,7 @@ queryStringParser =
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
                     , privatePaths = confirmPaths pri
                     , publicPaths = confirmPaths pub
-                    , raw = raw
+                    , raw = decodedRaw
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
                     , sdkVersion = sdkVersion

@@ -11,12 +11,14 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Icons
+import Json.Print
 import List.Ext as List
 import List.Extra as List
 import Loading
 import Maybe.Extra as Maybe
 import Radix exposing (..)
 import RemoteData exposing (RemoteData(..))
+import Result.Extra as Result
 import Styling as S
 import Tailwind as T
 import Time
@@ -50,6 +52,7 @@ view context model =
                     || not (List.isEmpty context.privatePaths)
                     || not (List.isEmpty context.publicPaths)
                     || not (List.isEmpty context.web)
+                    || not (Maybe.isNothing context.raw)
 
             label =
                 Html.span
@@ -112,12 +115,8 @@ view context model =
                     (Resource.fileSystemPath Resource.Public)
                     context.publicPaths
                 )
-            |> List.append
-                [ Maybe.unwrap
-                    Html.nothing
-                    (Resource.custom "Filecoin")
-                    context.raw
-                ]
+            |> List.prepend
+                [ Maybe.unwrap Html.nothing rawResource context.raw ]
             |> Html.ul
                 [ T.italic
                 , T.leading_snug
@@ -300,6 +299,17 @@ appNameLabel context =
     context.appFolder
         |> Maybe.andThen (String.split "/" >> List.getAt 1)
         |> Maybe.map (Html.text >> List.singleton)
+
+
+rawResource : Result String String -> Html Msg
+rawResource raw =
+    Result.unwrap
+        Resource.rawError
+        (\permissions ->
+            Json.Print.prettyString { indent = 2, columns = 40 } permissions
+                |> Result.unwrap Resource.rawError Resource.raw
+        )
+        raw
 
 
 warning : List (Html Msg) -> Html Msg

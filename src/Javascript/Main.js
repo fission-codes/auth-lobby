@@ -4,6 +4,7 @@
 
 */
 
+
 const wn = webnative
 
 let app
@@ -265,7 +266,7 @@ async function linkApp({
     return { [key]: value, "cap": a.capability }
   })
 
-  const parsedRaw = raw && raw !== null ? JSON.parse(wn.machinery.base64.urlDecode(raw)) : []
+  const parsedRaw = raw && raw !== null ? JSON.parse(raw) : []
 
   // TODO: Waiting on API changes
   // const ucanPromise = wn.ucan.build({
