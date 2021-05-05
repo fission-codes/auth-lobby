@@ -54,6 +54,7 @@ workbox_config 		:= "workbox.config.cjs"
 
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
 	cp {{src_dir}}/Static/Html/Ipfs.html {{dist_dir}}/ipfs.html
+	cp {{src_dir}}/Static/Html/Exchange.html {{dist_dir}}/exchange.html
 	cp {{src_dir}}/Static/Html/Reset.html {{dist_dir}}/reset/index.html
 
 

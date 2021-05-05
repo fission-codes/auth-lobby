@@ -250,7 +250,8 @@ async function linkApp({
   attenuation,
   lifetimeInSeconds,
   oldFlow,
-  sharedRepo
+  sharedRepo,
+  keyInSessionStorage,
 }) {
   const audience = didWrite
   const issuer = await wn.did.write()
@@ -398,9 +399,11 @@ async function linkApp({
   })
 
   // Add to ipfs
-  let cid
+  let cid = null
 
-  if (sharedRepo) {
+  if (keyInSessionStorage) {
+    sessionStorage.setItem("encrypted-secrets", classified)
+  } else if (sharedRepo) {
     cid = await webnative.ipfs.add(classified).then(r => r.cid)
   } else {
     await fs.write(SESSION_PATH, classified)

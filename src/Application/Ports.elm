@@ -33,9 +33,10 @@ port linkApp :
     , didWrite : String
     , didExchange : String
     , lifetimeInSeconds : Int
-    , sharedRepo : Bool
+    , keyInSessionStorage : Bool
 
     -- TODO: Remove backwards compatibility
+    , sharedRepo : Bool
     , oldFlow : Bool
     }
     -> Cmd msg

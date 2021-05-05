@@ -36,10 +36,11 @@ type alias Context =
     , redirectTo : Url
     , redirectToProtocol : String
     , sdkVersion : Maybe Semver.Version
-    , sharedRepo : Bool
     , web : List String
+    , keyInSessionStorage : Bool
 
     -- TODO: Remove backwards compatibility
+    , sharedRepo : Bool
     , oldFlow : Bool
     }
 
@@ -96,6 +97,7 @@ extractFromUrl url =
                         , sdkVersion = c.sdkVersion
                         , sharedRepo = c.sharedRepo
                         , web = c.web
+                        , keyInSessionStorage = c.keyInSessionStorage
 
                         -- TODO: Remove backwards compatibility
                         , oldFlow = c.oldFlow
@@ -313,6 +315,16 @@ queryStringParser =
                     , sdkVersion = sdkVersion
                     , sharedRepo = Maybe.unwrap False ((==) "t") sha
                     , web = app
+                    , keyInSessionStorage =
+                        case Maybe.map (\version -> Semver.compare version sessionStorageSdkVersion) sdkVersion of
+                            Just GT ->
+                                True
+
+                            Just EQ ->
+                                True
+
+                            _ ->
+                                False
 
                     -- TODO: Remove backwards compatibility
                     , oldFlow =
@@ -356,3 +368,7 @@ confirmPaths =
 
 newFlowSdkVersion =
     Semver.version 0 22 0 [] []
+
+
+sessionStorageSdkVersion =
+    Semver.version 0 24 1 [] []
