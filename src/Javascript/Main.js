@@ -306,7 +306,12 @@ async function linkApp({
     return [ ...acc, wn.path.fromPosix(path) ]
   }, [])
 
-  const permissions = { fs: { private: [ wn.path.root() ] }}
+  const permissions = {
+    fs: {
+      private: [ wn.path.root() ],
+      public: [ wn.path.root() ]
+    }
+  }
 
   let fs
   let madeFsChanges = false
@@ -344,7 +349,7 @@ async function linkApp({
       madeFsChanges = true
     }
 
-    const posixPath = wn.path.toPosix(path)
+    const posixPath = wn.path.toPosix(path, { absolute: true })
     const adjustedPath = canPermissionFiles
       ? posixPath
       : posixPath.replace(/\/$/, "")
