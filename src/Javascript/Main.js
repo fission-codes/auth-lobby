@@ -631,7 +631,8 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         issuer: await wn.did.ucan(),
         audience: data.didThrowaway,
         lifetimeInSeconds: 60 * 5, // 5 minutes
-        facts: [{ sessionKey }]
+        facts: [{ sessionKey }],
+        potency: null
       })
 
       // Encode & encrypt UCAN
