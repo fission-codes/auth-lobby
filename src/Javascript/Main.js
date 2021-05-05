@@ -299,12 +299,22 @@ async function linkApp({
   // Load, or create, filesystem
   const username = await localforage.getItem("usedUsername")
   const dataRoot = await wn.dataRoot.lookup(username)
-  const privatePaths = att.reduce((acc, a) => {
-    const path = a.wnfs || a.floofs
-    if (!path) return acc
-    if (path.startsWith("/public")) return acc
-    return [ ...acc, wn.path.fromPosix(path) ]
-  }, [])
+
+  const publicPaths = []
+  const privatePaths = []
+
+  att.forEach(a => {
+    const posixPath = a.wnfs || a.floofs
+    if (!posixPath) return
+
+    const path = wn.path.fromPosix(posixPath)
+
+    if (wn.path.isBranch(wn.path.Branch.Public, path)) {
+      publicPaths.push(path)
+    } else if (wn.path.isBranch(wn.path.Branch.Private, path)) {
+      privatePaths.push(path)
+    }
+  })
 
   const permissions = {
     fs: {
@@ -333,10 +343,7 @@ async function linkApp({
     issuer
   })
 
-  // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
-  if (!canPermissionFiles) await backwardsCompatUcan(fsUcan)
-
-  let fsSecrets = await privatePaths.reduce(async (promise, path) => {
+  await [...publicPaths, ...privatePaths].reduce(async (promise, path) => {
     const acc = await promise
     const pathExists = await fs.exists(path)
 
@@ -349,6 +356,14 @@ async function linkApp({
       madeFsChanges = true
     }
 
+  }, Promise.resolve())
+
+  // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
+  if (!canPermissionFiles) await backwardsCompatUcan(fsUcan)
+
+  // Filesystem secrets
+  let fsSecrets = await privatePaths.reduce(async (promise, path) => {
+    const acc = await promise
     const posixPath = wn.path.toPosix(path, { absolute: true })
     const adjustedPath = canPermissionFiles
       ? posixPath
