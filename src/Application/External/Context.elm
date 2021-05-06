@@ -371,4 +371,4 @@ newFlowSdkVersion =
 
 
 sessionStorageSdkVersion =
-    Semver.version 0 24 0 [] []
+    Semver.version 0 24 0 [ "alpha" ] []
