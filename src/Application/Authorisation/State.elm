@@ -83,9 +83,10 @@ allow model =
                 , didWrite = context.didWrite
                 , didExchange = context.didExchange
                 , lifetimeInSeconds = context.lifetimeInSeconds
-                , sharedRepo = context.sharedRepo
+                , keyInSessionStorage = context.keyInSessionStorage
 
                 -- TODO: Remove backwards compatibility
+                , sharedRepo = context.sharedRepo
                 , oldFlow = context.oldFlow
                 }
             )
@@ -128,7 +129,8 @@ gotUcansForApplication { cid, readKey, ucan } model =
                     ]
 
                 _ ->
-                    []
+                    [ ( "authorised", "via-postmessage" )
+                    ]
     in
     model.externalContext
         |> External.redirectCommand

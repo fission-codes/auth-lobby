@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Fission Lobby IPFS Worker</title>
+</head>
+<body>
+
+  <script>
+      window.addEventListener("message", event => {
+        // Note: Answering the event.source means we basically
+        // answer _anyone_ asking us via an iframe.
+        // This is not an issue, because we only ever expose the
+        // "encrypted-secrets" key and well, the secrets are encrypted.
+        event.source.postMessage(sessionStorage.getItem("encrypted-secrets"), event.origin)
+        sessionStorage.removeItem("encrypted-secrets")
+      })
+  </script>
+
+  <!-- Service worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js")
+      })
+    }
+  </script>
+
+</body>
+</html>
