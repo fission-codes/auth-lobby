@@ -136,7 +136,7 @@ async function myReadKey() {
   const maybeReadKey = await localforage.getItem("readKey")
   if (maybeReadKey) return maybeReadKey
 
-  const readKey = await wn.keystore.genKeyStr()
+  const readKey = await wn.crypto.aes.genKeyStr()
   await localforage.setItem("readKey", readKey)
   return readKey
 }
