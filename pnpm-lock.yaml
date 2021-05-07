@@ -3,7 +3,7 @@ dependencies:
   ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
   ipfs-message-port-server: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   localforage: 1.9.0
-  webnative: 0.24.0
+  webnative: 0.24.0-alpha-12
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
   esbuild: 0.8.2
@@ -3677,16 +3677,15 @@ packages:
     dev: false
     resolution:
       integrity: sha512-7zRr8fKOWp/N8xfZyZV6WG1CUvKNiNahSDI4vjJnPJD60lHtIg62dpv60yCgcM2PP8QKv4S2UkZl+8MsYmQRpw==
-  /keystore-idb/0.14.1:
+  /keystore-idb/0.14.0:
     dependencies:
       '@ungap/global-this': 0.4.3
-      buffer: 6.0.3
       localforage: 1.9.0
     dev: false
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-oyymnax18EycBDlS8Leg9WmJJ39J3fITDXUWd+he8gkq44hgnEDjjgfiGWuCBLlB9/3E3AmLWvpXFPlPAG6jWQ==
+      integrity: sha512-LX6BipvB4t90XZgD/6yYg6/7Avv9V+yEg6j48Vds2T5QRd82De03ApKlCbkYYGl3G2odwY28odL7ES6+eKcglg==
   /keyv/3.1.0:
     dependencies:
       json-buffer: 3.0.0
@@ -6528,7 +6527,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative/0.24.0:
+  /webnative/0.24.0-alpha-12:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -6538,7 +6537,7 @@ packages:
       ipfs-message-port-client: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-client.tar.gz'
       ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
       ipld-dag-pb: 0.20.0
-      keystore-idb: 0.14.1
+      keystore-idb: 0.14.0
       localforage: 1.9.0
       make-error: 1.3.6
       noble-ed25519: 1.0.4
@@ -6547,7 +6546,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-or4xZ+jTn20GTvJfDdZlqCFGCu9AXqbBTqQTSRXygFHer4BxsvOfRsGlNGwtlYgYIujlpdb3pWRSpd67XBXQrA==
+      integrity: sha512-YAzIs17cR6KgDxekUYEPwj3W66QSdY5157YnWZwb6FRocgovvpRJ0nhVk+u82tTE4NpAzazAgN+CfjPXTe7nyg==
   /whatwg-fetch/3.6.2:
     dev: true
     resolution:
@@ -6939,6 +6938,6 @@ specifiers:
   quicktype: 'https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz'
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.24.0
+  webnative: 0.24.0-alpha-12
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
