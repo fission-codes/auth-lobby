@@ -332,6 +332,7 @@ async function linkApp({
     fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
   } else {
     fs = await freshFileSystem({ permissions })
+    madeFsChanges = true
   }
 
   // Ensure all necessary filesystem parts
