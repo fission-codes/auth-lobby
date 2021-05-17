@@ -249,10 +249,15 @@ async function linkApp({
   didExchange,
   attenuation,
   lifetimeInSeconds,
+
+  // webnative version-specific feature flags
   oldFlow,
   sharedRepo,
   keyInSessionStorage,
 }) {
+  // Both features became available at webnative v0.24.0
+  const supportsFilepathPermissions = keyInSessionStorage
+
   const audience = didWrite
   const issuer = await wn.did.write()
 
@@ -305,8 +310,13 @@ async function linkApp({
   const privatePaths = []
 
   att.forEach(a => {
-    const posixPath = a.wnfs || a.floofs
+    let posixPath = a.wnfs || a.floofs
     if (!posixPath) return
+
+    // Before webnative v0.24.0 we assumed all permission paths to be directory paths
+    if (!posixPath.endsWith("/") && !supportsFilepathPermissions) {
+      posixPath += "/"
+    }
 
     const path = wn.path.fromPosix(posixPath)
 
