@@ -432,7 +432,8 @@ async function linkApp({
   let cid = null
 
   if (keyInSessionStorage) {
-    sessionStorage.setItem("encrypted-secrets", classified)
+    sessionStorage.setItem("encrypted-secrets", classified) // backwards compatibility
+    sessionStorage.setItem(`encrypted-secrets-for-${didExchange}`, classified)
   } else if (sharedRepo) {
     cid = await webnative.ipfs.add(classified).then(r => r.cid)
   } else {

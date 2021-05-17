@@ -8,12 +8,18 @@
 
   <script>
       window.addEventListener("message", event => {
+        const secretsKey = event.data && event.data.didExchange ?
+          `encrypted-secrets-for-${event.data.didExchange}` :
+          "encrypted-secrets" // backwards compatibility
         // Note: Answering the event.source means we basically
         // answer _anyone_ asking us via an iframe.
-        // This is not an issue, because we only ever expose the
-        // "encrypted-secrets" key and well, the secrets are encrypted.
-        event.source.postMessage(sessionStorage.getItem("encrypted-secrets"), event.origin)
-        sessionStorage.removeItem("encrypted-secrets")
+        // This is not an issue because the secrets are encrypted.
+        // We don't share anything besides things prefixed as "encrypted-secrets".
+        event.source.postMessage(sessionStorage.getItem(secretsKey), event.origin)
+
+        // we don't delete the secrets, as the authenticating app might get
+        // interrupted between fetching the secrets & storing them, and therefore
+        // might re-request them.
       })
   </script>
 
