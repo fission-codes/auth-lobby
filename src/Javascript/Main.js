@@ -255,9 +255,6 @@ async function linkApp({
   sharedRepo,
   keyInSessionStorage,
 }) {
-  // Both features became available at webnative v0.24.0
-  const supportsFilepathPermissions = keyInSessionStorage
-
   const audience = didWrite
   const issuer = await wn.did.write()
 
@@ -314,7 +311,7 @@ async function linkApp({
     if (!posixPath) return
 
     // Before webnative v0.24.0 we assumed all permission paths to be directory paths
-    if (!posixPath.endsWith("/") && !supportsFilepathPermissions) {
+    if (!posixPath.endsWith("/") && !canPermissionFiles) {
       posixPath += "/"
     }
 
@@ -360,7 +357,7 @@ async function linkApp({
     const pathExists = await fs.exists(path)
 
     if (!pathExists) {
-      if (!canPermissionFiles || wn.path.isDirectory(path)) {
+      if (wn.path.isDirectory(path)) {
         await fs.mkdir(path, { localOnly: true })
       } else {
         await fs.write(path, "", { localOnly: true })
