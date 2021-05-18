@@ -52,7 +52,9 @@ view context model =
                     || not (List.isEmpty context.privatePaths)
                     || not (List.isEmpty context.publicPaths)
                     || not (List.isEmpty context.web)
-                    || not (Maybe.isNothing context.raw)
+
+            hasRawResources =
+                Maybe.isJust context.raw
 
             label =
                 Html.span
@@ -85,6 +87,16 @@ view context model =
 
                 --
                 , Html.text "?"
+                ]
+
+          else if hasRawResources then
+            Html.div
+                [ T.mt_10 ]
+                [ Html.text "Allow "
+                , label
+
+                --
+                , Html.text " access to the following resouces?"
                 ]
 
           else
