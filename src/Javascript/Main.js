@@ -250,8 +250,11 @@ async function linkApp({
   didExchange,
   attenuation,
   lifetimeInSeconds,
+
+  // webnative version-specific feature flags
   oldFlow,
   sharedRepo,
+  keyInSessionStorage,
   raw 
 }) {
   const audience = didWrite
@@ -316,14 +319,34 @@ async function linkApp({
   // Load, or create, filesystem
   const username = await localforage.getItem("usedUsername")
   const dataRoot = await wn.dataRoot.lookup(username)
-  const privatePaths = att.reduce((acc, a) => {
-    const path = a.wnfs || a.floofs
-    if (!path) return acc
-    if (path.startsWith("/public")) return acc
-    return [ ...acc, wn.path.fromPosix(path) ]
-  }, [])
 
-  const permissions = { fs: { private: [ wn.path.root() ] }}
+  const publicPaths = []
+  const privatePaths = []
+
+  att.forEach(a => {
+    let posixPath = a.wnfs || a.floofs
+    if (!posixPath) return
+
+    // Before webnative v0.24.0 we assumed all permission paths to be directory paths
+    if (!posixPath.endsWith("/") && !canPermissionFiles) {
+      posixPath += "/"
+    }
+
+    const path = wn.path.fromPosix(posixPath)
+
+    if (wn.path.isBranch(wn.path.Branch.Public, path)) {
+      publicPaths.push(path)
+    } else if (wn.path.isBranch(wn.path.Branch.Private, path)) {
+      privatePaths.push(path)
+    }
+  })
+
+  const permissions = {
+    fs: {
+      private: [ wn.path.root() ],
+      public: [ wn.path.root() ]
+    }
+  }
 
   let fs
   let madeFsChanges = false
@@ -333,6 +356,7 @@ async function linkApp({
     fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
   } else {
     fs = await freshFileSystem({ permissions })
+    madeFsChanges = true
   }
 
   // Ensure all necessary filesystem parts
@@ -345,15 +369,12 @@ async function linkApp({
     issuer
   })
 
-  // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
-  if (!canPermissionFiles) await backwardsCompatUcan(fsUcan)
-
-  let fsSecrets = await privatePaths.reduce(async (promise, path) => {
+  await [...publicPaths, ...privatePaths].reduce(async (promise, path) => {
     const acc = await promise
     const pathExists = await fs.exists(path)
 
     if (!pathExists) {
-      if (!canPermissionFiles || wn.path.isDirectory(path)) {
+      if (wn.path.isDirectory(path)) {
         await fs.mkdir(path, { localOnly: true })
       } else {
         await fs.write(path, "", { localOnly: true })
@@ -361,7 +382,15 @@ async function linkApp({
       madeFsChanges = true
     }
 
-    const posixPath = wn.path.toPosix(path)
+  }, Promise.resolve())
+
+  // Backwards compatibility for UCAN encoding issue with proof with SDK version < 0.24
+  if (!canPermissionFiles) await backwardsCompatUcan(fsUcan)
+
+  // Filesystem secrets
+  let fsSecrets = await privatePaths.reduce(async (promise, path) => {
+    const acc = await promise
+    const posixPath = wn.path.toPosix(path, { absolute: true })
     const adjustedPath = canPermissionFiles
       ? posixPath
       : posixPath.replace(/\/$/, "")
@@ -417,9 +446,11 @@ async function linkApp({
   })
 
   // Add to ipfs
-  let cid
+  let cid = null
 
-  if (sharedRepo) {
+  if (keyInSessionStorage) {
+    sessionStorage.setItem("encrypted-secrets", classified)
+  } else if (sharedRepo) {
     cid = await webnative.ipfs.add(classified).then(r => r.cid)
   } else {
     await fs.write(SESSION_PATH, classified)
@@ -628,7 +659,8 @@ async function publishOnChannel([ maybeUsername, subject, data ]) {
         issuer: await wn.did.ucan(),
         audience: data.didThrowaway,
         lifetimeInSeconds: 60 * 5, // 5 minutes
-        facts: [{ sessionKey }]
+        facts: [{ sessionKey }],
+        potency: null
       })
 
       // Encode & encrypt UCAN
