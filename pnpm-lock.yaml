@@ -3,7 +3,7 @@ dependencies:
   ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
   ipfs-message-port-server: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   localforage: 1.9.0
-  webnative: 0.24.2-alpha-2
+  webnative: 0.25.1
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
   esbuild: 0.8.2
@@ -6528,7 +6528,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative/0.24.2-alpha-2:
+  /webnative/0.25.1:
     dependencies:
       base58-universal: 1.0.0
       borc: 2.1.2
@@ -6547,7 +6547,7 @@ packages:
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-TY2603grSzUwSsRKBIofn5/A9Jh3xtBwhk2uxiio14SAtH4vwSa2K4xXVEjBM89MfuqAZCReKTWXpioMXaQeIg==
+      integrity: sha512-rESavRygvARpa9QJV6Rsh+UW8H/3J9peI0K/JZE1K5jsOzW3IDZGPxaHDcnDRDPVa6J8U6XDB2wzmUVbAavYYQ==
   /whatwg-fetch/3.6.2:
     dev: true
     resolution:
@@ -6939,6 +6939,6 @@ specifiers:
   quicktype: 'https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz'
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.24.2-alpha-2
+  webnative: 0.25.1
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
