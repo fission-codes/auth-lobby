@@ -70,9 +70,10 @@ view context model =
                         |> Maybe.withDefault (originLabel context)
                     )
           in
-          if hasResources then
-            Html.div
-                [ T.mt_10 ]
+          Html.div
+            [ T.mt_10 ]
+          <|
+            if hasResources then
                 [ Html.text "Allow "
                 , label
 
@@ -89,19 +90,15 @@ view context model =
                 , Html.text "?"
                 ]
 
-          else if hasRawResources then
-            Html.div
-                [ T.mt_10 ]
+            else if hasRawResources then
                 [ Html.text "Allow "
                 , label
 
                 --
-                , Html.text " access to the following resouces?"
+                , Html.text " access to the following resources?"
                 ]
 
-          else
-            Html.div
-                [ T.mt_10 ]
+            else
                 [ Html.text "Allow "
                 , label
                 , Html.text " to authenticate with this account?"

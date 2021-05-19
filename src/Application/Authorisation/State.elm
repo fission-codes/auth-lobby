@@ -86,8 +86,7 @@ allow model =
                 , lifetimeInSeconds = context.lifetimeInSeconds
                 , keyInSessionStorage = context.keyInSessionStorage
                 , raw =
-                    context.raw
-                        |> Maybe.unwrap "[]" (Result.unpack identity identity)
+                    Maybe.unwrap "[]" (Result.unpack identity identity) context.raw
 
                 -- TODO: Remove backwards compatibility
                 , sharedRepo = context.sharedRepo
