@@ -11,12 +11,14 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Icons
+import Json.Print
 import List.Ext as List
 import List.Extra as List
 import Loading
 import Maybe.Extra as Maybe
 import Radix exposing (..)
 import RemoteData exposing (RemoteData(..))
+import Result.Extra as Result
 import Styling as S
 import Tailwind as T
 import Time
@@ -51,6 +53,9 @@ view context model =
                     || not (List.isEmpty context.publicPaths)
                     || not (List.isEmpty context.web)
 
+            hasRawResources =
+                Maybe.isJust context.raw
+
             label =
                 Html.span
                     [ T.font_semibold
@@ -65,9 +70,10 @@ view context model =
                         |> Maybe.withDefault (originLabel context)
                     )
           in
-          if hasResources then
-            Html.div
-                [ T.mt_10 ]
+          Html.div
+            [ T.mt_10 ]
+          <|
+            if hasResources then
                 [ Html.text "Allow "
                 , label
 
@@ -84,9 +90,15 @@ view context model =
                 , Html.text "?"
                 ]
 
-          else
-            Html.div
-                [ T.mt_10 ]
+            else if hasRawResources then
+                [ Html.text "Allow "
+                , label
+
+                --
+                , Html.text " access to the following resources?"
+                ]
+
+            else
                 [ Html.text "Allow "
                 , label
                 , Html.text " to authenticate with this account?"
@@ -112,6 +124,8 @@ view context model =
                     (Resource.fileSystemPath Resource.Public)
                     context.publicPaths
                 )
+            |> List.prepend
+                [ Maybe.unwrap Html.nothing rawResource context.raw ]
             |> Html.ul
                 [ T.italic
                 , T.leading_snug
@@ -294,6 +308,17 @@ appNameLabel context =
     context.appFolder
         |> Maybe.andThen (String.split "/" >> List.getAt 1)
         |> Maybe.map (Html.text >> List.singleton)
+
+
+rawResource : Result String String -> Html Msg
+rawResource raw =
+    Result.unwrap
+        Resource.rawError
+        (\permissions ->
+            Json.Print.prettyString { indent = 2, columns = 40 } permissions
+                |> Result.unwrap Resource.rawError Resource.raw
+        )
+        raw
 
 
 warning : List (Html Msg) -> Html Msg

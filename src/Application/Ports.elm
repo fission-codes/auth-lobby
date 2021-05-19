@@ -34,6 +34,7 @@ port linkApp :
     , didExchange : String
     , lifetimeInSeconds : Int
     , keyInSessionStorage : Bool
+    , raw : String
 
     -- TODO: Remove backwards compatibility
     , sharedRepo : Bool

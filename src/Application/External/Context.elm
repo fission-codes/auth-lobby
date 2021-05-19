@@ -19,6 +19,7 @@ import Url exposing (Url)
 import Url.Builder
 import Url.Parser as Url exposing (..)
 import Url.Parser.Query as Query
+import UrlBase64
 
 
 
@@ -33,6 +34,7 @@ type alias Context =
     , newUser : Maybe Bool
     , privatePaths : List String
     , publicPaths : List String
+    , raw : Maybe (Result String String)
     , redirectTo : Url
     , redirectToProtocol : String
     , sdkVersion : Maybe Semver.Version
@@ -92,6 +94,7 @@ extractFromUrl url =
                         , newUser = c.newUser
                         , privatePaths = c.privatePaths
                         , publicPaths = c.publicPaths
+                        , raw = c.raw
                         , redirectTo = redirectTo
                         , redirectToProtocol = redirectToProtocol
                         , sdkVersion = c.sdkVersion
@@ -276,7 +279,7 @@ apply argParser funcParser =
 
 queryStringParser =
     Query.map
-        (\fol app pri pub lif new sdk sha ->
+        (\fol app pri pub raw lif new sdk sha ->
             Maybe.map3
                 (\didExchange didWrite red ->
                     let
@@ -302,6 +305,16 @@ queryStringParser =
 
                         sdkVersion =
                             Maybe.andThen Semver.parse sdk
+
+                        decodedRaw =
+                            Maybe.map
+                                (UrlBase64.decode
+                                    (\base64str ->
+                                        Result.fromMaybe "[]" <|
+                                            Base64.toString base64str
+                                    )
+                                )
+                                raw
                     in
                     { appFolder = fol
                     , didExchange = didExchange
@@ -310,6 +323,7 @@ queryStringParser =
                     , newUser = Maybe.map (String.toLower >> (==) "t") new
                     , privatePaths = confirmPaths pri
                     , publicPaths = confirmPaths pub
+                    , raw = decodedRaw
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
                     , sdkVersion = sdkVersion
@@ -339,6 +353,7 @@ queryStringParser =
         |> apply (Query.custom "app" identity)
         |> apply (Query.custom "privatePath" identity)
         |> apply (Query.custom "publicPath" identity)
+        |> apply (Query.string "raw")
         -- Optional, pt. 2
         |> apply (Query.int "lifetimeInSeconds")
         |> apply (Query.string "newUser")

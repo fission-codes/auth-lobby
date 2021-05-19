@@ -1,8 +1,9 @@
-module Authorisation.Suggest.Resource exposing (FileSystemRoot(..), application, applicationFolder, custom, everything, fileSystemPath)
+module Authorisation.Suggest.Resource exposing (FileSystemRoot(..), application, applicationFolder, custom, everything, fileSystemPath, raw, rawError)
 
 import FeatherIcons
 import Html exposing (Html)
 import Icons
+import Json.Print
 import Radix exposing (..)
 import Tailwind as T
 
@@ -79,6 +80,27 @@ custom key value =
             [ Html.text (key ++ ": ")
             , Html.strong [] [ Html.text value ]
             ]
+        ]
+
+
+raw : String -> Html Msg
+raw permissions =
+    rawResource
+        [ rawLabel
+            [ resourceIcon FeatherIcons.lock
+            , Html.text "Additional resources requested"
+            ]
+        , Html.pre
+            []
+            [ Html.text permissions ]
+        ]
+
+
+rawError : Html Msg
+rawError =
+    resource
+        [ resourceIcon FeatherIcons.alertTriangle
+        , Html.text "Invalid resource request. This request will be ignored."
         ]
 
 
@@ -165,6 +187,47 @@ resourceItem additionalClasses nodes =
         [ Html.div
             [ T.flex
             , T.items_center
+            , T.px_4
+            , T.py_5
+            ]
+            nodes
+        ]
+
+
+rawLabel nodes =
+    Html.div
+        [ T.flex
+        , T.items_center
+        ]
+        nodes
+
+
+rawResource nodes =
+    Html.div
+        [ T.bg_white
+        , T.border_b
+        , T.border_black
+        , T.border_opacity_05
+
+        --
+        , T.first__pt_px
+        , T.first__rounded_t_md
+        , T.last__border_transparent
+        , T.last__rounded_b_md
+
+        -- Dark mode
+        ------------
+        , T.dark__bg_darkness_below
+        , T.dark__border_white
+        , T.dark__border_opacity_025
+        ]
+        [ Html.div
+            [ T.flex
+            , T.flex_col
+            , T.justify_center
+            , T.overflow_x_auto
+            , T.space_y_3
+            , T.space_x_6
             , T.px_4
             , T.py_5
             ]

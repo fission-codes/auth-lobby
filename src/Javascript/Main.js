@@ -4,6 +4,7 @@
 
 */
 
+
 const wn = webnative
 
 let app
@@ -254,6 +255,7 @@ async function linkApp({
   oldFlow,
   sharedRepo,
   keyInSessionStorage,
+  raw 
 }) {
   const audience = didWrite
   const issuer = await wn.did.write()
@@ -266,6 +268,8 @@ async function linkApp({
     const [key, value] = a.resource
     return { [key]: value, "cap": a.capability }
   })
+
+  const parsedRaw = raw && raw !== null ? JSON.parse(raw) : []
 
   // TODO: Waiting on API changes
   // const ucanPromise = wn.ucan.build({
@@ -295,6 +299,19 @@ async function linkApp({
 
     return wn.ucan.encode(ucan)
   })
+  .concat(
+    parsedRaw.map(async a => {
+      const ucan = await wn.ucan.build({
+        potency: a.ptc,
+        resource: a.rsc,
+        expiration: a.exp,
+        proof,
+        audience,
+        issuer,
+      })
+      return wn.ucan.encode(ucan)
+    })
+  )
 
   ucans = await Promise.all(ucans)
   ucans = ucans.filter(a => a)

@@ -11,6 +11,7 @@ import Maybe.Extra as Maybe
 import Ports
 import Radix exposing (..)
 import RemoteData
+import Result.Extra as Result
 import Return exposing (return)
 import Semver
 import Ucan
@@ -84,6 +85,8 @@ allow model =
                 , didExchange = context.didExchange
                 , lifetimeInSeconds = context.lifetimeInSeconds
                 , keyInSessionStorage = context.keyInSessionStorage
+                , raw =
+                    Maybe.unwrap "[]" (Result.unpack identity identity) context.raw
 
                 -- TODO: Remove backwards compatibility
                 , sharedRepo = context.sharedRepo
