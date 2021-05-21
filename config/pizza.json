@@ -1,0 +1,7 @@
+{
+  "API_ENDPOINT": "https://matheus23.fission.pizza",
+  "DATA_ROOT_DOMAIN": "fission.team",
+
+  "RELAY": "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw",
+  "SIGNALING_ADDR": "/dns4/webrtc.runfission.com/tcp/443/wss/p2p-webrtc-star/"
+}
