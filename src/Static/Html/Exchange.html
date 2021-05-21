@@ -8,7 +8,7 @@
 
   <script>
       window.addEventListener("message", event => {
-        // make sure the message is ment for us
+        // make sure the message is meant for us
         if (event.data && event.data.webnative == null) return
         const secretsKey = event.data && event.data.didExchange ?
           `encrypted-secrets-for-${event.data.didExchange}` :
