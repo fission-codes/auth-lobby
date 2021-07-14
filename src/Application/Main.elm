@@ -109,6 +109,14 @@ init flags url navKey =
                 |> Maybe.map (Theme.Url.fetch flags.apiDomain)
                 |> Maybe.withDefault Cmd.none
             )
+        |> Return.command
+            (case String.toLower url.path of
+                "reset" ->
+                    Nav.load "/reset/"
+
+                _ ->
+                    Cmd.none
+            )
 
 
 determineInitialPage : Flags -> Url -> External.Context.ParsedContext -> Page

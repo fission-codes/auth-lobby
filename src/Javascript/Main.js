@@ -255,7 +255,7 @@ async function linkApp({
   oldFlow,
   sharedRepo,
   keyInSessionStorage,
-  raw 
+  raw
 }) {
   const audience = didWrite
   const issuer = await wn.did.write()
@@ -1074,6 +1074,8 @@ function copyToClipboard(text) {
 function makeBase64UrlSafe(base64) {
   return base64.replace(/\//g, "_").replace(/\+/g, "-").replace(/=+$/, "")
 }
+
+
 
 // LOGGING
 // =======
