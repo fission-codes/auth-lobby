@@ -1,6 +1,7 @@
 port module Ports exposing (..)
 
 import Authorisation.Suggest.Params as Suggest
+import Authorisation.Suggest.Progress exposing (ProgressUpdate)
 import Json.Decode as Json
 
 
@@ -83,10 +84,13 @@ port gotLinked : ({ username : String } -> msg) -> Sub msg
 port gotLinkAppError : (String -> msg) -> Sub msg
 
 
+port gotLinkAppParams : (Suggest.Params -> msg) -> Sub msg
+
+
+port gotLinkAppProgress : (ProgressUpdate -> msg) -> Sub msg
+
+
 port gotLinkExchangeError : (String -> msg) -> Sub msg
-
-
-port gotUcansForApplication : (Suggest.Params -> msg) -> Sub msg
 
 
 port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg

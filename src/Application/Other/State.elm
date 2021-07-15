@@ -3,11 +3,13 @@ module Other.State exposing (..)
 import Http
 import Json.Decode as Decode
 import Ports
-import Radix exposing (Manager)
+import Radix exposing (..)
 import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
+import Task
 import Theme
 import Theme.Defaults
+import Time
 
 
 
@@ -29,6 +31,11 @@ decodeTheme json model =
         |> RemoteData.fromResult
         |> (\r -> { model | theme = r })
         |> Return.singleton
+
+
+getCurrentTime : (Time.Posix -> Msg) -> Manager
+getCurrentTime msg model =
+    return model (Task.perform msg Time.now)
 
 
 gotThemeViaHttp : Result Http.Error String -> Manager

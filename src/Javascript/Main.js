@@ -251,7 +251,7 @@ async function linkApp({
   attenuation,
   lifetimeInSeconds,
 
-  // webnative version-specific feature flags
+  // Webnative version-specific feature flags
   oldFlow,
   sharedRepo,
   keyInSessionStorage,
@@ -317,6 +317,11 @@ async function linkApp({
   ucans = ucans.filter(a => a)
 
   // Load, or create, filesystem
+  app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Resolving"
+  })
+
   const username = await localforage.getItem("usedUsername")
   const dataRoot = await wn.dataRoot.lookup(username)
 
@@ -351,6 +356,11 @@ async function linkApp({
   let fs
   let madeFsChanges = false
 
+  app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Loading"
+  })
+
   if (dataRoot) {
     await wn.lobby.storeFileSystemRootKey(await myReadKey())
     fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
@@ -369,7 +379,13 @@ async function linkApp({
     issuer
   })
 
-  await [...publicPaths, ...privatePaths].reduce(async (promise, path) => {
+  const paths = [...publicPaths, ...privatePaths]
+  if (paths.length) app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Checking"
+  })
+
+  await paths.reduce(async (promise, path) => {
     const acc = await promise
     const pathExists = await fs.exists(path)
 
@@ -388,6 +404,11 @@ async function linkApp({
   if (!canPermissionFiles) await backwardsCompatUcan(fsUcan)
 
   // Filesystem secrets
+  app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Gathering"
+  })
+
   let fsSecrets = await privatePaths.reduce(async (promise, path) => {
     const acc = await promise
     const posixPath = wn.path.toPosix(path, { absolute: true })
@@ -408,6 +429,11 @@ async function linkApp({
   }, Promise.resolve({}))
 
   // Session key
+  app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Encrypting"
+  })
+
   const sessionKey = await crypto.subtle.generateKey(
     {
       name: "AES-GCM",
@@ -445,8 +471,13 @@ async function linkApp({
     sessionKey: await ks.encrypt(sessionKeyBase64, publicKey)
   })
 
-  // Add to ipfs
+  // Store classified data
   let cid = null
+
+  app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Storing"
+  })
 
   if (keyInSessionStorage) {
     sessionStorage.setItem("encrypted-secrets", classified) // backwards compatibility
@@ -465,6 +496,11 @@ async function linkApp({
 
   // Update user's data root if need be
   if (madeFsChanges) {
+    app.ports.gotLinkAppProgress.send({
+      time: Date.now(),
+      progress: "Updating"
+    })
+
     const rootCid = await fs.root.put()
     const res = await wn.dataRoot.update(rootCid, wn.ucan.encode(fsUcan))
     if (!res.success) return app.ports.gotLinkAppError.send("Failed to update data root 😰")
@@ -485,11 +521,11 @@ async function linkApp({
     const plainTextReadKey = await myReadKey()
     const readKey = await ks.encrypt(plainTextReadKey, publicKey).then(makeBase64UrlSafe)
 
-    app.ports.gotUcansForApplication.send({ cid: null, readKey, ucan: wn.ucan.encode(oldUcan) })
+    app.ports.gotLinkAppParams.send({ cid: null, readKey, ucan: wn.ucan.encode(oldUcan) })
 
   } else {
     // Send everything back to Elm
-    app.ports.gotUcansForApplication.send({ cid, readKey: null, ucan: null })
+    app.ports.gotLinkAppParams.send({ cid, readKey: null, ucan: null })
 
   }
 }
