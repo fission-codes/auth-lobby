@@ -130,7 +130,7 @@ fileSystemPath root path =
                 [ resourceIcon FeatherIcons.hardDrive
                 , Html.span
                     []
-                    [ Html.strong [] [ Html.text path ]
+                    [ Html.strong [] [ Html.text (removeLeadingSlash path) ]
                     , Html.text " in your "
                     , Html.text <|
                         case root of
@@ -146,6 +146,14 @@ fileSystemPath root path =
 
 
 -- ㊙️
+
+
+removeLeadingSlash string =
+    if String.startsWith "/" string then
+        String.dropLeft 1 string
+
+    else
+        string
 
 
 resource =

@@ -12,6 +12,7 @@ import Channel.State as Channel
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import Debouncing
 import External.Context
+import Flow
 import Maybe.Extra as Maybe
 import Other.State as Other
 import Page exposing (Page)
@@ -94,7 +95,7 @@ init flags url navKey =
     -- Remote Data
     -----------------------------------------
     , reCreateAccount = RemoteData.NotAsked
-    , reLinkApp = RemoteData.NotAsked
+    , reLinkApp = Flow.NotStarted
     }
         |> -- If authenticated, wait for incoming linking requests.
            (case flags.usedUsername of
@@ -108,6 +109,14 @@ init flags url navKey =
             (maybeThemePointer
                 |> Maybe.map (Theme.Url.fetch flags.apiDomain)
                 |> Maybe.withDefault Cmd.none
+            )
+        |> Return.command
+            (case String.toLower url.path of
+                "reset" ->
+                    Nav.load "/reset/"
+
+                _ ->
+                    Cmd.none
             )
 
 
@@ -155,8 +164,8 @@ update msg =
         -----------------------------------------
         -- Authorisation
         -----------------------------------------
-        AllowAuthorisation ->
-            Authorisation.allow
+        AllowAuthorisation a ->
+            Authorisation.allow a
 
         DenyAuthorisation ->
             Authorisation.deny
@@ -164,8 +173,11 @@ update msg =
         GotLinkAppError a ->
             Authorisation.gotLinkAppError a
 
-        GotUcansForApplication a ->
-            Authorisation.gotUcansForApplication a
+        GotLinkAppParams a ->
+            Authorisation.gotLinkAppParams a
+
+        GotLinkAppProgress a ->
+            Authorisation.gotLinkAppProgress a
 
         -----------------------------------------
         -- Channel
@@ -248,6 +260,9 @@ update msg =
         CopyToClipboard a ->
             Other.copyToClipboard a
 
+        GetCurrentTime a ->
+            Other.getCurrentTime a
+
         GotThemeViaHttp a ->
             Other.gotThemeViaHttp a
 
@@ -270,8 +285,9 @@ subscriptions _ =
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
         , Ports.gotLinked GotLinked
         , Ports.gotLinkAppError GotLinkAppError
+        , Ports.gotLinkAppParams GotLinkAppParams
+        , Ports.gotLinkAppProgress GotLinkAppProgress
         , Ports.gotLinkExchangeError GotLinkExchangeError
-        , Ports.gotUcansForApplication GotUcansForApplication
         , Ports.gotUsernameAvailability GotUsernameAvailability
 
         -----------------------------------------

@@ -1,9 +1,11 @@
 module Authorisation.State exposing (..)
 
 import Authorisation.Suggest.Params as Suggest
+import Authorisation.Suggest.Progress as Progress exposing (..)
 import Common exposing (ifThenElse)
 import Dict
 import External.Context as External
+import Flow exposing (..)
 import Json.Decode
 import Json.Encode as Json
 import List.Ext as List
@@ -14,6 +16,7 @@ import RemoteData
 import Result.Extra as Result
 import Return exposing (return)
 import Semver
+import Time
 import Ucan
 
 
@@ -21,8 +24,8 @@ import Ucan
 -- 📣
 
 
-allow : Manager
-allow model =
+allow : Time.Posix -> Manager
+allow currentTime model =
     case model.externalContext of
         RemoteData.Success context ->
             let
@@ -73,7 +76,12 @@ allow model =
                         resources
             in
             ( { model
-                | reLinkApp = RemoteData.Loading
+                | reLinkApp =
+                    Flow.InProgress
+                        { progress = Progress.Starting
+                        , progressTime = Time.posixToMillis currentTime
+                        , startTime = Time.posixToMillis currentTime
+                        }
               }
             , Ports.linkApp
                 { attenuation = attenuation
@@ -107,11 +115,11 @@ deny model =
 
 gotLinkAppError : String -> Manager
 gotLinkAppError err model =
-    Return.singleton { model | reLinkApp = RemoteData.Failure err }
+    Return.singleton { model | reLinkApp = Flow.Failure err }
 
 
-gotUcansForApplication : Suggest.Params -> Manager
-gotUcansForApplication { cid, readKey, ucan } model =
+gotLinkAppParams : Suggest.Params -> Manager
+gotLinkAppParams { cid, readKey, ucan } model =
     let
         username =
             Maybe.withDefault "" model.usedUsername
@@ -145,3 +153,19 @@ gotUcansForApplication { cid, readKey, ucan } model =
                 |> Ok
             )
         |> return model
+
+
+gotLinkAppProgress : ProgressUpdate -> Manager
+gotLinkAppProgress update model =
+    case ( model.reLinkApp, Progress.fromString update.progress ) of
+        ( InProgress progress, Just newProgress ) ->
+            { progress = newProgress
+            , progressTime = update.time
+            , startTime = progress.startTime
+            }
+                |> InProgress
+                |> (\flow -> { model | reLinkApp = flow })
+                |> Return.singleton
+
+        _ ->
+            Return.singleton model

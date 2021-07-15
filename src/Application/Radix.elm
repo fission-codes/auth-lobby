@@ -11,15 +11,18 @@ import Account.Creation.Context as Creation
 import Account.Linking.Context as Linking
 import Account.Linking.Exchange as Linking
 import Authorisation.Suggest.Params as Suggest
+import Authorisation.Suggest.Progress exposing (ProgressUpdate, TimedProgress)
 import Browser
 import Browser.Navigation as Nav
 import Debouncer.Messages as Debouncer exposing (Debouncer)
 import External.Context as External
+import Flow exposing (Flow)
 import Http
 import Json.Decode as Json
 import Page exposing (Page)
 import RemoteData exposing (RemoteData)
 import Theme exposing (Theme)
+import Time
 import Url exposing (Url)
 
 
@@ -44,10 +47,10 @@ type alias Model =
     , usernameAvailabilityDebouncer : Debouncer Msg
 
     -----------------------------------------
-    -- Remote Data
+    -- Remote Data & Flows
     -----------------------------------------
     , reCreateAccount : RemoteData String ()
-    , reLinkApp : RemoteData String ()
+    , reLinkApp : Flow String TimedProgress
     }
 
 
@@ -60,10 +63,11 @@ type Msg
       -----------------------------------------
       -- Authorisation
       -----------------------------------------
-    | AllowAuthorisation
+    | AllowAuthorisation Time.Posix
     | DenyAuthorisation
     | GotLinkAppError String
-    | GotUcansForApplication Suggest.Params
+    | GotLinkAppParams Suggest.Params
+    | GotLinkAppProgress ProgressUpdate
       -----------------------------------------
       -- Create
       -----------------------------------------
@@ -103,6 +107,7 @@ type Msg
       -- 🧿 Other things
       -----------------------------------------
     | CopyToClipboard String
+    | GetCurrentTime (Time.Posix -> Msg)
     | GotThemeViaHttp (Result Http.Error String)
     | GotThemeViaIpfs (Result Http.Error String)
     | Leave
