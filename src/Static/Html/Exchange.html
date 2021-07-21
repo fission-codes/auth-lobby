@@ -7,7 +7,27 @@
 <body>
 
   <script>
-      window.addEventListener("message", event => {
+      window.addEventListener("message", async event => {
+        // we need to support state partitioning - https://developer.mozilla.org/en-US/docs/Web/Privacy/State_Partitioning
+        // a spec meant to prevent tracking. It means that each site in a
+        // browser gets its own storage bucket for caches, indexedDB,
+        // sessionStorage, localStorage and more. Thus, we wouldn't be able to
+        // retrieve our secrets from within an iframe on other origins.
+        // To get back the storage bucket of where this html is served at,
+        // we need to request it.
+        if (document.hasStorageAccess && document.requestStorageAccess) {
+          console.log("State Partitioning support in this browser detected!")
+          if (!await document.hasStorageAccess()) {
+            console.log("No access to storage yet. Requesting.")
+            try {
+              await document.requestStorageAccess()
+              console.log("Access to storage has been granted.")
+            } catch (e) {
+              console.error(`Can't exchange secrets with auth lobby due to state partitioning (read more at https://developer.mozilla.org/en-US/docs/Web/Privacy/State_Partitioning). Try disabling privacy-protecting features for this website or somehow enable storage access for this page. If you see this issue, please tell us about it: https://fission.codes/support/.`, e)
+            }
+          }
+        }
+
         // make sure the message is meant for us
         if (event.data && event.data.webnative == null) return
         const secretsKey = event.data && event.data.didExchange ?
