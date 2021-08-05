@@ -44,7 +44,7 @@ view context model =
                 , S.subtleFootNote
                     [ Html.text "Authenticating with "
                     , Html.span
-                        [ T.border_b, T.border_gray_600 ]
+                        [ T.border_b, T.border_base_200 ]
                         [ Html.text context.username ]
                     ]
                 ]
@@ -146,14 +146,14 @@ exchangeView fallbackView maybeExchange model =
                         [ E.onClick (CancelLink { onBothSides = True })
 
                         --
-                        , T.bg_gray_400
+                        , T.bg_base_400
                         , T.flex
                         , T.items_center
                         , T.ml_3
 
                         -- Dark mode
                         ------------
-                        , T.dark__bg_gray_200
+                        , T.dark__bg_base_600
                         ]
                         [ S.buttonIcon FeatherIcons.x
                         , Html.text "Cancel"
@@ -265,7 +265,7 @@ numberDisplay numbers =
             (\n ->
                 Html.div
                     [ T.border_2
-                    , T.border_gray_600
+                    , T.border_base_200
                     , T.leading_normal
                     , T.mr_2
                     , T.pt_px
@@ -277,7 +277,7 @@ numberDisplay numbers =
 
                     -- Dark mode
                     ------------
-                    , T.dark__border_darkness_above
+                    , T.dark__border_base_800
 
                     -- Responsive
                     -------------
@@ -298,11 +298,11 @@ numberDisplay numbers =
             , T.pt_1
             , T.not_italic
             , T.text_4xl
-            , T.text_gray_200
+            , T.text_base_600
 
             -- Dark mode
             ------------
-            , T.dark__text_gray_400
+            , T.dark__text_base_400
 
             -- Responsive
             -------------

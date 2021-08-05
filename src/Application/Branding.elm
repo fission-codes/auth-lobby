@@ -39,14 +39,14 @@ logo { theme, usedUsername, version } =
         , T.mx_auto
         , T.px_6
         , T.relative
-        , T.text_gray_200
+        , T.text_base_600
 
         --
         , T.sm__px_0
 
         -- Dark mode
         ------------
-        , T.dark__text_gray_500
+        , T.dark__text_base_300
         ]
         [ Html.img
             [ A.attribute "style" (Maybe.withDefault "" themeLogo.styles)
@@ -72,47 +72,6 @@ logo { theme, usedUsername, version } =
             , T.dark__block
             ]
             []
-
-        -----------------------------------------
-        -- Auth tag
-        -----------------------------------------
-        , if isDefaultLogo then
-            Html.div
-                [ A.style "font-size" "10px"
-                , A.style "padding" "3px 4px 2px 5px"
-                , A.title ("Version " ++ version)
-
-                --
-                , T.absolute
-                , T.bg_gray_200
-                , T.font_display
-                , T.font_medium
-                , T.hidden
-                , T.neg_mr_1
-                , T.opacity_90
-                , T.right_0
-                , T.rounded
-                , T.top_0
-                , T.text_xs
-                , T.text_white
-                , T.tracking_widest
-                , T.translate_x_10
-                , T.transform
-                , T.uppercase
-
-                --
-                , T.sm__block
-
-                -- Dark mode
-                ------------
-                , T.dark__bg_gray_500
-                , T.dark__text_darkness_above
-                ]
-                [ Html.text "Auth"
-                ]
-
-          else
-            Html.text ""
         ]
 
 

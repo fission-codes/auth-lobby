@@ -1,4 +1,4 @@
-import * as kit from "fission-kit"
+import * as kit from "@fission-suite/kit"
 import defaultTheme from "tailwindcss/defaultTheme.js"
 
 

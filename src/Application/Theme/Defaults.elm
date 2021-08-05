@@ -40,7 +40,7 @@ introduction =
 
 logo : Theme.Logo
 logo =
-    { darkScheme = "/images/logo-dark-scheme-textonly.svg"
-    , lightScheme = "/images/logo-light-scheme-textonly.svg"
-    , styles = Nothing
+    { darkScheme = "/images/logo-light.svg"
+    , lightScheme = "/images/logo-dark.svg"
+    , styles = Just "opacity: 0.9"
     }

@@ -83,8 +83,8 @@ So for example:
 {
   "introduction": "Learn more about Fission on our [website](https://fission.codes).",
   "logo": {
-    "dark-scheme": "https://auth.fission.codes/images/logo-dark-scheme-textonly.svg",
-    "light-scheme": "https://auth.fission.codes/images/logo-light-scheme-textonly.svg",
+    "dark-scheme": "https://auth.fission.codes/images/logo-light-colored.svg",
+    "light-scheme": "https://auth.fission.codes/images/logo-dark-colored.svg",
     "styles": "width: 120px; padding-bottom: 10px"
   }
 }

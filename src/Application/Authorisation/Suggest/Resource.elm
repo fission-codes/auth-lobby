@@ -162,7 +162,7 @@ resource =
 
         -- Dark mode
         ------------
-        , T.dark__bg_darkness_below
+        , T.dark__bg_base_950
         ]
 
 
@@ -225,7 +225,7 @@ rawResource nodes =
 
         -- Dark mode
         ------------
-        , T.dark__bg_darkness_below
+        , T.dark__bg_base_950
         , T.dark__border_white
         , T.dark__border_opacity_025
         ]

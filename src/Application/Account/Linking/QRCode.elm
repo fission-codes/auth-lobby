@@ -31,7 +31,7 @@ view url maybeUsername =
         --
         , T.border_2
         , T.border_dashed
-        , T.border_gray_500
+        , T.border_base_300
         , T.cursor_pointer
         , T.inline_block
         , T.italic
@@ -39,12 +39,12 @@ view url maybeUsername =
         , T.opacity_80
         , T.p_3
         , T.rounded_md
-        , T.text_darkness
+        , T.text_base_900
 
         -- Dark mode
         ------------
-        , T.dark__border_gray_200
-        , T.dark__text_gray_900
+        , T.dark__border_base_600
+        , T.dark__text_base_25
         ]
         [ urlWithParams
             |> QRCode.fromString

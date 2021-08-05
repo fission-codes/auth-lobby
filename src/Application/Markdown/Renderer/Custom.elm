@@ -17,12 +17,12 @@ default =
                     , A.title (Maybe.withDefault "" title)
 
                     --
-                    , T.text_gray_100
+                    , T.text_base_700
                     , T.underline
 
                     -- Dark mode
                     ------------
-                    , T.dark__text_gray_500
+                    , T.dark__text_base_300
                     ]
 
         -- Paragraph

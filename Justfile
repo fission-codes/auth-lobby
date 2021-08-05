@@ -60,7 +60,7 @@ workbox_config 		:= "workbox.config.cjs"
 
 @images:
 	echo "🌄  Copying images"
-	cp -RT node_modules/fission-kit/images/ {{dist_dir}}/images/
+	pnpx copy-fission-images {{dist_dir}}/images/
 	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
@@ -125,8 +125,7 @@ insert-version:
 	cp -RT {{src_dir}}/Static/Manifests/ {{dist_dir}}/
 	cp -RT {{src_dir}}/Static/Themes/ {{dist_dir}}/themes/
 
-	mkdir -p {{dist_dir}}/fonts/
-	cp node_modules/fission-kit/fonts/**/*.woff2 {{dist_dir}}/fonts/
+	pnpx copy-fission-fonts {{dist_dir}}/fonts/ --woff2
 
 
 @translate-schemas:

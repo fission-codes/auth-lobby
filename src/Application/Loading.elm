@@ -8,7 +8,7 @@ import Tailwind as T
 
 animation : { size : Int } -> Html msg
 animation =
-    animationWithAttributes [ T.text_gray_300 ]
+    animationWithAttributes [ T.text_base_500 ]
 
 
 animationWithAttributes : List (Html.Attribute msg) -> { size : Int } -> Html msg

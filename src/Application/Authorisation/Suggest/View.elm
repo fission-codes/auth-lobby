@@ -135,13 +135,13 @@ view context model =
                 , T.mx_auto
                 , T.rounded_md
                 , T.shadow
-                , T.text_gray_200
+                , T.text_base_600
                 , T.text_left
                 , T.text_sm
 
                 -- Dark mode
                 ------------
-                , T.dark__text_gray_400
+                , T.dark__text_base_400
                 ]
 
         -- Warnings
@@ -196,7 +196,7 @@ view context model =
                     Html.div
                         [ T.border
                         , T.border_dashed
-                        , T.border_gray_500
+                        , T.border_base_300
                         , T.border_opacity_60
                         , T.italic
                         , T.leading_loose
@@ -207,7 +207,7 @@ view context model =
 
                         -- Dark mode
                         ------------
-                        , T.dark__border_gray_200
+                        , T.dark__border_base_600
                         , T.dark__border_opacity_60
                         ]
                         [ Html.span
@@ -257,14 +257,14 @@ view context model =
                 , A.disabled isInProgress
 
                 --
-                , T.bg_gray_400
+                , T.bg_base_400
                 , T.items_center
                 , T.ml_3
                 , ifThenElse isInProgress T.hidden T.flex
 
                 -- Dark mode
                 ------------
-                , T.dark__bg_gray_200
+                , T.dark__bg_base_600
                 ]
                 [ S.buttonIcon FeatherIcons.x
                 , Html.text "No"
@@ -294,7 +294,7 @@ view context model =
                     [ S.subtleFootNote
                         [ Html.text "Logged in as "
                         , Html.span
-                            [ T.border_b, T.border_gray_600 ]
+                            [ T.border_b, T.border_base_200 ]
                             [ Html.text username ]
                         ]
                     ]
@@ -332,7 +332,7 @@ rawResource raw =
 warning : List (Html Msg) -> Html Msg
 warning nodes =
     Html.div
-        [ T.bg_yellow_tint
+        [ T.bg_marker_yellow_tint
         , T.flex
         , T.italic
         , T.items_center
@@ -345,12 +345,12 @@ warning nodes =
         , T.shadow_sm
         , T.text_left
         , T.text_sm
-        , T.text_yellow_shade
+        , T.text_marker_yellow_shade
 
         -- Dark mode
         ------------
-        , T.dark__bg_yellow_shade
-        , T.dark__text_yellow
+        , T.dark__bg_marker_yellow_shade
+        , T.dark__text_marker_yellow
         ]
         [ Icons.wrap
             [ T.align_middle

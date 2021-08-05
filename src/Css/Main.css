@@ -1,8 +1,8 @@
 @charset "UTF-8";
 
-@import "fission-kit/fonts/body/fontface.css";
-@import "fission-kit/fonts/display/fontface.css";
-@import "fission-kit/fonts/mono/fontface.css";
+@import "@fission-suite/kit/fonts/body/fontface.css";
+@import "@fission-suite/kit/fonts/display/fontface.css";
+@import "@fission-suite/kit/fonts/mono/fontface.css";
 
 @tailwind base;
 @tailwind components;
@@ -15,7 +15,7 @@ html {
 
 
 body {
-  @apply bg-gray-700 font-body h-screen text-gray-100;
+  @apply bg-base-100 font-body h-screen text-base-700;
   height: -webkit-fill-available;
   text-rendering: optimizeLegibility;
 }
@@ -23,7 +23,7 @@ body {
 
 @screen dark {
   body {
-    @apply bg-darkness text-gray-500;
+    @apply bg-base-900 text-base-300;
   }
 }
 
@@ -59,7 +59,7 @@ p.inline:not(:last-child):after {
 
 input::placeholder,
 textarea::placeholder {
-  @apply text-gray-400 opacity-75;
+  @apply text-base-400 opacity-75;
 }
 
 
@@ -77,14 +77,14 @@ textarea:user-invalid {
 
 input:focus,
 textarea:focus {
-  @apply border-gray-300;
+  @apply border-base-500;
 }
 
 
 @screen dark {
   input::placeholder,
   textarea::placeholder {
-    @apply text-gray-300 opacity-75;
+    @apply text-base-500 opacity-75;
   }
 
   input:user-invalid,

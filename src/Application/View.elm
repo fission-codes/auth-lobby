@@ -22,6 +22,8 @@ import Page
 import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
 import Styling as S
+import Svg
+import Svg.Attributes
 import Tailwind as T
 import Theme.Defaults
 
@@ -121,12 +123,12 @@ view_ model =
                         ]
                         [ Html.div
                             [ T.border_t
-                            , T.border_gray_600
+                            , T.border_base_200
                             , T.pt_5
 
                             -- Dark mode
                             ------------
-                            , T.dark__border_gray_100
+                            , T.dark__border_base_700
                             ]
                             [ Html.a
                                 [ A.href "https://fission.codes"
@@ -136,22 +138,19 @@ view_ model =
                                 , T.inline_flex
                                 , T.items_center
                                 , T.justify_center
-                                , T.text_gray_400
+                                , T.text_base_400
                                 , T.text_xs
                                 ]
                                 [ Html.span
                                     [ T.mr_px
                                     ]
                                     [ Html.text "Powered by" ]
-                                , Html.img
-                                    [ A.src "/images/badge-solid-faded.svg"
-                                    , A.width 14
-
-                                    --
+                                , Html.span
+                                    [ A.title "Fission"
                                     , T.inline_block
                                     , T.ml_1
                                     ]
-                                    []
+                                    [ fissionBadge ]
                                 ]
                             ]
                         ]
@@ -178,6 +177,20 @@ view_ model =
         |> List.singleton
 
 
+fissionBadge =
+    Svg.svg
+        [ Svg.Attributes.viewBox "0 0 640 640"
+        , Svg.Attributes.width "13"
+        ]
+        [ Svg.path
+            [ Svg.Attributes.fill "currentColor"
+            , Svg.Attributes.fillRule "evenodd"
+            , Svg.Attributes.d "m0 320a319.58 319.58 0 0 1 320-320c176.14 0 320 142.94 320 320a320 320 0 0 1 -640 0zm384.88 116c0 44.12 36.33 80.45 80.44 80.45 45 0 80.45-35.47 78.72-81.32 0-44.11-36.33-80.44-80.45-80.44-20.76 0-40.65 8.65-56.22 23.35-23.36-12.11-49.31-21.62-77-28.54 2.41-6.64 7.77-22.94 12.26-36.61 1.95-5.93 3.73-11.37 5-15.29a368.77 368.77 0 0 0 43.25 5.18c55.36 4.33 96-6.05 122.84-30.27s32-57.09 32-79.58c0-54.5-45-99.48-99.48-99.48h-.75c-5.59-.2-35.52-1.26-62.39 19.91-18.1 14.64-41.47 75.2-58.77 125.37-26-6.92-49.31-16.43-69.21-29.41v-5.19c0-44.11-36.33-80.45-80.44-80.45s-80.45 36.32-80.45 80.45 36.33 80.45 80.45 80.45c20.76 0 40.65-8.65 56.22-23.36 23.36 12.11 49.31 21.63 78.72 29.41-2.41 6.64-7.77 22.95-12.26 36.61-1.95 5.93-3.73 11.37-5 15.3a366.68 366.68 0 0 0 -43.25-5.19c-55.36-4.33-96 6-122.84 30.27s-32 57.09-32 79.58c0 54.5 45 99.48 99.48 99.48h5.19c11.24 0 35.46-1.73 58-19.89 18.17-14.71 41.52-75.26 58.82-125.43 26 6.92 49.31 16.43 69.21 29.41zm114.18-207.65c9.51-10.35 12.94-24.22 11.24-42.35-2.59-19.9-24.22-72.66-52.76-78.72q-23.35-5.19-46.71 33.74-18.16 37.62-44.12 106.4l23.36 2.58c55.36 3.43 91.69-3.49 108.99-21.65zm-275.95 160.89c-40.65 0-68.33 7.79-82.17 22.49-9.52 10.38-13 24.22-11.25 42.39 2.6 19.9 24.22 72.66 52.77 78.72q23.35 5.19 46.71-33.74 18.17-37.62 44.12-106.4l-23.36-2.59c-4.87 0-9.51-.23-14.05-.45-4.32-.21-8.54-.42-12.77-.42z"
+            ]
+            []
+        ]
+
+
 
 -- CHOOSE
 
@@ -185,11 +198,11 @@ view_ model =
 choose : Model -> Html Msg
 choose model =
     Html.div
-        [ T.text_gray_300
+        [ T.text_base_500
 
         -- Dark mode
         ------------
-        , T.dark__text_gray_400
+        , T.dark__text_base_400
         ]
         [ Branding.logo model
 
@@ -257,7 +270,7 @@ choose model =
 
             --
             , S.button
-                [ T.bg_gray_400
+                [ T.bg_base_400
                 , T.ml_3
 
                 --
@@ -268,7 +281,7 @@ choose model =
 
                 -- Dark mode
                 ------------
-                , T.dark__bg_gray_200
+                , T.dark__bg_base_600
                 ]
                 [ Html.text "Sign in" ]
             ]
@@ -323,7 +336,7 @@ authenticated username model =
 
                 --
                 , T.border_b
-                , T.border_gray_600
+                , T.border_base_200
                 , T.cursor_pointer
                 ]
                 [ Html.text "remove this device"
