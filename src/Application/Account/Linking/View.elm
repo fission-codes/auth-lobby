@@ -268,6 +268,7 @@ numberDisplay numbers =
                     , T.border_base_200
                     , T.leading_normal
                     , T.mr_2
+                    , T.opacity_90
                     , T.pt_px
                     , T.rounded_md
                     , T.w_12
@@ -287,7 +288,8 @@ numberDisplay numbers =
                     ]
             )
         |> Html.div
-            [ T.flex
+            [ T.antialiased
+            , T.flex
             , T.font_display
             , T.font_thin
             , T.justify_center

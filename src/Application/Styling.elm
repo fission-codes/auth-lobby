@@ -5,6 +5,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Icons
+import Kit.Components
 import Tailwind as T
 
 
@@ -49,43 +50,33 @@ iconSize =
 
 
 button : Node msg
-button =
-    buttonWithNode Html.button
-
-
-buttonIcon : FeatherIcons.Icon -> Html msg
-buttonIcon icon =
-    Icons.wrap [ T.mr_2 ] (FeatherIcons.withSize 16 icon)
-
-
-buttonLink : Node msg
-buttonLink =
-    buttonWithNode Html.a
-
-
-buttonWithNode : Node msg -> Node msg
-buttonWithNode node attributes =
-    attributes
-        |> List.append
-            [ T.antialiased
-            , T.appearance_none
-            , T.font_semibold
-            , T.leading_normal
-            , T.px_5
-            , T.py_3
-            , T.relative
-            , T.rounded
-            , T.text_sm
+button attributes nodes =
+    Kit.Components.button
+        Kit.Components.Normal
+        (List.append
+            [ T.justify_center
             , T.text_white
-            , T.tracking_wider
             , T.transition_colors
-            , T.uppercase
 
             --
             , default_transition_duration
             , default_transition_easing
             ]
-        |> node
+            attributes
+        )
+        [ Html.span
+            [ T.inline_flex
+            , T.items_center
+            , T.justify_center
+            , T.pt_px
+            ]
+            nodes
+        ]
+
+
+buttonIcon : FeatherIcons.Icon -> Html msg
+buttonIcon icon =
+    Icons.wrap [ T.mr_2 ] (FeatherIcons.withSize 16 icon)
 
 
 clickToCopy : String -> msg -> Html msg

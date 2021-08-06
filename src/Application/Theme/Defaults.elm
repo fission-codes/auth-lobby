@@ -42,5 +42,5 @@ logo : Theme.Logo
 logo =
     { darkScheme = "/images/logo-light.svg"
     , lightScheme = "/images/logo-dark.svg"
-    , styles = Just "opacity: 0.9"
+    , styles = Just "opacity: 0.85"
     }
