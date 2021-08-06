@@ -72,7 +72,7 @@ view context model =
                     )
           in
           Html.div
-            [ T.mt_10 ]
+            [ T.mt_8 ]
           <|
             if hasResources then
                 [ Html.text "Allow "
@@ -189,7 +189,7 @@ view context model =
         , Html.div
             [ T.flex
             , T.justify_center
-            , T.mt_10
+            , T.mt_8
             ]
             [ case model.reLinkApp of
                 InProgress progress ->
@@ -289,8 +289,7 @@ view context model =
         , case model.usedUsername of
             Just username ->
                 Html.div
-                    [ T.mt_10
-                    ]
+                    [ T.mt_8 ]
                     [ S.subtleFootNote
                         [ Html.text "Logged in as "
                         , Html.span

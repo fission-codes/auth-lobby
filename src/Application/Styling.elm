@@ -168,7 +168,7 @@ messageBlock attributes =
     attributes
         |> List.append
             [ T.max_w_lg
-            , T.mt_10
+            , T.mt_8
             , T.mx_auto
             , T.text_center
             ]

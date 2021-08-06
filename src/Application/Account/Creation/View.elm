@@ -125,7 +125,7 @@ form dataRootDomain maybeError context =
           in
           S.button
             [ T.block
-            , T.mt_6
+            , T.mt_8
             , T.w_full
 
             --

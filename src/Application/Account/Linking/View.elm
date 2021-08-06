@@ -217,7 +217,7 @@ form context =
         , S.button
             [ T.bg_purple
             , T.block
-            , T.mt_6
+            , T.mt_8
             , T.w_full
             ]
             [ Html.text "Link account" ]

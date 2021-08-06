@@ -118,7 +118,7 @@ view_ model =
                     Html.div
                         [ T.flex
                         , T.justify_center
-                        , T.mt_10
+                        , T.mt_8
                         , T.text_center
                         ]
                         [ Html.div
@@ -254,7 +254,7 @@ choose model =
             [ T.flex
             , T.items_center
             , T.justify_center
-            , T.mt_10
+            , T.mt_8
             , T.mx_auto
             ]
             [ S.button

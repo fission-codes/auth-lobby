@@ -1,5 +1,5 @@
 dependencies:
-  '@fission-suite/kit': 2.0.0
+  '@fission-suite/kit': 2.0.2
   ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
   ipfs-message-port-server: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   localforage: 1.9.0
@@ -941,7 +941,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-bvM7Qz6eKnJVFIn+1LPtjlBFPVN5jNDc1XmN15vWe7Q3DPBufWWsLiIvUu7xW87uTG6QoggpIDnUgLQvPheU+Q==
-  /@fission-suite/kit/2.0.0:
+  /@fission-suite/kit/2.0.2:
     dependencies:
       clsx: 1.1.1
       copyfiles: 2.4.1
@@ -951,7 +951,7 @@ packages:
     peerDependencies:
       react: ^17.0.2
     resolution:
-      integrity: sha512-laiqKXhiUtpGRvX8PDdmeCf2i1y7MYR6cNeMwjXiWJ5DKHPTvOxCS6xHjHLaG0fDP/6h206BgzjSn0XuZQMVqw==
+      integrity: sha512-YvPQS8/RrlyAy8aKxyqWDSy9L51AcwSeu0j/r7ajw40VLhZy8Np9vFEhK87k0PR2l1HR8ytI+tHzDQE3nVhbfg==
   /@fullhuman/postcss-purgecss/3.1.0-alpha.0_postcss@8.1.10:
     dependencies:
       postcss: 8.1.10
@@ -2056,7 +2056,7 @@ packages:
       integrity: sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
   /copyfiles/2.4.1:
     dependencies:
-      glob: 7.1.6
+      glob: 7.1.7
       minimatch: 3.0.4
       mkdirp: 1.0.4
       noms: 0.0.0
@@ -3047,6 +3047,7 @@ packages:
       minimatch: 3.0.4
       once: 1.4.0
       path-is-absolute: 1.0.1
+    dev: true
     resolution:
       integrity: sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==
   /glob/7.1.7:
@@ -3057,7 +3058,6 @@ packages:
       minimatch: 3.0.4
       once: 1.4.0
       path-is-absolute: 1.0.1
-    dev: true
     resolution:
       integrity: sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==
   /global-dirs/2.1.0:
@@ -3388,7 +3388,7 @@ packages:
       integrity: sha512-B9ZWJxHHOHUhUjCPrMpLD4xEq35bUTClHM1S6CBU5ixQnkZmwipwgc96vAd7AAGM9TGHvJR+Uss+/Ak6UphK+Q==
   /ipfs-core-types/0.2.1:
     dependencies:
-      cids: 1.1.5
+      cids: 1.1.7
       multiaddr: 8.1.2
       peer-id: 0.14.8
     dev: false
@@ -4464,7 +4464,7 @@ packages:
       integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
   /multiaddr/8.1.2:
     dependencies:
-      cids: 1.1.5
+      cids: 1.1.7
       class-is: 1.1.0
       dns-over-http-resolver: 1.2.3
       err-code: 2.0.3
@@ -5094,7 +5094,7 @@ packages:
       integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
   /peer-id/0.14.8:
     dependencies:
-      cids: 1.1.5
+      cids: 1.1.7
       class-is: 1.1.0
       libp2p-crypto: 0.19.6
       minimist: 1.2.5
@@ -6327,7 +6327,7 @@ packages:
   /string-to-stream/1.1.1:
     dependencies:
       inherits: 2.0.4
-      readable-stream: 2.3.0
+      readable-stream: 2.3.7
     dev: true
     resolution:
       integrity: sha512-QySF2+3Rwq0SdO3s7BAp4x+c3qsClpPQ6abAmb0DGViiSBAkT5kL6JT2iyzEVP+T1SmzHrQD1TwlP9QAHCc+Sw==
@@ -7536,7 +7536,7 @@ packages:
       tarball: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
     version: 0.6.0-fission
 specifiers:
-  '@fission-suite/kit': 2.0.0
+  '@fission-suite/kit': 2.0.2
   elm-tailwind-css: ^1.1.1
   esbuild: ^0.8.2
   ipfs-message-port-protocol: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
