@@ -1,4 +1,4 @@
-name: Auto-deploy develop to staging
+name: Deploy to staging
 
 
 on:
@@ -51,4 +51,4 @@ jobs:
           machine_key: ${{ secrets.FISSION_STAGING_KEY }}
           remote: "staging"
           build_dir: ./build
-          app_url: enormous-round-tin-elf.fissionapp.net
+          app_url: lobby.fissionapp.net
