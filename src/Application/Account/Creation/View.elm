@@ -13,7 +13,7 @@ import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
 import Icons
-import Loading
+import Kit.Components as Kit
 import Page
 import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
@@ -47,10 +47,7 @@ view context model =
 
 creatingAccount : Html msg
 creatingAccount =
-    [ Html.text "Just a moment, creating your account." ]
-        |> Html.div [ T.italic, T.mt_3 ]
-        |> List.singleton
-        |> Loading.screen
+    Kit.loadingIndicator "Just a moment, creating your account."
 
 
 
@@ -290,12 +287,15 @@ needsLink context model =
 
                     --
                     , Html.div
-                        [ T.mt_6
+                        [ T.flex
+                        , T.justify_center
+                        , T.mt_6
                         , T.mx_auto
                         , T.max_w_md
                         , T.opacity_50
                         ]
-                        [ Loading.animation { size = 18 }
+                        [ Kit.loadingAnimation
+                            [ T.h_5, T.w_5 ]
                         ]
 
                     --

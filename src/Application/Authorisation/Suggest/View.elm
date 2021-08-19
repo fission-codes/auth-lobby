@@ -14,9 +14,9 @@ import Html.Events as E
 import Html.Extra as Html
 import Icons
 import Json.Print
+import Kit.Components as Kit
 import List.Ext as List
 import List.Extra as List
-import Loading
 import Maybe.Extra as Maybe
 import Radix exposing (..)
 import Result.Extra as Result
@@ -215,9 +215,11 @@ view context model =
                             , T.items_center
                             , T.pt_px
                             ]
-                            [ Loading.animationWithAttributes
-                                [ T.mr_2, T.opacity_60 ]
-                                { size = 16 }
+                            [ Kit.loadingAnimation
+                                [ T.h_3
+                                , T.w_3
+                                , T.mr_2
+                                ]
 
                             -- Html.img
                             --     [ A.src "/images/fire.gif"

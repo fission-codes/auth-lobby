@@ -14,7 +14,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Html.Extra as Html
-import Loading
+import Kit.Components as Kit
 import Markdown.Parser
 import Markdown.Renderer
 import Markdown.Renderer.Custom
@@ -35,10 +35,8 @@ import Theme.Defaults
 view : Model -> List (Html Msg)
 view model =
     if RemoteData.isLoading model.theme then
-        [ Html.text "Just a moment, loading lobby theme." ]
-            |> Html.div [ T.italic, T.mt_3 ]
-            |> List.singleton
-            |> Loading.screen
+        "Just a moment, loading lobby theme."
+            |> Kit.loadingIndicator
             |> List.singleton
 
     else

@@ -39,6 +39,17 @@
   },
   "properties": {
 
+    "authorisation": {
+      "description": "Customisation properties regarding the authorisation screen",
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "description": "Markdown to be rendered below the 'allow access' prompt",
+          "type": "string"
+        }
+      }
+    },
+
     "introduction": {
       "description": "Markdown to be rendered on the welcome screen (choose between login or create account)",
       "type": "string"

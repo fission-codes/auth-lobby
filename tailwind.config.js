@@ -4,6 +4,18 @@ import defaultTheme from "tailwindcss/defaultTheme.js"
 
 export default {
 
+  purge: {
+    content: [ "dist/*.js" ],
+    safelist: [
+      "animate-loading-bugfix-placeholder-rotate",
+      "animate-loading-bugfix-placeholder-line-1",
+      "animate-loading-bugfix-placeholder-line-2",
+      "animate-loading-bugfix-placeholder-line-3",
+      "animate-loading-bugfix-placeholder-line-4",
+    ]
+  },
+
+
   /////////////////////////////////////////
   // THEME ////////////////////////////////
   /////////////////////////////////////////
@@ -24,13 +36,7 @@ export default {
     // Fonts
     // -----
 
-    fontFamily: {
-      ...defaultTheme.fontFamily,
-
-      body: [ kit.fonts.body, ...defaultTheme.fontFamily.sans ],
-      display: [ kit.fonts.display, ...defaultTheme.fontFamily.serif ],
-      mono: [ kit.fonts.mono, ...defaultTheme.fontFamily.mono ],
-    },
+    fontFamily: kit.fonts,
 
     // Inset
     // -----
@@ -68,15 +74,13 @@ export default {
     // ==========
 
     extend: {
-
-      fontSize: {
-        "tiny": "0.8125rem" // between `xs` and `sm`
-      },
+      keyframes: kit.keyframes,
+      animation: kit.animations,
+      fontSize: kit.fontSizes,
 
       screens: {
         dark: { raw: "(prefers-color-scheme: dark)" }
       },
-
     },
 
   },

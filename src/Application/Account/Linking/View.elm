@@ -11,7 +11,7 @@ import Html exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Icons
-import Loading
+import Kit.Components as Kit
 import Page
 import Radix exposing (Model, Msg(..))
 import Styling as S
@@ -166,12 +166,15 @@ exchangeView fallbackView maybeExchange model =
                 [ T.italic ]
                 [ Html.text "Negotiating with your other device."
                 , Html.div
-                    [ T.mt_6
+                    [ T.flex
+                    , T.justify_center
+                    , T.mt_6
                     , T.mx_auto
                     , T.max_w_md
                     , T.opacity_50
                     ]
-                    [ Loading.animation { size = 18 }
+                    [ Kit.loadingAnimation
+                        [ T.h_4, T.w_4 ]
                     ]
                 ]
 

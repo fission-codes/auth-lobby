@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@fission-suite/kit": "2.0.2",
+    "@fission-suite/kit": "2.1.0",
     "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz",
     "ipfs-message-port-server": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz",
     "localforage": "^1.9.0",

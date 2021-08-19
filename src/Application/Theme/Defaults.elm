@@ -21,7 +21,10 @@ import Theme exposing (Theme)
 
 empty : Theme
 empty =
-    { introduction = Nothing
+    { authorisation =
+        Just
+            { prompt = Nothing }
+    , introduction = Nothing
     , logo = Nothing
     }
 
