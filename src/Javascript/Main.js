@@ -208,6 +208,17 @@ async function createAccount(args) {
   if (success) {
     await localforage.setItem("usedUsername", args.username)
 
+    // Add public exchange key to filesystem
+    const fs = await freshFileSystemWithPublicExchangeKey()
+    const { success } = await updateDataRoot(fs)
+
+    if (!success) {
+      return app.ports.gotCreateAccountFailure.send(
+        "Failed to update data root"
+      )
+    }
+
+    // Fin
     if (!navigator.storage || !navigator.storage.persist) {
       app.ports.gotCreateAccountSuccess.send(
         null
@@ -261,7 +272,7 @@ async function linkApp({
   const issuer = await wn.did.write()
 
   // Proof
-  let proof = await localforage.getItem("ucan")
+  const proof = await localforage.getItem("ucan")
 
   // Build UCAN
   const att = attenuation.map(a => {
@@ -370,6 +381,11 @@ async function linkApp({
   }
 
   // Ensure all necessary filesystem parts
+  if (await fs.hasPublicExchangeKey() === false) {
+    await fs.addPublicExchangeKey()
+    madeFsChanges = true
+  }
+
   const fsUcan = await wn.ucan.build({
     potency: "APPEND",
     resource: "*",
@@ -528,22 +544,6 @@ async function linkApp({
     app.ports.gotLinkAppParams.send({ cid, readKey: null, ucan: null })
 
   }
-}
-
-
-async function freshFileSystem({ permissions }) {
-  const fs = await wn.fs.empty({
-    permissions,
-    rootKey: await myReadKey(),
-    localOnly: true
-  })
-
-  await fs.mkdir(wn.path.directory("private", "Apps"))
-  await fs.mkdir(wn.path.directory("private", "Audio"))
-  await fs.mkdir(wn.path.directory("private", "Documents"))
-  await fs.mkdir(wn.path.directory("private", "Photos"))
-  await fs.mkdir(wn.path.directory("private", "Video"))
-  return fs
 }
 
 
@@ -1107,8 +1107,54 @@ function copyToClipboard(text) {
   else console.log(`Missing clipboard api, tried to copy: "${text}"`)
 }
 
+async function freshFileSystem({ permissions }) {
+  const fs = await wn.fs.empty({
+    permissions,
+    rootKey: await myReadKey(),
+    localOnly: true
+  })
+
+  await fs.mkdir(wn.path.directory("private", "Apps"))
+  await fs.mkdir(wn.path.directory("private", "Audio"))
+  await fs.mkdir(wn.path.directory("private", "Documents"))
+  await fs.mkdir(wn.path.directory("private", "Photos"))
+  await fs.mkdir(wn.path.directory("private", "Video"))
+  return fs
+}
+
+async function freshFileSystemWithPublicExchangeKey() {
+  const permissions = {
+    fs: {
+      public: [ wn.path.root() ],
+      private: [ wn.path.root() ]
+    }
+  }
+
+  const fs = await freshFileSystem({ permissions })
+  await fs.addPublicExchangeKey()
+  return fs
+}
+
 function makeBase64UrlSafe(base64) {
   return base64.replace(/\//g, "_").replace(/\+/g, "-").replace(/=+$/, "")
+}
+
+async function updateDataRoot(fs) {
+  const proof = await localforage.getItem("ucan")
+  const issuer = await wn.did.write()
+  const fsUcan = await wn.ucan.build({
+    potency: "APPEND",
+    resource: "*",
+    proof,
+
+    audience: issuer,
+    issuer
+  })
+
+  return wn.dataRoot.update(
+    await fs.root.put(),
+    wn.ucan.encode(fsUcan)
+  )
 }
 
 
