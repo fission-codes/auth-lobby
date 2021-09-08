@@ -44,6 +44,7 @@ type alias Model =
     -----------------------------------------
     -- Debouncers
     -----------------------------------------
+    , ionDidValidDebouncer : Debouncer Msg
     , usernameAvailabilityDebouncer : Debouncer Msg
 
     -----------------------------------------
@@ -71,17 +72,22 @@ type Msg
       -----------------------------------------
       -- Create
       -----------------------------------------
+    | CheckIfIonDidIsValid
     | CheckIfUsernameIsAvailable
     | CreateAccount Creation.Context
     | GotCreateAccountFailure String
     | GotCreateAccountSuccess
     | GotCreateEmailInput String
+    | GotCreateIonDidInput String
+    | GotCreateIonDidValid { valid : Bool }
+    | GotCreateIonKeyInput String
     | GotCreateUsernameInput String
     | GotUsernameAvailability { available : Bool, valid : Bool }
     | SkipLinkDuringSetup
       -----------------------------------------
       -- Debouncers
       -----------------------------------------
+    | IonDidValidDebouncerMsg (Debouncer.Msg Msg)
     | UsernameAvailabilityDebouncerMsg (Debouncer.Msg Msg)
       -----------------------------------------
       -- Linking

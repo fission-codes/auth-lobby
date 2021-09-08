@@ -61,10 +61,12 @@ async function bootElm() {
 
 
 function ports() {
+  app.ports.checkIfIonDidIsValid.subscribe(checkIfIonDidIsValid)
   app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
   app.ports.closeChannel.subscribe(closeChannel)
   app.ports.copyToClipboard.subscribe(copyToClipboard)
   app.ports.createAccount.subscribe(createAccount)
+  app.ports.createAccountWithIon.subscribe(createAccountWithIon)
   app.ports.leave.subscribe(leave)
   app.ports.linkApp.subscribe(linkApp)
   app.ports.linkedDevice.subscribe(linkedDevice)
@@ -187,6 +189,21 @@ async function leave() {
 // CREATE
 // ------
 
+async function checkIfIonDidIsValid(did) {
+  let valid = false;
+
+  await ION.resolve(did)
+  .then(response => {
+
+    if (response.didDocument.id === did) {
+      valid = true;
+    }
+  })
+  .catch(() => (valid = false))
+
+  app.ports.gotIonDidValid.send({ valid })
+}
+
 async function checkIfUsernameIsAvailable(username) {
   if (wn.lobby.isUsernameValid(username)) {
     const isAvailable = await wn.lobby.isUsernameAvailable(username, DATA_ROOT_DOMAIN)
@@ -234,6 +251,74 @@ async function createAccount(args) {
       "Unable to create an account, maybe you have one already?"
     )
 
+  }
+}
+
+async function createAccountWithIon(args) {
+  const { email, ionDid, username } = args
+  const ionPrivateKey = JSON.parse(args.ionPrivateKey)
+
+  const ucan = await wn.ucan.build({
+    addSignature: false,
+    audience: await wn.machinery.api.did(),
+    issuer: ionDid,
+    lifetimeInSeconds: 31557600,  // one year
+    resource: "*"
+  })
+  console.log('ucan', ucan)
+
+  const jws = makeBase64UrlSafe(
+    await ION.signJws({
+      header: ucan.header,
+      payload: ucan.payload,
+      privateJwk: ionPrivateKey
+    })
+  )
+  console.log('jws', jws)
+
+  // const publicJwk = { ... }
+  // const verifiedJws = await ION.verifyJws({jws, publicJwk});
+  // console.log('verified JWS', verifiedJws)
+
+  // const apiEndpoint = wn.setup.endpoints.api
+  // const response = await fetch(`${apiEndpoint}/user`, {
+  //   method: "PUT",
+  //   headers: {
+  //     "authorization": `Bearer ${jwt}`,
+  //     "content-type": "application/json"
+  //   },
+  //   body: JSON.stringify({email, username})
+  // })
+
+  // if (response.status < 300) {
+  if (false) {
+    await localforage.setItem("usedUsername", args.username)
+
+    if (!navigator.storage || !navigator.storage.persist) {
+      app.ports.gotCreateAccountSuccess.send(
+        null
+      )
+    } else if (await navigator.storage.persist()) {
+      app.ports.gotCreateAccountSuccess.send(
+        null
+      )
+    } else {
+      // Ideally we should do:
+      // app.ports.gotCreateAccountFailure.send(
+      //   "I need permission from you to store data in your browser."
+      // )
+      //
+      // But currently there's a bug in incognito Chromium
+      // where `navigator.storage.persist()` doesn't show the popup.
+      app.ports.gotCreateAccountSuccess.send(
+        null
+      )
+    }
+
+  } else {
+    app.ports.gotCreateAccountFailure.send(
+      "Unable to create an account, maybe you have one already?"
+    )
   }
 }
 

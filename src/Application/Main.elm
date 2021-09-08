@@ -89,6 +89,7 @@ init flags url navKey =
     -----------------------------------------
     -- Debouncers
     -----------------------------------------
+    , ionDidValidDebouncer = Debouncing.ionDidValid.debouncer
     , usernameAvailabilityDebouncer = Debouncing.usernameAvailability.debouncer
 
     -----------------------------------------
@@ -191,6 +192,9 @@ update msg =
         -----------------------------------------
         -- Create
         -----------------------------------------
+        CheckIfIonDidIsValid ->
+            Creation.checkIfIonDidIsValid
+
         CheckIfUsernameIsAvailable ->
             Creation.checkIfUsernameIsAvailable
 
@@ -206,6 +210,15 @@ update msg =
         GotCreateEmailInput a ->
             Creation.gotCreateEmailInput a
 
+        GotCreateIonDidInput a ->
+            Creation.gotCreateIonDidInput a
+
+        GotCreateIonDidValid a ->
+            Creation.gotCreateIonDidValid a
+
+        GotCreateIonKeyInput a ->
+            Creation.gotCreateIonKeyInput a
+
         GotCreateUsernameInput a ->
             Creation.gotCreateUsernameInput a
 
@@ -218,6 +231,9 @@ update msg =
         -----------------------------------------
         -- Debouncers
         -----------------------------------------
+        IonDidValidDebouncerMsg a ->
+            Debouncer.update update Debouncing.ionDidValid.updateConfig a
+
         UsernameAvailabilityDebouncerMsg a ->
             Debouncer.update update Debouncing.usernameAvailability.updateConfig a
 
@@ -283,6 +299,7 @@ subscriptions _ =
         [ Ports.cancelLink CancelLink
         , Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
+        , Ports.gotIonDidValid GotCreateIonDidValid
         , Ports.gotLinked GotLinked
         , Ports.gotLinkAppError GotLinkAppError
         , Ports.gotLinkAppParams GotLinkAppParams

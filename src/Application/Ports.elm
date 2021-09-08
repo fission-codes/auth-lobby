@@ -9,6 +9,9 @@ import Json.Decode as Json
 -- 📣
 
 
+port checkIfIonDidIsValid : String -> Cmd msg
+
+
 port checkIfUsernameIsAvailable : String -> Cmd msg
 
 
@@ -16,6 +19,9 @@ port copyToClipboard : String -> Cmd msg
 
 
 port createAccount : { did : String, email : String, username : String } -> Cmd msg
+
+
+port createAccountWithIon : { ionDid : String, ionPrivateKey : String, email : String, username : String } -> Cmd msg
 
 
 port focusOnForm : () -> Cmd msg
@@ -76,6 +82,9 @@ port gotCreateAccountFailure : (String -> msg) -> Sub msg
 
 
 port gotCreateAccountSuccess : (() -> msg) -> Sub msg
+
+
+port gotIonDidValid : ({ valid : Bool } -> msg) -> Sub msg
 
 
 port gotLinked : ({ username : String } -> msg) -> Sub msg

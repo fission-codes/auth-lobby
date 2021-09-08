@@ -112,6 +112,46 @@ form dataRootDomain maybeError context =
         , usernameMessage dataRootDomain context
 
         -----------------------------------------
+        -- ION DID
+        -----------------------------------------
+        , S.label
+            [ A.for "iondid"
+            , T.mt_6
+            ]
+            [ Html.text "ION DID" ]
+        , S.textField
+            [ A.autocomplete False
+            , A.id "iondid"
+            , A.placeholder ""
+            , A.required False
+            , A.value context.ionDid
+            , E.onInput GotCreateIonDidInput
+            , T.w_full
+            ]
+            []
+        , ionDidMessage context
+
+        -----------------------------------------
+        -- ION Key
+        -----------------------------------------
+        , S.label
+            [ A.for "ionkey"
+            , T.mt_6
+            ]
+            [ Html.text "ION Private Key" ]
+        , S.textField
+            [ A.autocomplete False
+            , A.id "ionkey"
+            , A.placeholder ""
+            , A.required False
+            , A.value context.ionPrivateKey
+            , E.onInput GotCreateIonKeyInput
+            , T.w_full
+            ]
+            []
+        , ionWarning
+
+        -----------------------------------------
         -- Sign Up
         -----------------------------------------
         , let
@@ -227,6 +267,86 @@ usernameMessage dataRootDomain context =
                 [ Html.span [ T.antialiased ] [ Html.text "Your personal address will be " ]
                 , Html.strong [ T.break_all ] [ Html.text username, Html.text ".", Html.text dataRootDomain ]
                 ]
+        ]
+
+
+
+-- ION DID
+
+
+ionDidMessage : Context -> Html Msg
+ionDidMessage context =
+    let
+        ionDid =
+            String.trim context.ionDid
+
+        isValid =
+            context.ionDidIsValid == Success True
+
+        checking =
+            context.ionDidIsValid == Loading
+
+        isFaulty =
+            context.ionDidIsValid == Failure ()
+
+        hidden =
+            ionDid == "" || context.ionDidIsValid == NotAsked
+    in
+    Html.div
+        [ T.items_center
+        , T.leading_tight
+        , T.mt_3
+        , T.opacity_75
+        , T.rounded
+        , T.text_tiny
+        , T.tracking_tight
+
+        --
+        , ifThenElse hidden T.hidden T.flex
+        , ifThenElse isFaulty T.text_red T.text_inherit
+        , ifThenElse isFaulty T.dark__text_pink_tint T.dark__text_inherit
+        ]
+        [ FeatherIcons.user
+            |> FeatherIcons.withSize 16
+            |> Icons.wrap [ T.mr_2, T.opacity_60 ]
+
+        --
+        , if hidden then
+            Html.text ""
+
+          else if checking then
+            Html.span [ T.antialiased ] [ Html.text "Checking if ION DID is registered..." ]
+
+          else if not isValid then
+            Html.span
+                []
+                [ Html.span [ T.antialiased ] [ Html.text "Sorry, " ]
+                , Html.strong [ T.break_all ] [ Html.text ionDid ]
+                , Html.span [ T.antialiased ] [ Html.text " is not valid or it has not been registered with the ION network." ]
+                ]
+
+          else
+            Html.span
+                []
+                [ Html.span [ T.antialiased ] [ Html.text "Your ION DID valid and registered." ]
+                ]
+        ]
+
+
+ionWarning : Html Msg
+ionWarning =
+    Html.div
+        [ T.items_center
+        , T.leading_tight
+        , T.mt_3
+        , T.opacity_75
+        , T.rounded
+        , T.text_tiny
+        , T.tracking_tight
+        ]
+        [ Html.span
+            [ T.antialiased ]
+            [ Html.text "⚠️ Do not use your real private key with this demo! Please create a key pair and ION DID for testing purposes only." ]
         ]
 
 

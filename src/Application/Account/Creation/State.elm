@@ -6,6 +6,7 @@ import Account.Linking.Exchange as LinkingExchange
 import Account.Linking.State as Linking
 import Browser.Navigation as Nav
 import Debouncing
+import Http
 import Maybe.Extra as Maybe
 import Page
 import Ports
@@ -18,6 +19,25 @@ import Url
 
 
 -- 📣
+
+
+checkIfIonDidIsValid : Manager
+checkIfIonDidIsValid model =
+    case model.page of
+        Page.CreateAccount context ->
+            case context.ionDid of
+                "" ->
+                    Return.singleton model
+
+                i ->
+                    model
+                        |> adjustContext
+                            (\c -> { c | ionDidIsValid = Loading })
+                        |> Return.command
+                            (Ports.checkIfIonDidIsValid i)
+
+        _ ->
+            Return.singleton model
 
 
 checkIfUsernameIsAvailable : Manager
@@ -41,11 +61,23 @@ checkIfUsernameIsAvailable model =
 
 createAccount : Context -> Manager
 createAccount context model =
-    case ( context.usernameIsValid, context.usernameIsAvailable ) of
-        ( _, Success False ) ->
+    case ( context.usernameIsValid, context.usernameIsAvailable, context.ionDidIsValid ) of
+        ( _, Success False, _ ) ->
             Return.singleton model
 
-        ( True, _ ) ->
+        ( _, _, Success False ) ->
+            Return.singleton model
+
+        ( True, _, Success True ) ->
+            { ionDid = String.trim context.ionDid
+            , ionPrivateKey = String.trim context.ionPrivateKey
+            , email = String.trim context.email
+            , username = String.trim context.username
+            }
+                |> Ports.createAccountWithIon
+                |> return { model | reCreateAccount = Loading }
+
+        ( True, _, NotAsked ) ->
             { did = Maybe.unwrap "" .didWrite (RemoteData.toMaybe model.externalContext)
             , email = String.trim context.email
             , username = String.trim context.username
@@ -55,6 +87,19 @@ createAccount context model =
 
         _ ->
             Return.singleton model
+
+
+gotCreateIonDidValid : { valid : Bool } -> Manager
+gotCreateIonDidValid { valid } model =
+    if valid then
+        adjustContext
+            (\c -> { c | ionDidIsValid = Success True })
+            { model | reCreateAccount = NotAsked }
+
+    else
+        adjustContext
+            (\c -> { c | ionDidIsValid = Failure () })
+            { model | reCreateAccount = NotAsked }
 
 
 gotCreateAccountFailure : String -> Manager
@@ -95,6 +140,30 @@ gotCreateEmailInput : String -> Manager
 gotCreateEmailInput input model =
     adjustContext
         (\c -> { c | email = input })
+        { model | reCreateAccount = NotAsked }
+
+
+gotCreateIonDidInput : String -> Manager
+gotCreateIonDidInput input model =
+    { model | reCreateAccount = NotAsked }
+        |> adjustContext
+            (\c ->
+                { c
+                    | ionDid = input
+                    , ionDidIsValid = Loading
+                }
+            )
+        |> Return.command
+            (CheckIfIonDidIsValid
+                |> Debouncing.ionDidValid.provideInput
+                |> Return.task
+            )
+
+
+gotCreateIonKeyInput : String -> Manager
+gotCreateIonKeyInput input model =
+    adjustContext
+        (\c -> { c | ionPrivateKey = input })
         { model | reCreateAccount = NotAsked }
 
 

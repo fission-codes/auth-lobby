@@ -9,6 +9,17 @@ import Return
 -- 🏔
 
 
+ionDidValid =
+    makeConfig
+        { getter = .ionDidValidDebouncer
+        , setter = \debouncer model -> { model | ionDidValidDebouncer = debouncer }
+
+        --
+        , msg = IonDidValidDebouncerMsg
+        , settleAfter = fromSeconds 0.75
+        }
+
+
 usernameAvailability =
     makeConfig
         { getter = .usernameAvailabilityDebouncer
