@@ -280,19 +280,24 @@ async function createAccountWithIon(args) {
   // const verifiedJws = await ION.verifyJws({jws, publicJwk});
   // console.log('verified JWS', verifiedJws)
 
-  // const apiEndpoint = wn.setup.endpoints.api
-  // const response = await fetch(`${apiEndpoint}/user`, {
-  //   method: "PUT",
-  //   headers: {
-  //     "authorization": `Bearer ${jwt}`,
-  //     "content-type": "application/json"
-  //   },
-  //   body: JSON.stringify({email, username})
-  // })
+  const apiEndpoint = wn.setup.endpoints.api
+  const response = await fetch(`${apiEndpoint}/user`, {
+    method: "PUT",
+    headers: {
+      "authorization": `Bearer ${jwt}`,
+      "content-type": "application/json"
+    },
+    body: JSON.stringify({email, username})
+  })
 
-  // if (response.status < 300) {
-  if (false) {
+  if (response.status < 300) {
     await localforage.setItem("usedUsername", args.username)
+
+    // Create RSA keystore and get the user's Fission DID
+
+    // Sign a UCAN from the ION DID to the Fission DID
+
+    // Store the UCAN for use by Fission apps
 
     if (!navigator.storage || !navigator.storage.persist) {
       app.ports.gotCreateAccountSuccess.send(
