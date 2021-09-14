@@ -119,6 +119,9 @@ insert-version:
 	just config=default clean css-large translate-schemas production-elm html css-small js images static minify-js
 	just config=default apply-config production-service-worker
 
+@ion-build:
+	just config=ion clean css-large translate-schemas production-elm html css-small js images static minify-js
+	just config=ion apply-config production-service-worker
 
 @static:
 	echo "⛰  Copying some more static files"
