@@ -381,6 +381,11 @@ async function linkApp({
   }
 
   // Ensure all necessary filesystem parts
+  app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Identifying"
+  })
+
   if (await fs.hasPublicExchangeKey() === false) {
     await fs.addPublicExchangeKey()
     madeFsChanges = true
