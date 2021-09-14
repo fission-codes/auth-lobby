@@ -255,6 +255,8 @@ async function createAccount(args) {
 }
 
 async function createAccountWithIon(args) {
+  await localforage.setItem("usedUsername", args.username)
+
   const { email, ionDid, username } = args
   const ionPrivateKey = JSON.parse(args.ionPrivateKey)
 
@@ -262,9 +264,10 @@ async function createAccountWithIon(args) {
     addSignature: false,
     audience: await wn.machinery.api.did(),
     issuer: ionDid,
-    lifetimeInSeconds: 31557600,  // one year
+    lifetimeInSeconds: 300,  // five minutes
     resource: "*"
   })
+  ucan.header.alg = 'EdDSA'
   console.log('ucan', ucan)
 
   const jws = makeBase64UrlSafe(
@@ -290,14 +293,25 @@ async function createAccountWithIon(args) {
     body: JSON.stringify({email, username})
   })
 
-  if (response.status < 300) {
-    await localforage.setItem("usedUsername", args.username)
+  const json = response.json()
+  console.log('response from server', json)
 
+  if (response.status < 300) {
     // Create RSA keystore and get the user's Fission DID
+    const ks = await wn.keystore.get()
+    const fissionDid = await wn.did.write()
 
     // Sign a UCAN from the ION DID to the Fission DID
+    const rootUcan = await wn.ucan.build({
+      audience: fissionDid,
+      issuer: ionDid,
+      lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
+      potency: "SUPER_USER"
+    });
+    const encodedRootUcan = wn.ucan.encode(rootUcan)
 
     // Store the UCAN for use by Fission apps
+    await localforage.setItem("ucan", encodedRootUcan)
 
     if (!navigator.storage || !navigator.storage.persist) {
       app.ports.gotCreateAccountSuccess.send(
