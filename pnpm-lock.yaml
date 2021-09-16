@@ -3,7 +3,7 @@ dependencies:
   ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
   ipfs-message-port-server: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   localforage: 1.9.0
-  webnative: 0.28.0-alpha
+  webnative: 0.28.0
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
   esbuild: 0.8.2
@@ -1211,10 +1211,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==
-  /@ungap/global-this/0.4.3:
+  /@ungap/global-this/0.4.4:
     dev: false
     resolution:
-      integrity: sha512-MuHEpDBurNVeD6mV9xBcAN2wfTwuaFQhHuhWkJuXmyVJ5P5sBCw+nnFpdfb0tAvgWkfefWCsAoAsh7MTUr3LPg==
+      integrity: sha512-mHkm6FvepJECMNthFuIgpAEFmPOk71UyXuIxYfjytvFTnSDBIz7jmViO+LfHI/AjrazWije0PnSP3+/NlwzqtA==
   /@zxing/text-encoding/0.9.0:
     dev: false
     optional: true
@@ -3923,16 +3923,16 @@ packages:
     dev: false
     resolution:
       integrity: sha512-0wjZ2z/SfZZq01+3/8jYLd8aEShSa+aat1zyPGQY3IuKoEAp6DJGvu2zt6snELrQU9jbCkIlCyNOD7RdQbHhkQ==
-  /keystore-idb/0.14.2:
+  /keystore-idb/0.15.0:
     dependencies:
-      '@ungap/global-this': 0.4.3
-      buffer: 6.0.3
-      localforage: 1.9.0
+      '@ungap/global-this': 0.4.4
+      localforage: 1.10.0
+      uint8arrays: 3.0.0
     dev: false
     engines:
       node: '>=10.21.0'
     resolution:
-      integrity: sha512-1jjL3Tjn4NSjczl/KBBnK1JefmouMSHC18Gv+2Eo27PiBSNrfa9ipGZkpW4OsV/tdYC50JA1IQ2yZRpeiYmH+w==
+      integrity: sha512-CSUCwdSR/gv/ydyv0m4DiTVdtHw0WPKmiw1frMh0jI3Ri9eGwtLBnYefppb2zgC6xLk4aBrPpojpjrRCEaL0/A==
   /keyv/3.1.0:
     dependencies:
       json-buffer: 3.0.0
@@ -4032,6 +4032,12 @@ packages:
   /lines-and-columns/1.1.6:
     resolution:
       integrity: sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
+  /localforage/1.10.0:
+    dependencies:
+      lie: 3.1.1
+    dev: false
+    resolution:
+      integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
   /localforage/1.9.0:
     dependencies:
       lie: 3.1.1
@@ -6747,6 +6753,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Q9/hhJa2836nQfEJSZTmr+pg9+cDJS9XEAp7N2Vg5MzL3bK/mkMVfjscRGYruP9jNda6MAdf4QD/y78gSzkp6A==
+  /uint8arrays/3.0.0:
+    dependencies:
+      multiformats: 9.4.4
+    dev: false
+    resolution:
+      integrity: sha512-HRCx0q6O9Bfbp+HHSfQQKD7wU70+lydKVt4EghkdOvlK/NlrF90z+eXV34mUd48rNvVJXwkrMSPpCATkct8fJA==
   /unbox-primitive/1.0.1:
     dependencies:
       function-bind: 1.1.1
@@ -6974,7 +6986,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative/0.28.0-alpha:
+  /webnative/0.28.0:
     dependencies:
       cborg: 1.5.0
       cids: 1.1.7
@@ -6982,8 +6994,9 @@ packages:
       ipfs-message-port-client: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-client.tar.gz'
       ipfs-message-port-protocol: '@ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
       ipld-dag-pb: 0.22.3
-      keystore-idb: 0.14.2
+      keystore-idb: 0.15.0
       localforage: 1.9.0
+      multiformats: 9.4.4
       noble-ed25519: 1.2.5
       throttle-debounce: 3.0.1
       uint8arrays: 2.1.10
@@ -6991,7 +7004,7 @@ packages:
     engines:
       node: '>=15'
     resolution:
-      integrity: sha512-DP1LC339SlwKetg36kwNKAzXhwx/5aeXPilDDtVE6FHj9I/RnRmLkOvlqXRLCshbjnpvrPmEJVa7mUKdAxFkaA==
+      integrity: sha512-IHahuroHEjmbQqZlNeXw4qr5X/uBEQ3tDZEtyb5fSloUx30S1AQ1FH8IkloAMtkbniNSMcPzfEX/Lu5GF1pi7A==
   /whatwg-fetch/3.6.2:
     dev: true
     resolution:
@@ -7440,6 +7453,6 @@ specifiers:
   quicktype: 'https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz'
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.28.0-alpha
+  webnative: 0.28.0
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
