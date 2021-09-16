@@ -176,7 +176,22 @@ async function lookupRootDid(maybeUsername) {
  */
 async function leave() {
   if (window.confirm("Are you sure you want to remove this device? If you're not authenticated on any other devices, you will lose access to your account!")) {
-    await webnative.keystore.clear()
+    const username = await localforage.getItem("usedUsername")
+    const dataRoot = username && await wn.dataRoot.lookup(username)
+
+    if (dataRoot) {
+      const permissions = ROOT_ACCESS
+      const fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
+      const publicDid = await wn.did.exchange()
+      const path = wn.path.directory(wn.path.Branch.Public, ".well-known", "exchange", publicDid)
+
+      if (await fs.exists(path)) {
+        await fs.rm(path)
+        await updateDataRoot(fs)
+      }
+    }
+
+    await webnative.leave({ withoutRedirect: true })
     await localforage.clear()
 
     location.reload()
@@ -252,6 +267,7 @@ async function createAccount(args) {
 // LINK
 // ----
 
+const ROOT_ACCESS = { fs: { private: [ wn.path.root() ], public: [ wn.path.root() ] }}
 const SESSION_PATH = wn.path.file("public", "Apps", "Fission", "Lobby", "Session")
 
 
@@ -357,12 +373,7 @@ async function linkApp({
     }
   })
 
-  const permissions = {
-    fs: {
-      private: [ wn.path.root() ],
-      public: [ wn.path.root() ]
-    }
-  }
+  const permissions = ROOT_ACCESS
 
   let fs
   let madeFsChanges = false
@@ -1128,14 +1139,7 @@ async function freshFileSystem({ permissions }) {
 }
 
 async function freshFileSystemWithPublicExchangeKey() {
-  const permissions = {
-    fs: {
-      public: [ wn.path.root() ],
-      private: [ wn.path.root() ]
-    }
-  }
-
-  const fs = await freshFileSystem({ permissions })
+  const fs = await freshFileSystem({ permissions: ROOT_ACCESS })
   await fs.addPublicExchangeKey()
   return fs
 }
