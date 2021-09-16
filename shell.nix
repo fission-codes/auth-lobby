@@ -1,9 +1,12 @@
-let
+{ rosetta ? false }:
+  let
 
-  sources = import ./nix/sources.nix;
-  pkgs = import sources.nixpkgs {};
+    overrides = if rosetta then { system = "x86_64-darwin"; } else {};
 
-in
+    sources = import ./nix/sources.nix;
+    pkgs = import sources.nixpkgs overrides;
+
+  in
 
   pkgs.mkShell {
     buildInputs = [
