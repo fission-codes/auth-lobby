@@ -176,7 +176,22 @@ async function lookupRootDid(maybeUsername) {
  */
 async function leave() {
   if (window.confirm("Are you sure you want to remove this device? If you're not authenticated on any other devices, you will lose access to your account!")) {
-    await webnative.keystore.clear()
+    const username = await localforage.getItem("usedUsername")
+    const dataRoot = username && await wn.dataRoot.lookup(username)
+
+    if (dataRoot) {
+      const permissions = ROOT_ACCESS
+      const fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
+      const publicDid = await wn.did.exchange()
+      const path = wn.path.directory(wn.path.Branch.Public, ".well-known", "exchange", publicDid)
+
+      if (await fs.exists(path)) {
+        await fs.rm(path)
+        await updateDataRoot(fs)
+      }
+    }
+
+    await webnative.leave({ withoutRedirect: true })
     await localforage.clear()
 
     location.reload()
@@ -208,6 +223,17 @@ async function createAccount(args) {
   if (success) {
     await localforage.setItem("usedUsername", args.username)
 
+    // Add public exchange key to filesystem
+    const fs = await freshFileSystemWithPublicExchangeKey()
+    const { success } = await updateDataRoot(fs)
+
+    if (!success) {
+      return app.ports.gotCreateAccountFailure.send(
+        "Failed to update data root"
+      )
+    }
+
+    // Fin
     if (!navigator.storage || !navigator.storage.persist) {
       app.ports.gotCreateAccountSuccess.send(
         null
@@ -241,6 +267,7 @@ async function createAccount(args) {
 // LINK
 // ----
 
+const ROOT_ACCESS = { fs: { private: [ wn.path.root() ], public: [ wn.path.root() ] }}
 const SESSION_PATH = wn.path.file("public", "Apps", "Fission", "Lobby", "Session")
 
 
@@ -261,7 +288,7 @@ async function linkApp({
   const issuer = await wn.did.write()
 
   // Proof
-  let proof = await localforage.getItem("ucan")
+  const proof = await localforage.getItem("ucan")
 
   // Build UCAN
   const att = attenuation.map(a => {
@@ -346,12 +373,7 @@ async function linkApp({
     }
   })
 
-  const permissions = {
-    fs: {
-      private: [ wn.path.root() ],
-      public: [ wn.path.root() ]
-    }
-  }
+  const permissions = ROOT_ACCESS
 
   let fs
   let madeFsChanges = false
@@ -370,6 +392,16 @@ async function linkApp({
   }
 
   // Ensure all necessary filesystem parts
+  app.ports.gotLinkAppProgress.send({
+    time: Date.now(),
+    progress: "Identifying"
+  })
+
+  if (await fs.hasPublicExchangeKey() === false) {
+    await fs.addPublicExchangeKey()
+    madeFsChanges = true
+  }
+
   const fsUcan = await wn.ucan.build({
     potency: "APPEND",
     resource: "*",
@@ -528,22 +560,6 @@ async function linkApp({
     app.ports.gotLinkAppParams.send({ cid, readKey: null, ucan: null })
 
   }
-}
-
-
-async function freshFileSystem({ permissions }) {
-  const fs = await wn.fs.empty({
-    permissions,
-    rootKey: await myReadKey(),
-    localOnly: true
-  })
-
-  await fs.mkdir(wn.path.directory("private", "Apps"))
-  await fs.mkdir(wn.path.directory("private", "Audio"))
-  await fs.mkdir(wn.path.directory("private", "Documents"))
-  await fs.mkdir(wn.path.directory("private", "Photos"))
-  await fs.mkdir(wn.path.directory("private", "Video"))
-  return fs
 }
 
 
@@ -1107,8 +1123,47 @@ function copyToClipboard(text) {
   else console.log(`Missing clipboard api, tried to copy: "${text}"`)
 }
 
+async function freshFileSystem({ permissions }) {
+  const fs = await wn.fs.empty({
+    permissions,
+    rootKey: await myReadKey(),
+    localOnly: true
+  })
+
+  await fs.mkdir(wn.path.directory("private", "Apps"))
+  await fs.mkdir(wn.path.directory("private", "Audio"))
+  await fs.mkdir(wn.path.directory("private", "Documents"))
+  await fs.mkdir(wn.path.directory("private", "Photos"))
+  await fs.mkdir(wn.path.directory("private", "Video"))
+  return fs
+}
+
+async function freshFileSystemWithPublicExchangeKey() {
+  const fs = await freshFileSystem({ permissions: ROOT_ACCESS })
+  await fs.addPublicExchangeKey()
+  return fs
+}
+
 function makeBase64UrlSafe(base64) {
   return base64.replace(/\//g, "_").replace(/\+/g, "-").replace(/=+$/, "")
+}
+
+async function updateDataRoot(fs) {
+  const proof = await localforage.getItem("ucan")
+  const issuer = await wn.did.write()
+  const fsUcan = await wn.ucan.build({
+    potency: "APPEND",
+    resource: "*",
+    proof,
+
+    audience: issuer,
+    issuer
+  })
+
+  return wn.dataRoot.update(
+    await fs.root.put(),
+    wn.ucan.encode(fsUcan)
+  )
 }
 
 

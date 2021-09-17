@@ -7,6 +7,7 @@ type Progress
     = Starting
     | Resolving
     | Loading
+    | Identifying
     | Checking
     | Gathering
     | Encrypting
@@ -38,6 +39,9 @@ explain progress =
 
         Loading ->
             "Loading your filesystem"
+
+        Identifying ->
+            "Ensuring .well-known public key"
 
         Checking ->
             "Checking existence of directories & files"
@@ -71,6 +75,9 @@ toString progress =
         Loading ->
             "Loading"
 
+        Identifying ->
+            "Identifying"
+
         Checking ->
             "Checking"
 
@@ -98,6 +105,9 @@ fromString string =
 
         "Loading" ->
             Just Loading
+
+        "Identifying" ->
+            Just Identifying
 
         "Checking" ->
             Just Checking
