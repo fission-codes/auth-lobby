@@ -6,7 +6,7 @@ dependencies:
   webnative: 0.28.0
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
-  esbuild: 0.8.2
+  esbuild: 0.12.28
   mustache: 4.0.1
   postcss-import: 12.0.1
   quicktype: '@ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz'
@@ -2568,12 +2568,12 @@ packages:
       node: '>= 0.4'
     resolution:
       integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==
-  /esbuild/0.8.2:
+  /esbuild/0.12.28:
     dev: true
     hasBin: true
     requiresBuild: true
     resolution:
-      integrity: sha512-kR3+OtVSx8cRDmz4PcfQU4FsXnfhiBfJzAV3nX4oK84pH5y7HaGKiTKBl4e7lKzFSiHo05Lzpo2r2B89u5Vspg==
+      integrity: sha512-pZ0FrWZXlvQOATlp14lRSk1N9GkeJ3vLIwOcUoo3ICQn9WNR4rWoNi81pbn6sC1iYUy7QPqNzI3+AEzokwyVcA==
   /escalade/3.1.1:
     dev: false
     engines:
@@ -7444,7 +7444,7 @@ packages:
 specifiers:
   '@fission-suite/kit': 2.1.0
   elm-tailwind-css: ^1.1.1
-  esbuild: ^0.8.2
+  esbuild: ^0.12.26
   ipfs-message-port-protocol: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz'
   ipfs-message-port-server: 'https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz'
   localforage: ^1.9.0
