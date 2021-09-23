@@ -1,5 +1,5 @@
 {
-    "API_ENDPOINT": "https://runfission.net",
+    "API_ENDPOINT": "https://ion.runfission.net",
     "DATA_ROOT_DOMAIN": "fissionuser.net",
   
     "RELAY": "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw",
