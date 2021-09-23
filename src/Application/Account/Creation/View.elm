@@ -147,6 +147,7 @@ form dataRootDomain maybeError context =
             , A.value context.ionPrivateKey
             , E.onInput GotCreateIonKeyInput
             , T.w_full
+            , A.type_ "password"
             ]
             []
         , ionWarning
