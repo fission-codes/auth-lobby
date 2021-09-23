@@ -264,26 +264,28 @@ async function createAccountWithIon(args) {
     addSignature: false,
     audience: await wn.machinery.api.did(),
     issuer: ionDid,
-    lifetimeInSeconds: 300,  // five minutes
+    lifetimeInSeconds: 60 * 60 * 24,  // one day
     resource: "*"
   })
   ucan.header.alg = 'EdDSA'
   console.log('ucan', ucan)
 
-  const jws = makeBase64UrlSafe(
+  const jwt = makeBase64UrlSafe(
     await ION.signJws({
       header: ucan.header,
       payload: ucan.payload,
       privateJwk: ionPrivateKey
     })
   )
-  console.log('jws', jws)
+  console.log('jwt', jwt)
 
   // const publicJwk = { ... }
-  // const verifiedJws = await ION.verifyJws({jws, publicJwk});
+  // const verifiedJws = await ION.verifyJws({jws: jwt, publicJwk});
   // console.log('verified JWS', verifiedJws)
 
-  const apiEndpoint = wn.setup.endpoints.api
+  const apiEndpoint = wn.setup.endpoints().api
+  console.log('API endpoint', apiEndpoint)
+
   const response = await fetch(`${apiEndpoint}/user`, {
     method: "PUT",
     headers: {
@@ -293,9 +295,6 @@ async function createAccountWithIon(args) {
     body: JSON.stringify({email, username})
   })
 
-  const json = response.json()
-  console.log('response from server', json)
-
   if (response.status < 300) {
     // Create RSA keystore and get the user's Fission DID
     const ks = await wn.keystore.get()
@@ -303,12 +302,21 @@ async function createAccountWithIon(args) {
 
     // Sign a UCAN from the ION DID to the Fission DID
     const rootUcan = await wn.ucan.build({
+      addSignature: false,
       audience: fissionDid,
       issuer: ionDid,
       lifetimeInSeconds: 60 * 60 * 24 * 30 * 12 * 1000, // 1000 years
       potency: "SUPER_USER"
     });
-    const encodedRootUcan = wn.ucan.encode(rootUcan)
+    rootUcan.header.alg = 'EdDSA'
+
+    const encodedRootUcan = makeBase64UrlSafe(
+      await ION.signJws({
+        header: rootUcan.header,
+        payload: rootUcan.payload,
+        privateJwk: ionPrivateKey
+      })
+    )
 
     // Store the UCAN for use by Fission apps
     await localforage.setItem("ucan", encodedRootUcan)
