@@ -3,10 +3,11 @@
   "type": "module",
   "dependencies": {
     "@fission-suite/kit": "2.1.0",
-    "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz",
-    "ipfs-message-port-server": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-server.tar.gz",
+    "ipfs-message-port-protocol": "0.10.2-rc.2",
+    "ipfs-message-port-server": "0.10.2-rc.2",
     "localforage": "^1.9.0",
-    "webnative": "0.28.0"
+    "multiformats": "^9.4.8",
+    "webnative": "0.28.1"
   },
   "devDependencies": {
     "elm-tailwind-css": "^1.1.1",
@@ -18,10 +19,5 @@
     "terser-dir": "^1.0.7",
     "workbox-cli": "^6.1.2",
     "workbox-strategies": "^6.1.2"
-  },
-  "pnpm": {
-    "overrides": {
-      "ipfs-message-port-protocol": "https://ipfs.runfission.com/ipfs/bafybeigx6q4aezve7my76s5vvfuiinbxtepapqvmjf2jbgrozrut6cjape/p/ipfs-message-port-protocol.tar.gz"
-    }
   }
 }
