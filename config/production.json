@@ -3,5 +3,7 @@
   "DATA_ROOT_DOMAIN": "fission.name",
 
   "RELAY": "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw",
-  "SIGNALING_ADDR": "/dns4/webrtc.runfission.com/tcp/443/wss/p2p-webrtc-star/"
+  "SIGNALING_ADDR": "/dns4/webrtc.runfission.com/tcp/443/wss/p2p-webrtc-star/",
+
+  "IPFS_WORKER_V1": "https://ipfs.runfission.com/ipfs/bafybeie2kcmehpw37roa2jy4dbckahmrrkkgzubcbztxowffx5xehr6stm"
 }
