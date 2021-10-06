@@ -421,6 +421,7 @@ async function linkApp({
       [adjustedPath]: await fs.get(path).then(f => {
         return {
           key: f.key,
+          algorithm: f.algorithm,
           bareNameFilter: f.header.bareNameFilter
         }
       })
