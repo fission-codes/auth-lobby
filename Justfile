@@ -22,11 +22,15 @@ workbox_config 		:= "workbox.config.cjs"
 # ---
 
 
-@apply-config: insert-version
+@apply-config: insert-variables
 	echo "🎛  Applying config \`config/{{config}}.json\`"
 	{{node_bin}}/mustache config/{{config}}.json {{dist_dir}}/index.html > {{dist_dir}}/index.applied.html
 	rm {{dist_dir}}/index.html
 	mv {{dist_dir}}/index.applied.html {{dist_dir}}/index.html
+
+	{{node_bin}}/mustache config/{{config}}.json {{dist_dir}}/ipfs.html > {{dist_dir}}/ipfs.applied.html
+	rm {{dist_dir}}/ipfs.html
+	mv {{dist_dir}}/ipfs.applied.html {{dist_dir}}/ipfs.html
 
 
 @clean:
@@ -50,10 +54,12 @@ workbox_config 		:= "workbox.config.cjs"
 
 @html:
 	echo "📄  Copying static HTML files"
+	mkdir -p {{dist_dir}}/ipfs/
 	mkdir -p {{dist_dir}}/reset/
 
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
 	cp {{src_dir}}/Static/Html/Ipfs.html {{dist_dir}}/ipfs.html
+	cp {{src_dir}}/Static/Html/Ipfs/v2.html {{dist_dir}}/ipfs/v2.html
 	cp {{src_dir}}/Static/Html/Exchange.html {{dist_dir}}/exchange.html
 	cp {{src_dir}}/Static/Html/Reset.html {{dist_dir}}/reset/index.html
 
@@ -64,9 +70,13 @@ workbox_config 		:= "workbox.config.cjs"
 	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
-insert-version:
+insert-variables:
 	#!/usr/bin/env node
+	console.log("🎛  Inserting variables")
+
 	const fs = require("fs")
+
+	// Version
 	const html = fs.readFileSync("{{dist_dir}}/index.html", { encoding: "utf8" })
 	const work = fs.readFileSync("{{workbox_config}}", { encoding: "utf8" })
 	const timestamp = Math.floor(Date.now() / 1000).toString()
@@ -83,7 +93,7 @@ insert-version:
 	cp ./node_modules/webnative/dist/index.umd.min.js web_modules/webnative.min.js
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
-	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.54.4/dist/index.min.js
+	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.59.1/index.min.js
 
 
 @js:

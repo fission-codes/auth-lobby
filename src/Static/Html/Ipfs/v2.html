@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Fission Lobby IPFS Worker</title>
+</head>
+<body>
+
+  <script>
+    const workerName = "Marx"
+
+    if (typeof SharedWorker === "function") {
+      const worker = new SharedWorker("../worker.min.js", { name: workerName })
+      window.onmessage = ({ ports }) => {
+        const port = ports && ports[0]
+        if (port) port.postMessage("connect", [ worker.port ])
+      }
+
+    } else {
+      const channel = new MessageChannel()
+      const worker = new Worker("../worker.min.js", { name: workerName })
+      worker.postMessage("setup", [ channel.port2 ])
+      window.onmessage = e => {
+        const port = e.ports && e.ports[0]
+        if (port) port.postMessage("connect", [ channel.port1 ])
+      }
+
+    }
+  </script>
+
+  <!-- Service worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("../service-worker.js")
+      })
+    }
+  </script>
+
+</body>
+</html>
