@@ -133,7 +133,7 @@ const main = async (port) => {
 
 
 // Try connecting when browser comes online
-self.addEventListener('online', () => {
+self.addEventListener("online", () => {
   peers.forEach(peer => {
     tryConnecting(peer)
   })
@@ -270,9 +270,9 @@ function report(peer, status) {
 
   if (monitoringPeers) {
     console.table(peerConnections)
-    console.log('offline', offline)
-    console.log('last connected at', lastConnectedAt === 0 ? null : lastConnectedAt)
-    console.log('average latency', averageLatency)
+    console.log("offline", offline)
+    console.log("last connected at", lastConnectedAt === 0 ? null : lastConnectedAt)
+    console.log("average latency", averageLatency)
   }
 }
 
