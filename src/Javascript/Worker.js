@@ -116,7 +116,7 @@ const main = async (port) => {
   // Monitor bitswap and peer connections automatically if on localhost and staging environment
   if ([ "localhost", "auth.runfission.net" ].includes(self.location.hostname)) {
     monitorBitswap()
-    await monitorPeers()
+    monitorPeers()
   }
 
   // Connect every queued and future connection to the server.
