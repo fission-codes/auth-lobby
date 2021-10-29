@@ -105,9 +105,6 @@ const main = async (port) => {
 
   peers.forEach(peer => {
     latestPeerTimeoutIds[peer] = null
-  })
-
-  peers.forEach(peer => {
     tryConnecting(peer)
   })
 
