@@ -13,8 +13,26 @@ import { Server, IPFSService } from "ipfs-message-port-server"
 
 self.apiEndpoint = API_ENDPOINT
 
+
+/** 🎛️ Connection interval knobs
+ *
+ * KEEP_ALIVE_INTERVAL: Interval to keep the connection alive when online
+ * BACKOFF_INIT: Starting intervals for fibonacci backoff used when establishing a connection
+ * KEEP_TRYING_INTERVAL: Interval to keep trying the connection when offline
+ */
+
 const KEEP_ALIVE_INTERVAL =
   1 * 60 * 1000 // 1 minute
+
+const BACKOFF_INIT = {
+  retryNumber: 0,
+  lastBackoff: 0,
+  currentBackoff: 1000
+}
+
+const KEEP_TRYING_INTERVAL =
+  5 * 60 * 1000 // 5 minutes
+
 
 const OPTIONS = {
   config: {
@@ -39,6 +57,7 @@ const OPTIONS = {
 let peers = Promise.resolve(
   []
 )
+let latestPeerTimeoutIds = {}
 
 
 importScripts("web_modules/ipfs.min.js")
@@ -85,14 +104,16 @@ const main = async (port) => {
   self.server = server
 
   peers.forEach(peer => {
+    latestPeerTimeoutIds[peer] = null
     tryConnecting(peer)
   })
 
   console.log("🚀 Started IPFS node")
 
-  // Monitor bitswap automatically if on localhost and staging environment
+  // Monitor bitswap and peer connections automatically if on localhost and staging environment
   if ([ "localhost", "auth.runfission.net" ].includes(self.location.hostname)) {
     monitorBitswap()
+    monitorPeers()
   }
 
   // Connect every queued and future connection to the server.
@@ -108,6 +129,23 @@ const main = async (port) => {
 }
 
 
+// Try connecting when browser comes online
+self.addEventListener("online", () => {
+  peers
+    .filter(peer =>
+      !peer.includes("/localhost/") &&
+      !peer.includes("/127.0.0.1/") &&
+      !peer.includes("/0.0.0.0/")
+    )
+    .forEach(peer => {
+      tryConnecting(peer)
+    })
+})
+
+
+// PEERS
+// -----
+
 function fetchPeers() {
   const peersUrl = `${self.apiEndpoint}/ipfs/peers`
 
@@ -118,47 +156,143 @@ function fetchPeers() {
 }
 
 
-async function keepAlive(peer) {
-  const timeoutId = setTimeout(() => reconnect(peer), 30 * 1000)
+// CONNECTIONS
+// -----------
 
-  self.ipfs.libp2p.ping(peer).then(() => {
+async function keepAlive(peer, backoff, status) {
+  let timeoutId = null;
+
+  if (backoff.currentBackoff < KEEP_TRYING_INTERVAL) {
+
+    // Start race between reconnect and ping
+    timeoutId = setTimeout(() => reconnect(peer, backoff, status), backoff.currentBackoff)
+  } else {
+
+    // Disregard backoff, but keep trying
+    timeoutId = setTimeout(() => reconnect(peer, backoff, status), KEEP_TRYING_INTERVAL)
+  }
+
+  // Track the latest reconnect attempt
+  latestPeerTimeoutIds[peer] = timeoutId
+
+  self.ipfs.libp2p.ping(peer).then(latency => {
+    const updatedStatus = { connected: true, lastConnectedAt: Date.now(), latency }
+    report(peer, updatedStatus)
+
+    // Cancel reconnect because ping won
     clearTimeout(timeoutId)
-  }).catch(() => {}).finally(() => {
-    setTimeout(() => keepAlive(peer), KEEP_ALIVE_INTERVAL)
-  })
+
+    // Keep alive after the latest ping-reconnect race, ignore the rest
+    if (timeoutId === latestPeerTimeoutIds[peer]) {
+      setTimeout(() => keepAlive(peer, BACKOFF_INIT, updatedStatus), KEEP_ALIVE_INTERVAL)
+    }
+  }).catch(() => { })
 }
 
 
-async function reconnect(peer) {
-  await self.ipfs.swarm.disconnect(peer)
-  await self.ipfs.swarm.connect(peer)
+async function reconnect(peer, backoff, status) {
+  const updatedStatus = { ...status, connected: false, latency: null }
+  report(peer, updatedStatus)
+
+  try {
+    await self.ipfs.swarm.disconnect(peer)
+    await self.ipfs.swarm.connect(peer)
+  } catch {
+    // No action needed, we will retry
+  }
+
+  if (backoff.currentBackoff < KEEP_TRYING_INTERVAL) {
+    const nextBackoff = {
+      retryNumber: backoff.retryNumber + 1,
+      lastBackoff: backoff.currentBackoff,
+      currentBackoff: backoff.lastBackoff + backoff.currentBackoff
+    }
+
+    keepAlive(peer, nextBackoff, updatedStatus)
+  } else {
+    keepAlive(peer, backoff, updatedStatus)
+  }
 }
 
 
 async function tryConnecting(peer) {
   self
     .ipfs.libp2p.ping(peer)
-    .then(() => {
+    .then(latency => {
+
       return ipfs.swarm
-        .connect(peer, 15 * 1000)
+        .connect(peer, 1 * 1000)
         .then(() => {
           console.log(`🪐 Connected to ${peer}`)
+
+          const status = { connected: true, lastConnectedAt: Date.now(), latency }
+          report(peer, status)
 
           // Ensure permanent connection to Fission gateway
           // TODO: This is a temporary solution while we wait for
           //       https://github.com/libp2p/js-libp2p/issues/744
           //       (see "Keep alive" bit)
-          setTimeout(() => keepAlive(peer), KEEP_ALIVE_INTERVAL)
+          setTimeout(() => keepAlive(peer, BACKOFF_INIT, status), KEEP_ALIVE_INTERVAL)
         })
     })
     .catch(() => {
       console.log(`🪓 Could not connect to ${peer}`)
+
+      const status = { connected: false, lastConnectedAt: 0, latency: null }
+      report(peer, status)
+
+      keepAlive(peer, BACKOFF_INIT, status)
     })
 }
 
 
 self.reconnect = reconnect
 
+
+// REPORTING
+// ---------
+
+let peerConnections = []
+let monitoringPeers = false
+
+function report(peer, status) {
+  peerConnections = peerConnections
+    .filter(connection => connection.peer !== peer)
+    .concat({ peer, ...status })
+
+  const offline = peerConnections.every(connection => !connection.connected)
+  const lastConnectedAt = peerConnections.reduce((newest, connection) =>
+    newest >= connection.lastConnectedAt ? newest : connection.lastConnectedAt,
+    0
+  )
+
+  const activeConnections = peerConnections.filter(connection => connection.latency !== null)
+  const averageLatency = activeConnections.length > 0
+    ? peerConnections.reduce((sum, connection) => sum + connection.latency, 0) / activeConnections.length
+    : null
+
+  if (monitoringPeers) {
+    console.table(peerConnections)
+    console.log("offline", offline)
+    console.log("last connected at", lastConnectedAt === 0 ? null : lastConnectedAt)
+    console.log("average latency", averageLatency)
+  }
+}
+
+
+async function monitorPeers() {
+  monitoringPeers = true 
+  console.log("📡 Monitoring IPFS peers")
+}
+
+
+function stopMonitoringPeers() {
+  monitoringPeers = false
+}
+
+
+self.monitorPeers = monitorPeers
+self.stopMonitoringPeers = stopMonitoringPeers
 
 
 // 🔮
@@ -222,11 +356,11 @@ async function monitorBitswap(verbose) {
 
           if (dag.value.Links) {
             console.log(`🧱 ${c} is a 👉 DAG structure (${loaded})`)
-            ;(console.table || console.log)(
-              dag.value.Links.map(l => {
-                return { name: l.Name, cid: l.Hash.toString() }
-              })
-            )
+              ;(console.table || console.log)(
+                dag.value.Links.map(l => {
+                  return { name: l.Name, cid: l.Hash.toString() }
+                })
+              )
 
           } else {
             console.log(`📦 ${c} is 👉 Data (${loaded})`)
