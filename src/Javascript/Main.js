@@ -24,6 +24,13 @@ wn.setup.debug({
   enabled: true
 })
 
+wn.setup.userMessages({
+  versionMismatch: {
+    newer: async version => alert(`Your auth lobby is outdated. It might be cached. Try reloading the page until this message disappears. If this doesn't help, please contact support@fission.codes. (Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
+    older: async version => alert(`Your filesystem is outdated. Please upgrade your filesystem by using a miration app ot go to https://auth.fission.codes/reset/ and createe a new account. (Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
+  }
+})
+
 
 ;(async () => {
   const ucan = await localforage.getItem("ucan")
