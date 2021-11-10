@@ -22,6 +22,8 @@ After that, you need at least one of these resources:
 * `appFolder`, ask if the user wants to grant access to the private application folder.
 * `privatePath`, request access to a private path (you may pass this param multiple times).
 * `publicPath`, request access to a public path (you may pass this param multiple times).
+* `raw`, raw UCAN resources.
+* `shared`, request access to the shared section of the filesystem.
 
 You can define some optional parameters as well:
 * `lifetimeInSeconds`, how long an action should be authorised for. The default is one month.

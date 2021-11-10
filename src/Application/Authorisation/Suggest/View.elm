@@ -126,7 +126,20 @@ view context model =
                     context.publicPaths
                 )
             |> List.prepend
-                [ Maybe.unwrap Html.nothing rawResource context.raw ]
+                (if context.sharedSection then
+                    [ Resource.sharedSection ]
+
+                 else
+                    []
+                )
+            |> List.prepend
+                (case context.raw of
+                    Just r ->
+                        [ rawResource r ]
+
+                    Nothing ->
+                        []
+                )
             |> Html.ul
                 [ T.italic
                 , T.leading_snug
@@ -324,7 +337,8 @@ rawResource raw =
     Result.unwrap
         Resource.rawError
         (\permissions ->
-            Json.Print.prettyString { indent = 2, columns = 40 } permissions
+            permissions
+                |> Json.Print.prettyString { indent = 2, columns = 40 }
                 |> Result.unwrap Resource.rawError Resource.raw
         )
         raw

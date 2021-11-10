@@ -1,4 +1,4 @@
-module Authorisation.Suggest.Resource exposing (FileSystemRoot(..), application, applicationFolder, custom, everything, fileSystemPath, raw, rawError)
+module Authorisation.Suggest.Resource exposing (FileSystemRoot(..), application, applicationFolder, custom, everything, fileSystemPath, raw, rawError, sharedSection)
 
 import FeatherIcons
 import Html exposing (Html)
@@ -142,6 +142,13 @@ fileSystemPath root path =
                     , Html.text " file system"
                     ]
                 ]
+
+
+sharedSection =
+    resource
+        [ resourceIcon FeatherIcons.alertTriangle
+        , Html.text "Shared"
+        ]
 
 
 

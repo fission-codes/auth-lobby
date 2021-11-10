@@ -11,6 +11,7 @@ type FilesystemPart
     = AppFolder String
     | PrivatePath String
     | PublicPath String
+    | Shared
 
 
 
@@ -54,6 +55,9 @@ fsResource host part =
 
                 PublicPath p ->
                     "public/" ++ removeLeadingForwardSlash p
+
+                Shared ->
+                    "shared/"
     in
     path
         |> String.append "/"

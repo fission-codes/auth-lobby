@@ -94,7 +94,10 @@ allow currentTime model =
                 , lifetimeInSeconds = context.lifetimeInSeconds
                 , keyInSessionStorage = context.keyInSessionStorage
                 , raw =
-                    Maybe.unwrap "[]" (Result.unpack identity identity) context.raw
+                    Maybe.unwrap
+                        "[]"
+                        (Result.unpack identity identity)
+                        context.raw
 
                 -- TODO: Remove backwards compatibility
                 , sharedRepo = context.sharedRepo
