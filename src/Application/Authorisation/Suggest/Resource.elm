@@ -146,8 +146,8 @@ fileSystemPath root path =
 
 sharedSection =
     resource
-        [ resourceIcon FeatherIcons.alertTriangle
-        , Html.text "Shared"
+        [ resourceIcon FeatherIcons.share2
+        , Html.text "Ability to share the private files the app can access"
         ]
 
 

@@ -23,7 +23,7 @@ After that, you need at least one of these resources:
 * `privatePath`, request access to a private path (you may pass this param multiple times).
 * `publicPath`, request access to a public path (you may pass this param multiple times).
 * `raw`, raw UCAN resources.
-* `shared`, request access to the shared section of the filesystem.
+* `sharing`, request access to the shared section of the filesystem which is used for sharing private files. Remember that you also need access to the private item you want to share.
 
 You can define some optional parameters as well:
 * `lifetimeInSeconds`, how long an action should be authorised for. The default is one month.
@@ -41,6 +41,7 @@ https://auth.fission.codes
 & appFolder=Creator/My App              # `private/Apps/Creator/My App`
 & privatePath=Documents/Invoices        # `private/Documents/Invoices`
 & publicPath=Blog/Posts                 # `public/Blog/Posts`
+& sharing=t                             # `shared/`
 
 & lifetimeInSeconds=86400
 ```

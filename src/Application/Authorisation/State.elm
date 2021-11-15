@@ -65,6 +65,16 @@ allow currentTime model =
                                 (Ucan.PublicPath >> Ucan.fsResource host)
                                 context.publicPaths
                             )
+                        -----------------------------------------
+                        -- Shared section
+                        -----------------------------------------
+                        |> List.prepend
+                            (if context.sharedSection then
+                                [ Ucan.fsResource host Ucan.Shared ]
+
+                             else
+                                []
+                            )
 
                 attenuation =
                     List.map

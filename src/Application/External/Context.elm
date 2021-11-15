@@ -354,7 +354,7 @@ queryStringParser =
         |> apply (Query.custom "privatePath" identity)
         |> apply (Query.custom "publicPath" identity)
         |> apply (Query.string "raw")
-        |> apply (Query.enum "shared" booleans)
+        |> apply (Query.enum "sharing" booleans)
         -- Optional, pt. 2
         |> apply (Query.int "lifetimeInSeconds")
         |> apply (Query.string "newUser")
