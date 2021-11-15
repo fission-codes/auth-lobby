@@ -99,13 +99,13 @@ extractFromUrl url =
                         , redirectTo = redirectTo
                         , redirectToProtocol = redirectToProtocol
                         , sdkVersion = c.sdkVersion
+                        , sharedRepo = c.sharedRepo
                         , sharedSection = c.sharedSection
                         , web = c.web
                         , keyInSessionStorage = c.keyInSessionStorage
 
                         -- TODO: Remove backwards compatibility
                         , oldFlow = c.oldFlow
-                        , sharedRepo = c.sharedRepo
                         }
 
                 _ ->
