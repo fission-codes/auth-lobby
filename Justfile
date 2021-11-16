@@ -4,12 +4,12 @@ export NODE_OPTIONS := "--no-warnings"
 # Variables
 # ---------
 
-config						:= "default"
-dist_dir 					:= "./build"
-fission_cmd       := "fission"
-node_bin 					:= "./node_modules/.bin"
-src_dir  					:= "./src"
-workbox_config 		:= "workbox.config.cjs"
+config         := "default"
+dist_dir       := "./build"
+fission_cmd    := "fission"
+node_bin       := "./node_modules/.bin"
+src_dir        := "./src"
+workbox_config := "workbox.config.cjs"
 
 
 # Tasks
@@ -120,13 +120,16 @@ insert-variables:
 
 
 @production-build:
-	just config=production clean css-large translate-schemas production-elm html css-small js images static minify-js
-	just config=production apply-config production-service-worker
+	just config=production build
 
 
 @staging-build:
-	just config=default clean css-large translate-schemas production-elm html css-small js images static minify-js
-	just config=default apply-config production-service-worker
+	just config=default build
+
+
+@build:
+	just config={{config}} clean css-large translate-schemas production-elm html css-small js images static minify-js
+	just config={{config}} apply-config production-service-worker
 
 
 @static:
