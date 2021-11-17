@@ -4,7 +4,6 @@ import Authorisation.Suggest.Progress as Progress
 import Authorisation.Suggest.Resource as Resource
 import Branding
 import Common exposing (ifThenElse)
-import Dict
 import External.Context exposing (Context, defaultFailedState)
 import FeatherIcons
 import Flow exposing (Flow(..))
@@ -14,7 +13,6 @@ import Html.Events as E
 import Html.Extra as Html
 import Icons
 import Json.Print
-import Kit.Components as Kit
 import List.Ext as List
 import List.Extra as List
 import Maybe.Extra as Maybe
@@ -140,22 +138,7 @@ view context model =
                     Nothing ->
                         []
                 )
-            |> Html.ul
-                [ T.italic
-                , T.leading_snug
-                , T.max_w_md
-                , T.mt_6
-                , T.mx_auto
-                , T.rounded_md
-                , T.shadow
-                , T.text_base_600
-                , T.text_left
-                , T.text_sm
-
-                -- Dark mode
-                ------------
-                , T.dark__text_base_400
-                ]
+            |> S.resourceList
 
         -- Warnings
         -----------
@@ -206,51 +189,7 @@ view context model =
             ]
             [ case model.reLinkApp of
                 InProgress progress ->
-                    Html.div
-                        [ T.border
-                        , T.border_dashed
-                        , T.border_base_300
-                        , T.border_opacity_60
-                        , T.italic
-                        , T.leading_loose
-                        , T.px_4
-                        , T.py_3
-                        , T.rounded_md
-                        , T.text_sm
-
-                        -- Dark mode
-                        ------------
-                        , T.dark__border_base_600
-                        , T.dark__border_opacity_60
-                        ]
-                        [ Html.span
-                            [ T.flex
-                            , T.items_center
-                            , T.pt_px
-                            ]
-                            [ Kit.loadingAnimation
-                                [ T.h_3
-                                , T.w_3
-                                , T.mr_2
-                                ]
-
-                            -- Html.img
-                            --     [ A.src "/images/fire.gif"
-                            --     , A.height 18
-                            --     , A.width 18
-                            --
-                            --     --
-                            --     , T.mr_1
-                            --     , T.neg_mt_1
-                            --     ]
-                            --     []
-                            --
-                            , Html.span
-                                [ T.pl_1 ]
-                                [ Html.text (Progress.explain progress.progress)
-                                ]
-                            ]
-                        ]
+                    S.progress (Progress.explain progress.progress)
 
                 _ ->
                     S.button
@@ -301,20 +240,7 @@ view context model =
         -----------------------------------------
         -- As user
         -----------------------------------------
-        , case model.usedUsername of
-            Just username ->
-                Html.div
-                    [ T.mt_8 ]
-                    [ S.subtleFootNote
-                        [ Html.text "Logged in as "
-                        , Html.span
-                            [ T.border_b, T.border_base_200 ]
-                            [ Html.text username ]
-                        ]
-                    ]
-
-            Nothing ->
-                Html.text ""
+        , S.loggedInAs model
         ]
 
 

@@ -21,6 +21,7 @@ import Markdown.Renderer.Custom
 import Page
 import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
+import Share.View
 import Styling as S
 import Svg
 import Svg.Attributes
@@ -51,6 +52,9 @@ view_ model =
 
         Success context ->
             case model.page of
+                Page.AcceptShare a ->
+                    Share.View.accept a model
+
                 Page.Choose ->
                     choose model
 
@@ -78,6 +82,9 @@ view_ model =
             case model.usedUsername of
                 Just username ->
                     case model.page of
+                        Page.AcceptShare a ->
+                            Share.View.accept a model
+
                         Page.LinkAccount a ->
                             Account.Linking.View.view a model
 

@@ -66,6 +66,16 @@ port publishOnChannel : ( Maybe String, Maybe String, Json.Value ) -> Cmd msg
 
 
 
+-- 📣  ▒▒  SHARING
+
+
+port loadShare : { shareId : String, senderUsername : String } -> Cmd msg
+
+
+port acceptShare : { sharedBy : String } -> Cmd msg
+
+
+
 -- 📰
 
 
@@ -104,3 +114,16 @@ port gotInvalidRootDid : (() -> msg) -> Sub msg
 
 
 port gotChannelMessage : (Json.Value -> msg) -> Sub msg
+
+
+
+-- 📰  ▒▒  SHARING
+
+
+port gotAcceptShareProgress : (String -> msg) -> Sub msg
+
+
+port gotAcceptShareError : (String -> msg) -> Sub msg
+
+
+port listSharedItems : (Json.Value -> msg) -> Sub msg

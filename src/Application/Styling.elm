@@ -49,9 +49,18 @@ iconSize =
 -- 🍱
 
 
-button : Node msg
-button attributes nodes =
-    Kit.Components.button
+button =
+    buttonWithElement Html.button
+
+
+buttonLink =
+    buttonWithElement Html.a
+
+
+buttonWithElement : Node msg -> Node msg
+buttonWithElement element attributes nodes =
+    Kit.Components.buttonWithElement
+        element
         Kit.Components.Normal
         (List.append
             [ T.justify_center
@@ -163,6 +172,24 @@ label attributes =
         |> Html.label
 
 
+loggedInAs : { a | usedUsername : Maybe String } -> Html msg
+loggedInAs model =
+    case model.usedUsername of
+        Just username ->
+            Html.div
+                [ T.mt_8 ]
+                [ subtleFootNote
+                    [ Html.text "Logged in as "
+                    , Html.span
+                        [ T.border_b, T.border_base_200 ]
+                        [ Html.text username ]
+                    ]
+                ]
+
+        Nothing ->
+            Html.text ""
+
+
 messageBlock : Node msg
 messageBlock attributes =
     attributes
@@ -173,6 +200,103 @@ messageBlock attributes =
             , T.text_center
             ]
         |> Html.div
+
+
+progress : String -> Html msg
+progress text =
+    Html.div
+        [ T.border
+        , T.border_dashed
+        , T.border_base_300
+        , T.border_opacity_60
+        , T.italic
+        , T.leading_loose
+        , T.px_4
+        , T.py_3
+        , T.rounded_md
+        , T.text_sm
+
+        -- Dark mode
+        ------------
+        , T.dark__border_base_600
+        , T.dark__border_opacity_60
+        ]
+        [ Html.span
+            [ T.flex
+            , T.items_center
+            , T.pt_px
+            ]
+            [ Kit.Components.loadingAnimation
+                [ T.h_3
+                , T.w_3
+                , T.mr_2
+                ]
+            , Html.span
+                [ T.pl_1 ]
+                [ Html.text text ]
+            ]
+        ]
+
+
+resourceList =
+    Html.ul
+        [ T.italic
+        , T.leading_snug
+        , T.max_w_md
+        , T.mt_6
+        , T.mx_auto
+        , T.rounded_md
+        , T.shadow
+        , T.text_base_600
+        , T.text_left
+        , T.text_sm
+
+        -- Dark mode
+        ------------
+        , T.dark__text_base_400
+        ]
+
+
+resourceIcon icon =
+    icon
+        |> FeatherIcons.withSize 14
+        |> Icons.wrap [ T.mr_3, T.opacity_60 ]
+
+
+resource parts =
+    resource_
+        [ resourceIcon parts.icon
+        , parts.label
+        ]
+
+
+resource_ parts =
+    Html.li
+        [ T.bg_white
+        , T.border_b
+        , T.border_black
+        , T.border_opacity_05
+
+        --
+        , T.first__pt_px
+        , T.first__rounded_t_md
+        , T.last__border_transparent
+        , T.last__rounded_b_md
+
+        -- Dark mode
+        ------------
+        , T.dark__bg_base_950
+        , T.dark__border_white
+        , T.dark__border_opacity_025
+        ]
+        [ Html.div
+            [ T.flex
+            , T.items_center
+            , T.px_4
+            , T.py_5
+            ]
+            parts
+        ]
 
 
 subtleFootNote : List (Html msg) -> Html msg

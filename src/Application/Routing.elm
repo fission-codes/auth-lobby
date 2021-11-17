@@ -3,11 +3,13 @@ module Routing exposing (..)
 import Browser
 import Browser.Navigation as Nav
 import Common
-import Page exposing (Page)
+import Page exposing (Page(..))
 import Ports
 import Radix
 import Return exposing (return)
+import Share.Accept.Progress
 import Url exposing (Url)
+import Url.Parser as Url exposing (..)
 
 
 
@@ -42,7 +44,13 @@ goToPage page model =
 
 urlChanged : Url -> Radix.Manager
 urlChanged url model =
-    Return.singleton { model | url = url }
+    let
+        page =
+            url
+                |> fromUrl
+                |> Maybe.withDefault model.page
+    in
+    Return.singleton { model | page = page, url = url }
 
 
 urlRequested : Browser.UrlRequest -> Radix.Manager
@@ -53,3 +61,27 @@ urlRequested request model =
 
         Browser.External href ->
             return model (Nav.load href)
+
+
+
+-- 🔮
+
+
+fromUrl : Url -> Maybe Page
+fromUrl url =
+    Url.parse route { url | path = Maybe.withDefault "" url.fragment }
+
+
+route : Parser (Page -> a) a
+route =
+    oneOf
+        [ map
+            (\sharedBy shareId ->
+                AcceptShare
+                    { progress = Share.Accept.Progress.Loading
+                    , shareId = shareId
+                    , sharedBy = sharedBy
+                    }
+            )
+            (s "share" </> string </> string)
+        ]
