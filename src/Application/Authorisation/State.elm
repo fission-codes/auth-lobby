@@ -65,6 +65,16 @@ allow currentTime model =
                                 (Ucan.PublicPath >> Ucan.fsResource host)
                                 context.publicPaths
                             )
+                        -----------------------------------------
+                        -- Shared section
+                        -----------------------------------------
+                        |> List.prepend
+                            (if context.sharedSection then
+                                [ Ucan.fsResource host Ucan.Shared ]
+
+                             else
+                                []
+                            )
 
                 attenuation =
                     List.map
@@ -94,7 +104,10 @@ allow currentTime model =
                 , lifetimeInSeconds = context.lifetimeInSeconds
                 , keyInSessionStorage = context.keyInSessionStorage
                 , raw =
-                    Maybe.unwrap "[]" (Result.unpack identity identity) context.raw
+                    Maybe.unwrap
+                        "[]"
+                        (Result.unpack identity identity)
+                        context.raw
 
                 -- TODO: Remove backwards compatibility
                 , sharedRepo = context.sharedRepo

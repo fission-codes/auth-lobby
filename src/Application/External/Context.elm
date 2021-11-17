@@ -38,6 +38,7 @@ type alias Context =
     , redirectTo : Url
     , redirectToProtocol : String
     , sdkVersion : Maybe Semver.Version
+    , sharedSection : Bool
     , web : List String
     , keyInSessionStorage : Bool
 
@@ -99,6 +100,7 @@ extractFromUrl url =
                         , redirectToProtocol = redirectToProtocol
                         , sdkVersion = c.sdkVersion
                         , sharedRepo = c.sharedRepo
+                        , sharedSection = c.sharedSection
                         , web = c.web
                         , keyInSessionStorage = c.keyInSessionStorage
 
@@ -279,7 +281,7 @@ apply argParser funcParser =
 
 queryStringParser =
     Query.map
-        (\fol app pri pub raw lif new sdk sha ->
+        (\fol app pri pub raw shr lif new sdk sha ->
             Maybe.map3
                 (\didExchange didWrite red ->
                     let
@@ -309,10 +311,7 @@ queryStringParser =
                         decodedRaw =
                             Maybe.map
                                 (UrlBase64.decode
-                                    (\base64str ->
-                                        Result.fromMaybe "[]" <|
-                                            Base64.toString base64str
-                                    )
+                                    (Base64.toString >> Result.fromMaybe "[]")
                                 )
                                 raw
                     in
@@ -327,7 +326,8 @@ queryStringParser =
                     , redirectTo = Maybe.andThen Url.fromString redirectTo
                     , redirectToProtocol = protocol
                     , sdkVersion = sdkVersion
-                    , sharedRepo = Maybe.unwrap False ((==) "t") sha
+                    , sharedRepo = Maybe.withDefault False sha
+                    , sharedSection = Maybe.withDefault False shr
                     , web = app
                     , keyInSessionStorage =
                         case Maybe.map (\version -> Semver.compare version sessionStorageSdkVersion) sdkVersion of
@@ -354,11 +354,12 @@ queryStringParser =
         |> apply (Query.custom "privatePath" identity)
         |> apply (Query.custom "publicPath" identity)
         |> apply (Query.string "raw")
+        |> apply (Query.enum "sharing" booleans)
         -- Optional, pt. 2
         |> apply (Query.int "lifetimeInSeconds")
         |> apply (Query.string "newUser")
         |> apply (Query.string "sdk")
-        |> apply (Query.string "sharedRepo")
+        |> apply (Query.enum "sharedRepo" booleans)
         -- Required
         |> apply (Query.string "didExchange")
         |> apply (Query.string "didWrite")
@@ -379,6 +380,16 @@ confirmPaths =
             else
                 Just path
         )
+
+
+booleans =
+    Dict.fromList
+        [ ( "", True )
+        , ( "t", True )
+        , ( "T", True )
+        , ( "f", False )
+        , ( "F", False )
+        ]
 
 
 newFlowSdkVersion =
