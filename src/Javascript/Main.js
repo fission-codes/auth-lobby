@@ -26,8 +26,8 @@ wn.setup.debug({
 
 wn.setup.userMessages({
   versionMismatch: {
-    newer: async version => alert(`Your auth lobby is outdated. It might be cached. Try reloading the page until this message disappears. If this doesn't help, please contact support@fission.codes. (Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
-    older: async version => alert(`Your filesystem is outdated. Please upgrade your filesystem by using a miration app or click on "remove this device" and create a new account. (Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
+    newer: async version => alert(`Your auth lobby is outdated. It might be cached. Try reloading the page until this message disappears.\n\nIf this doesn't help, please contact support@fission.codes.\n\n(Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
+    older: async version => alert(`Your filesystem is outdated.\n\nPlease upgrade your filesystem by running a miration (https://guide.fission.codes/accounts/account-signup/account-migration) or click on "remove this device" and create a new account.\n\n(Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
   }
 })
 
