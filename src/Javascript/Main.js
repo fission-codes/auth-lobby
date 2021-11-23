@@ -27,7 +27,7 @@ wn.setup.debug({
 wn.setup.userMessages({
   versionMismatch: {
     newer: async version => alert(`Your auth lobby is outdated. It might be cached. Try reloading the page until this message disappears. If this doesn't help, please contact support@fission.codes. (Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
-    older: async version => alert(`Your filesystem is outdated. Please upgrade your filesystem by using a miration app ot go to https://auth.fission.codes/reset/ and createe a new account. (Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
+    older: async version => alert(`Your filesystem is outdated. Please upgrade your filesystem by using a miration app or click on "remove this device" and create a new account. (Filesystem version: ${version}. Webnative version: ${wn.VERSION})`),
   }
 })
 
@@ -187,14 +187,23 @@ async function leave() {
     const dataRoot = username && await wn.dataRoot.lookup(username)
 
     if (dataRoot) {
-      const permissions = ROOT_ACCESS
-      const fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
-      const publicDid = await wn.did.exchange()
-      const path = wn.path.directory(wn.path.Branch.Public, ".well-known", "exchange", publicDid)
+      // We want users to still be able to remove their account data, even if
+      // they can't remove their exchange DID, even though that's unfortunate.
+      // This is esp. important when the filesystem version doesn't match and
+      // the user just wants to create/log in a new account on the same device.
+      try {
+        await wn.checkFileSystemVersion(dataRoot)
+        const permissions = ROOT_ACCESS
+        const fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
+        const publicDid = await wn.did.exchange()
+        const path = wn.path.directory(wn.path.Branch.Public, ".well-known", "exchange", publicDid)
 
-      if (await fs.exists(path)) {
-        await fs.rm(path)
-        await updateDataRoot(fs)
+        if (await fs.exists(path)) {
+          await fs.rm(path)
+          await updateDataRoot(fs)
+        }
+      } catch (e) {
+        console.error(`Error while trying to remove DID form public/.well-known/exchange/`, e)
       }
     }
 
@@ -391,6 +400,7 @@ async function linkApp({
   })
 
   if (dataRoot) {
+    await wn.checkFileSystemVersion(dataRoot)
     await wn.lobby.storeFileSystemRootKey(await myReadKey())
     fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
   } else {

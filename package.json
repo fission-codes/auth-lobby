@@ -7,7 +7,7 @@
     "ipfs-message-port-server": "0.10.2-rc.2",
     "localforage": "^1.9.0",
     "multiformats": "^9.4.8",
-    "webnative": "0.30.0-alpha5"
+    "webnative": "0.30.0-alpha6"
   },
   "devDependencies": {
     "elm-tailwind-css": "^1.1.1",
