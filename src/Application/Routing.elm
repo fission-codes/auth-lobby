@@ -78,7 +78,7 @@ route =
         [ map
             (\sharedBy shareId ->
                 AcceptShare
-                    { progress = Share.Accept.Progress.Loading
+                    { progress = Share.Accept.Progress.Preparing
                     , shareId = shareId
                     , sharedBy = sharedBy
                     }

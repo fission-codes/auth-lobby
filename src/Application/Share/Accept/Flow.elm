@@ -17,7 +17,7 @@ accept : Manager
 accept model =
     case model.page of
         Page.AcceptShare context ->
-            ( model
+            ( { model | page = Page.AcceptShare { context | progress = Accepting } }
             , Ports.acceptShare { sharedBy = context.sharedBy }
             )
 

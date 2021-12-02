@@ -41,14 +41,17 @@ accept context model =
                         ]
 
                 --
-                Loading ->
+                Preparing ->
                     loading "Loading your filesystem"
+
+                Loading ->
+                    loading "Loading the shared data"
 
                 Loaded list ->
                     acceptForm context list
 
                 Accepting ->
-                    loading "Processing"
+                    loading "Copying links to shared data"
 
                 Publishing ->
                     loading "Updating data root"
