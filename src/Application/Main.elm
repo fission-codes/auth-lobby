@@ -21,7 +21,8 @@ import Radix exposing (Model, Msg(..))
 import RemoteData exposing (RemoteData(..))
 import Return exposing (return)
 import Routing
-import Theme.Defaults
+import Share.Accept.Flow
+import Share.State as Share
 import Theme.Url
 import Url exposing (Url)
 import Url.Parser as Url
@@ -118,37 +119,52 @@ init flags url navKey =
                 _ ->
                     Cmd.none
             )
+        |> -- If accepting share, initiate that flow.
+           (\( model, cmd ) ->
+                case ( model.page, flags.usedUsername ) of
+                    ( Page.AcceptShare { shareId, sharedBy }, Just _ ) ->
+                        Return.command
+                            (Ports.loadShare { shareId = shareId, senderUsername = sharedBy })
+                            ( model, cmd )
+
+                    _ ->
+                        ( model, cmd )
+           )
 
 
 determineInitialPage : Flags -> Url -> External.Context.ParsedContext -> Page
 determineInitialPage flags url externalContext =
-    if Maybe.isJust flags.usedUsername then
-        Page.SuggestAuthorisation
+    case ( Routing.fromUrl url, flags.usedUsername ) of
+        ( Just page, Just _ ) ->
+            page
 
-    else
-        case RemoteData.map .newUser externalContext of
-            Success (Just True) ->
-                Page.CreateAccount Account.Creation.Context.default
+        ( _, Just _ ) ->
+            Page.SuggestAuthorisation
 
-            Success (Just False) ->
-                Page.LinkAccount Account.Linking.Context.default
+        _ ->
+            case RemoteData.map .newUser externalContext of
+                Success (Just True) ->
+                    Page.CreateAccount Account.Creation.Context.default
 
-            _ ->
-                let
-                    context =
-                        Account.Linking.Context.default
+                Success (Just False) ->
+                    Page.LinkAccount Account.Linking.Context.default
 
-                    maybeUsername =
-                        url
-                            |> Url.parse (Url.query Account.Linking.Url.screenParamsParser)
-                            |> Maybe.join
-                in
-                case maybeUsername of
-                    Just username ->
-                        Page.LinkAccount { context | username = username }
+                _ ->
+                    let
+                        context =
+                            Account.Linking.Context.default
 
-                    Nothing ->
-                        Page.Choose
+                        maybeUsername =
+                            url
+                                |> Url.parse (Url.query Account.Linking.Url.screenParamsParser)
+                                |> Maybe.join
+                    in
+                    case maybeUsername of
+                        Just username ->
+                            Page.LinkAccount { context | username = username }
+
+                        Nothing ->
+                            Page.Choose
 
 
 
@@ -255,6 +271,21 @@ update msg =
             Routing.urlRequested a
 
         -----------------------------------------
+        -- Sharing
+        -----------------------------------------
+        AcceptShare ->
+            Share.accept
+
+        GotAcceptShareError a ->
+            Share.gotAcceptShareError a
+
+        GotAcceptShareProgress a ->
+            Share.gotAcceptShareProgress a
+
+        ListSharedItems a ->
+            Share.listSharedItems a
+
+        -----------------------------------------
         -- 🧿 Other things
         -----------------------------------------
         CopyToClipboard a ->
@@ -295,6 +326,13 @@ subscriptions _ =
         -----------------------------------------
         , Ports.gotInvalidRootDid (\_ -> GotInvalidRootDid)
         , Ports.gotChannelMessage GotChannelMessage
+
+        -----------------------------------------
+        -- Sharing
+        -----------------------------------------
+        , Ports.gotAcceptShareError GotAcceptShareError
+        , Ports.gotAcceptShareProgress GotAcceptShareProgress
+        , Ports.listSharedItems ListSharedItems
         ]
 
 
@@ -312,6 +350,9 @@ view model =
 title : Model -> String
 title model =
     case model.page of
+        Page.AcceptShare { sharedBy } ->
+            "Accept share from " ++ sharedBy
+
         Page.Choose ->
             "Fission"
 

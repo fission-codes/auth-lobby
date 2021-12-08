@@ -186,7 +186,7 @@ main_elm := src_dir + "/Application/Main.elm"
 
 @elm:
 	echo "🌳  Compiling Elm"
-	elm make {{main_elm}} --output={{dist_elm}}
+	elm make {{main_elm}} --output={{dist_elm}} --debug
 
 
 @production-elm:

@@ -19,7 +19,7 @@ import External.Context as External
 import Flow exposing (Flow)
 import Http
 import Json.Decode as Json
-import Page exposing (Page)
+import Page exposing (Page(..))
 import RemoteData exposing (RemoteData)
 import Theme exposing (Theme)
 import Time
@@ -69,6 +69,11 @@ type Msg
     | GotLinkAppParams Suggest.Params
     | GotLinkAppProgress ProgressUpdate
       -----------------------------------------
+      -- Channel
+      -----------------------------------------
+    | GotInvalidRootDid
+    | GotChannelMessage Json.Value
+      -----------------------------------------
       -- Create
       -----------------------------------------
     | CheckIfUsernameIsAvailable
@@ -99,10 +104,12 @@ type Msg
     | UrlChanged Url
     | UrlRequested Browser.UrlRequest
       -----------------------------------------
-      -- Channel
+      -- Sharing
       -----------------------------------------
-    | GotInvalidRootDid
-    | GotChannelMessage Json.Value
+    | AcceptShare
+    | GotAcceptShareError String
+    | GotAcceptShareProgress String
+    | ListSharedItems Json.Value
       -----------------------------------------
       -- 🧿 Other things
       -----------------------------------------
