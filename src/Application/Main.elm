@@ -121,8 +121,8 @@ init flags url navKey =
             )
         |> -- If accepting share, initiate that flow.
            (\( model, cmd ) ->
-                case model.page of
-                    Page.AcceptShare { shareId, sharedBy } ->
+                case ( model.page, flags.usedUsername ) of
+                    ( Page.AcceptShare { shareId, sharedBy }, Just _ ) ->
                         Return.command
                             (Ports.loadShare { shareId = shareId, senderUsername = sharedBy })
                             ( model, cmd )
@@ -135,7 +135,7 @@ init flags url navKey =
 determineInitialPage : Flags -> Url -> External.Context.ParsedContext -> Page
 determineInitialPage flags url externalContext =
     case ( Routing.fromUrl url, flags.usedUsername ) of
-        ( Just page, _ ) ->
+        ( Just page, Just _ ) ->
             page
 
         ( _, Just _ ) ->
