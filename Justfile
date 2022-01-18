@@ -92,8 +92,8 @@ insert-variables:
 	mkdir -p web_modules
 	cp -RT node_modules/webnative/dist/ web_modules/webnative/
 
-	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js
-	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.59.1/index.min.js
+	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js
+	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.61.0/index.min.js
 
 
 @js:
