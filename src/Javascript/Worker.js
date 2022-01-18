@@ -14,6 +14,12 @@ import { Server, IPFSService } from "ipfs-message-port-server"
 self.apiEndpoint = API_ENDPOINT
 
 
+// Global state
+let peers = Promise.resolve([])
+const latestPeerTimeoutIds = {}
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+
+
 /** 🎛️ Connection interval knobs
  *
  * KEEP_ALIVE_INTERVAL: Interval to keep the connection alive when online
@@ -34,6 +40,10 @@ const KEEP_TRYING_INTERVAL =
   5 * 60 * 1000 // 5 minutes
 
 
+
+/** 🎛️ IPFS Options
+ */
+
 const OPTIONS = {
   config: {
     Addresses: {
@@ -51,13 +61,11 @@ const OPTIONS = {
     config: {
       peerDiscovery: { autoDial: false }
     }
+  },
+  init: {
+    algorithm: isSafari ? "RSA" : undefined
   }
 }
-
-let peers = Promise.resolve(
-  []
-)
-let latestPeerTimeoutIds = {}
 
 
 importScripts("web_modules/ipfs.min.js")
@@ -281,7 +289,7 @@ function report(peer, status) {
 
 
 async function monitorPeers() {
-  monitoringPeers = true 
+  monitoringPeers = true
   console.log("📡 Monitoring IPFS peers")
 }
 
