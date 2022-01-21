@@ -4,7 +4,7 @@ dependencies:
   ipfs-message-port-server: 0.10.5
   localforage: 1.9.0
   multiformats: 9.4.8
-  webnative: 0.30.0-alpha12
+  webnative: 0.30.0-alpha14
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
   esbuild: 0.12.29
@@ -1004,13 +1004,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-tAag0jEcjwH+P2quUfipd7liWCNX2F8NvYjQp2wtInsZxnMlypdw0FtAOLxtvvkO+GSRRbmNi8m/5y42PQJYCQ==
-  /@ipld/dag-cbor/6.0.15:
+  /@ipld/dag-cbor/7.0.0:
     dependencies:
-      cborg: 1.5.4
+      cborg: 1.6.1
       multiformats: 9.5.4
     dev: false
     resolution:
-      integrity: sha512-Vm3VTSTwlmGV92a3C5aeY+r2A18zbH2amehNhsX8PBa3muXICaWrN8Uri85A5hLH7D7ElhE8PdjxD6kNqUmTZA==
+      integrity: sha512-us/dagGvfQ+acO8uyAfozUQ21xxvI6ZrCWwfbOuk+o+cSpCIKY30lUYRuN3kzWLvTJHvbuCVPVEH38ynM1ZBgw==
   /@ipld/dag-pb/2.1.15:
     dependencies:
       multiformats: 9.5.4
@@ -1705,11 +1705,11 @@ packages:
     dev: true
     resolution:
       integrity: sha512-vcX4U8lwVXPdqzPWi6cAJ3FnQaqXbBqy/GZseKNQzRj37J7qZdGcBtxq/QLFNLLlfsoXLUdHw8Iwenri86Tagw==
-  /cborg/1.5.4:
+  /cborg/1.6.1:
     dev: false
     hasBin: true
     resolution:
-      integrity: sha512-vEvwpEjwXCqc75eMA/+5cWAkAYzDgzdHTLGrZNsIIjFEbenOhVnGNpvr/nYkwQUOx4350nsMkS0QbcpozfWHuA==
+      integrity: sha512-dOGlTG610S6t3j7EYFxPBH7KiF1OlSAdWtMI4Iv1dabcId/L/nUvkfOEPge+vDp9YoPerEMiDoy5+Vm2oEqmQw==
   /chalk/2.4.2:
     dependencies:
       ansi-styles: 3.2.1
@@ -6465,10 +6465,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
-  /tweetnacl/0.14.5:
+  /tweetnacl/1.0.3:
     dev: false
     resolution:
-      integrity: sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=
+      integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
   /type-check/0.3.2:
     dependencies:
       prelude-ls: 1.1.2
@@ -6745,12 +6745,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative/0.30.0-alpha12:
+  /webnative/0.30.0-alpha14:
     dependencies:
-      '@ipld/dag-cbor': 6.0.15
+      '@ipld/dag-cbor': 7.0.0
       '@ipld/dag-pb': 2.1.15
-      cborg: 1.5.4
-      cids: 1.1.9
       fission-bloom-filters: 1.7.1
       ipfs-message-port-client: 0.10.3
       ipfs-message-port-protocol: 0.10.5
@@ -6760,13 +6758,13 @@ packages:
       multiformats: 9.5.4
       one-webcrypto: 1.0.3
       throttle-debounce: 3.0.1
-      tweetnacl: 0.14.5
-      uint8arrays: 2.1.10
+      tweetnacl: 1.0.3
+      uint8arrays: 3.0.0
     dev: false
     engines:
       node: '>=15'
     resolution:
-      integrity: sha512-toSFIz7fX72XWa8QVQmrR3zQ6PNVER2RHhZni6koTQbp70Q+Y4Wapn3zdEhop7/mhWcfQ9xrQMiaTYV1wyAHQg==
+      integrity: sha512-iLpOWiJYdVP+TK1K4I6Leb9AQ4GvsDKwD5B/D7CRreWahq+uPIDRUSkV+BJc2FECzpsiKh+JPWuHj6pHBXxx8g==
   /whatwg-fetch/3.6.2:
     dev: true
     resolution:
@@ -7162,6 +7160,6 @@ specifiers:
   quicktype: 'https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz'
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.30.0-alpha12
+  webnative: 0.30.0-alpha14
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
