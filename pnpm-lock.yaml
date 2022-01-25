@@ -4,7 +4,7 @@ dependencies:
   ipfs-message-port-server: 0.10.5
   localforage: 1.9.0
   multiformats: 9.4.8
-  webnative: 0.30.0-alpha14
+  webnative: 0.30.0-alpha15
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
   esbuild: 0.12.29
@@ -6745,7 +6745,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
-  /webnative/0.30.0-alpha14:
+  /webnative/0.30.0-alpha15:
     dependencies:
       '@ipld/dag-cbor': 7.0.0
       '@ipld/dag-pb': 2.1.15
@@ -6764,7 +6764,7 @@ packages:
     engines:
       node: '>=15'
     resolution:
-      integrity: sha512-iLpOWiJYdVP+TK1K4I6Leb9AQ4GvsDKwD5B/D7CRreWahq+uPIDRUSkV+BJc2FECzpsiKh+JPWuHj6pHBXxx8g==
+      integrity: sha512-JgTHB7fWsTBVUy5oiUh1CN0akjp39km5GMu93MGyIHM0xaJmU9giomz8uZbeHWFC2+0JB44k2dzU5uDwsDFKeA==
   /whatwg-fetch/3.6.2:
     dev: true
     resolution:
@@ -7160,6 +7160,6 @@ specifiers:
   quicktype: 'https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz'
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.30.0-alpha14
+  webnative: 0.30.0-alpha15
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
