@@ -9,9 +9,11 @@
     "webnative": "0.33.0-alpha-8"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.8",
     "elm-tailwind-css": "^1.1.1",
     "esbuild": "^0.12.26",
     "mustache": "^4.0.1",
+    "postcss": "^8.4.16",
     "postcss-import": "^12.0.1",
     "quicktype": "https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz",
     "tailwindcss": "^2.0.3",
