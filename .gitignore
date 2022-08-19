@@ -6,6 +6,7 @@
 /src/Library/Tailwind.elm
 /web_modules
 
+.direnv
 fission.yaml
 
 # Created by https://www.toptal.com/developers/gitignore/api/yarn,node,elm
