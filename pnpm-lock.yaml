@@ -12,7 +12,7 @@ specifiers:
   quicktype: https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.33.0-alpha-6
+  webnative: 0.33.0-alpha-7
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
 
@@ -21,7 +21,7 @@ dependencies:
   ipfs-message-port-protocol: 0.11.3
   ipfs-message-port-server: 0.11.3
   localforage: 1.9.0
-  webnative: 0.33.0-alpha-6
+  webnative: 0.33.0-alpha-7
 
 devDependencies:
   elm-tailwind-css: 1.1.1_tailwindcss@2.0.3
@@ -6958,8 +6958,8 @@ packages:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: true
 
-  /webnative/0.33.0-alpha-6:
-    resolution: {integrity: sha512-w6+bjT3SYRW7aWnesULWLA9ozmCaF6NZMdbAWBfjKPHb484z8V15Z68Mz7IlHD9x6EpZKgw8R0q8iqP3RHUhlA==}
+  /webnative/0.33.0-alpha-7:
+    resolution: {integrity: sha512-NY1qLowh75Jn/VJeyj919V0UYTGSNVcbhY63nODbwk3cd79sZuX4GWjJzzGN1A2chZG4RdzsOXrJC2VUPEZyoA==}
     engines: {node: '>=15'}
     dependencies:
       '@ipld/dag-cbor': 7.0.2
