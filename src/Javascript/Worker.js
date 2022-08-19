@@ -5,6 +5,8 @@
 IPFS (Shared) Worker.
 Pretty much copied from an example on https://github.com/ipfs/js-ipfs
 
+NOTE: DEPRECATED! Just lives here for backwards compatibility.
+
 */
 
 import localforage from "localforage"

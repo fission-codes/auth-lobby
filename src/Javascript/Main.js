@@ -8,7 +8,6 @@
 const wn = webnative
 
 let app
-let ipfs
 
 
 // 🚀
@@ -42,7 +41,6 @@ wn.setup.userMessages({
     await localforage.clear()
   }
 
-  // bootIpfs().then(bootElm)
   bootElm()
 })()
 
@@ -85,52 +83,6 @@ function ports() {
   app.ports.publishOnChannel.subscribe(
     a => publishOnChannel(a).catch(console.error)
   )
-}
-
-
-// IPFS
-// ----
-
-async function bootIpfs() {
-  ipfs = await Ipfs.create({
-    config: {
-      Bootstrap: [
-        RELAY
-      ],
-      Addresses: {
-        Swarm: [
-          SIGNALING_ADDR
-        ]
-      }
-    },
-    preload: {
-      enabled: false,
-      addresses: []
-    },
-    relay: {
-      enabled: true,
-      hop: {
-        enabled: true,
-        active: true
-      }
-    },
-    init: {
-      repo: "ipfs-1594230086172",
-      repoAutoMigrate: true
-    }
-  })
-
-  wn.ipfs.set(ipfs)
-
-  // ipfs.libp2p.connectionManager.on("peer:connect", (connection) => {
-  //   console.log("Connected to peer", connection.remotePeer._idB58String)
-  // })
-  //
-  // ipfs.libp2p.connectionManager.on("peer:disconnect", (connection) => {
-  //   console.log("Disconnected from peer", connection.remotePeer._idB58String)
-  // })
-
-  window.i = ipfs
 }
 
 
