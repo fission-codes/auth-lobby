@@ -95,20 +95,6 @@ So for example:
 
 
 
-## Shared IPFS Worker
-
-An IPFS worker is built along side this auth lobby.  
-You can use it as follows:
-
-```js
-import IpfsMessagePortClient from "ipfs-message-port-client"
-
-const worker = new SharedWorker("http://auth.fission.codes/worker.min.js", { type: "module" })
-const ipfs = IpfsMessagePortClient.from(worker.port)
-```
-
-
-
 ## Development
 
 This project uses Nix to manage the project's environment. If you'd like to build this project without Nix, check out the dependencies in the `shell.nix` file (most are available through Homebrew as well).

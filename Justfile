@@ -16,7 +16,7 @@ workbox_config := "workbox.config.cjs"
 # -----
 
 @default: dev-build
-	just dev-server & just watch
+	just dev-server # & just watch
 
 
 # ---
@@ -45,7 +45,7 @@ workbox_config := "workbox.config.cjs"
 @dev-server:
 	echo "🤵  Putting up a server for ya"
 	echo "http://localhost:8001"
-	devd --quiet build --port=8001 --all
+	simple-http-server --port 8001 --try-file build/index.html --cors --index --nocache --silent -- build
 
 
 @download-web-module filename url:
@@ -66,7 +66,7 @@ workbox_config := "workbox.config.cjs"
 
 @images:
 	echo "🌄  Copying images"
-	pnpx copy-fission-images {{dist_dir}}/images/
+	npx copy-fission-images {{dist_dir}}/images/
 	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
@@ -90,7 +90,7 @@ insert-variables:
 	pnpm install
 	rm -rf web_modules
 	mkdir -p web_modules
-	cp -RT node_modules/webnative/dist/ web_modules/webnative/
+	cp -rf node_modules/webnative/dist/ web_modules/webnative/
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js
 	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.62.3/index.min.js
@@ -138,7 +138,7 @@ insert-variables:
 	cp -RT {{src_dir}}/Static/Manifests/ {{dist_dir}}/
 	cp -RT {{src_dir}}/Static/Themes/ {{dist_dir}}/themes/
 
-	pnpx copy-fission-fonts {{dist_dir}}/fonts/ --woff2
+	npx copy-fission-fonts {{dist_dir}}/fonts/ --woff2
 
 
 @translate-schemas:
@@ -157,7 +157,7 @@ main_css := src_dir + "/Css/Main.css"
 
 @css-large:
 	echo "⚙️  Compiling CSS"
-	pnpx etc {{main_css}} \
+	npx etc {{main_css}} \
 		--config tailwind.config.js \
 		--elm-path src/Library/Tailwind.elm \
 		--output {{dist_css}} \
@@ -167,7 +167,7 @@ main_css := src_dir + "/Css/Main.css"
 
 @css-small:
 	echo "⚙️  Compiling Minified CSS"
-	NODE_ENV=production pnpx etc {{main_css}} \
+	NODE_ENV=production npx etc {{main_css}} \
 		--config tailwind.config.js \
 		--output {{dist_css}} \
 		--purge-content={{dist_elm}} \
@@ -200,12 +200,12 @@ main_elm := src_dir + "/Application/Main.elm"
 
 @service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=development pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
+	NODE_ENV=development npx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 @production-service-worker:
 	echo "⚙️  Generating service worker"
-	NODE_ENV=production pnpx workbox generateSW {{dist_dir}}/{{workbox_config}}
+	NODE_ENV=production npx workbox generateSW {{dist_dir}}/{{workbox_config}}
 
 
 
