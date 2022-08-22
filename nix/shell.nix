@@ -9,6 +9,7 @@
       curl
       jq
       just
+      rsync
       simple-http-server
       # watchexec
     ];

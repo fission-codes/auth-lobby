@@ -67,7 +67,7 @@ workbox_config := "workbox.config.cjs"
 @images:
 	echo "🌄  Copying images"
 	npx copy-fission-images {{dist_dir}}/images/
-	cp -RT {{src_dir}}/Static/Images/ {{dist_dir}}/images/
+	rsync -r {{src_dir}}/Static/Images/ {{dist_dir}}/images/
 
 
 insert-variables:
@@ -90,7 +90,7 @@ insert-variables:
 	pnpm install
 	rm -rf web_modules
 	mkdir -p web_modules
-	cp -rf node_modules/webnative/dist/ web_modules/webnative/
+	rsync -r node_modules/webnative/dist/ web_modules/webnative/
 
 	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js
 	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.62.3/index.min.js
@@ -99,7 +99,7 @@ insert-variables:
 @js:
 	echo "📄  Copying JS files"
 	rm -rf {{dist_dir}}/web_modules
-	cp -rf web_modules {{dist_dir}}/web_modules
+	rsync -r web_modules/ {{dist_dir}}/web_modules/
 	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
 	{{node_bin}}/esbuild \
 		--bundle \
@@ -134,9 +134,9 @@ insert-variables:
 
 @static:
 	echo "⛰  Copying some more static files"
-	cp -RT {{src_dir}}/Static/Favicons/ {{dist_dir}}/
-	cp -RT {{src_dir}}/Static/Manifests/ {{dist_dir}}/
-	cp -RT {{src_dir}}/Static/Themes/ {{dist_dir}}/themes/
+	rsync -r {{src_dir}}/Static/Favicons/ {{dist_dir}}/
+	rsync -r {{src_dir}}/Static/Manifests/ {{dist_dir}}/
+	rsync -r {{src_dir}}/Static/Themes/ {{dist_dir}}/themes/
 
 	npx copy-fission-fonts {{dist_dir}}/fonts/ --woff2
 
