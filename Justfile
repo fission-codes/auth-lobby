@@ -16,7 +16,7 @@ workbox_config := "workbox.config.cjs"
 # -----
 
 @default: dev-build
-	just dev-server & just watch
+	just dev-server # & just watch
 
 
 # ---
@@ -113,7 +113,7 @@ insert-variables:
 	{{node_bin}}/terser-dir \
 		{{dist_dir}} \
 		--each --extension .js \
-		--pattern "**/*.js, !**/*.min.js" \
+		--pattern "*.js, !**/*.min.js" \
 		--pseparator ", " \
 		--output {{dist_dir}} \
 		-- --compress --mangle
