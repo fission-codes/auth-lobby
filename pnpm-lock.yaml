@@ -14,7 +14,7 @@ specifiers:
   quicktype: https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: 0.33.0-alpha-8
+  webnative: 0.34.0-alpha-4
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
 
@@ -23,7 +23,7 @@ dependencies:
   ipfs-message-port-protocol: 0.11.3
   ipfs-message-port-server: 0.11.3
   localforage: 1.9.0
-  webnative: 0.33.0-alpha-8
+  webnative: 0.34.0-alpha-4
 
 devDependencies:
   autoprefixer: 10.4.8_postcss@8.4.16
@@ -1077,7 +1077,7 @@ packages:
   /@ipld/dag-pb/2.1.17:
     resolution: {integrity: sha512-AmzOdmdv5hT8iGsrbpzm5R0Fvk7DEbtwcglG2gJLvW9q3zwb+E681hY4EwEELypM1Rfnp/JDA9dGqYcpEi/iAg==}
     dependencies:
-      multiformats: 9.5.4
+      multiformats: 9.7.1
     dev: false
 
   /@libp2p/interface-connection/3.0.1:
@@ -4248,10 +4248,6 @@ packages:
   /lines-and-columns/1.1.6:
     resolution: {integrity: sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=}
 
-  /load-script/2.0.0:
-    resolution: {integrity: sha512-km6cyoPW4rM22JMGb+SHUKPMZVDpUaMpMAKrv8UHWllIxc/qjgMGHD91nY+5hM+/NFs310OZ2pqQeJKs7HqWPA==}
-    dev: false
-
   /localforage/1.10.0:
     resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
     dependencies:
@@ -6997,8 +6993,8 @@ packages:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: true
 
-  /webnative/0.33.0-alpha-8:
-    resolution: {integrity: sha512-nCN9b2XOZ/MUGgtxuTSB0m3/MlsmUuH9qbaWWxjoHiRwUftthzdtwp7+s+Gsc1OcrpcohYxbbqE8FGTrcngKtg==}
+  /webnative/0.34.0-alpha-4:
+    resolution: {integrity: sha512-VwsA9qXT8168Kv7E+3OTJo7ZNkyzyVdH2i0TzTRaraoQ3Fi2dWmd24avi6ZfbknZ91tR80R6mBA/7XI+s0CfbQ==}
     engines: {node: '>=15'}
     dependencies:
       '@ipld/dag-cbor': 7.0.2
@@ -7016,13 +7012,13 @@ packages:
       ipfs-unixfs: 6.0.9
       ipld-dag-pb: 0.22.3
       keystore-idb: 0.15.5
-      load-script: 2.0.0
       localforage: 1.10.0
       multiformats: 9.7.1
       one-webcrypto: 1.0.3
       throttle-debounce: 3.0.1
       tweetnacl: 1.0.3
       uint8arrays: 3.1.0
+      wnfs: 0.1.7-alpha5
     transitivePeerDependencies:
       - node-fetch
       - supports-color
@@ -7065,6 +7061,10 @@ packages:
     dependencies:
       string-width: 4.2.0
     dev: true
+
+  /wnfs/0.1.7-alpha5:
+    resolution: {integrity: sha512-wJ0SX06y/ogu1VU52Y2OvFpIR6bTgNso60w45aa3uWE5Mxf5wWnkjNgxT0VTGc9yX6ehBCUTZurKl6Mmx6BIHQ==}
+    dev: false
 
   /word-wrap/1.2.3:
     resolution: {integrity: sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==}
