@@ -14,7 +14,7 @@ specifiers:
   quicktype: https://ipfs.runfission.com/ipfs/bafybeiet7p4wkt2fmdeyx4n7la5t5jry77yb2xmoxvuuagtsvg4hrdr5hm/p/quicktype-elm.tar.gz
   tailwindcss: ^2.0.3
   terser-dir: ^1.0.7
-  webnative: ^0.34.0
+  webnative: ^0.34.1
   workbox-cli: ^6.1.2
   workbox-strategies: ^6.1.2
 
@@ -23,7 +23,7 @@ dependencies:
   ipfs-message-port-protocol: 0.11.3
   ipfs-message-port-server: 0.11.3
   localforage: 1.9.0
-  webnative: 0.34.0
+  webnative: 0.34.1
 
 devDependencies:
   autoprefixer: 10.4.8_postcss@8.4.16
@@ -4659,10 +4659,6 @@ packages:
       varint: 6.0.0
     dev: false
 
-  /multiformats/9.5.4:
-    resolution: {integrity: sha512-MFT8e8BOLX7OZKfSBGm13FwYvJVI6MEcZ7hujUCpyJwvYyrC1anul50A0Ee74GdeJ77aYTO6YU1vO+oF8NqSIw==}
-    dev: false
-
   /multiformats/9.7.1:
     resolution: {integrity: sha512-TaVmGEBt0fhxiNJMGphBfB+oGvUxFs8KgGvgl8d3C+GWtrFcvXdJ2196eg+dYhmSFClmgFfSfJEklo+SZzdNuw==}
     dev: false
@@ -6797,7 +6793,7 @@ packages:
   /uint8arrays/3.0.0:
     resolution: {integrity: sha512-HRCx0q6O9Bfbp+HHSfQQKD7wU70+lydKVt4EghkdOvlK/NlrF90z+eXV34mUd48rNvVJXwkrMSPpCATkct8fJA==}
     dependencies:
-      multiformats: 9.5.4
+      multiformats: 9.7.1
     dev: false
 
   /uint8arrays/3.1.0:
@@ -6993,8 +6989,8 @@ packages:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: true
 
-  /webnative/0.34.0:
-    resolution: {integrity: sha512-BS5pgHx9+sIzZ3NYA9Q76QQOctHFuyZ9p/LC4U4+gWTjycj0efWl0Z2jlsaUyGfqBkFLReyDeTb3ldHkD2PgbA==}
+  /webnative/0.34.1:
+    resolution: {integrity: sha512-FCY00dBUUHWEdabkLV3INTxnkNVlRQfmiNfe4M+Pg85rppLTHP0WU/MAbPHan5NMdH2j09KPeFmxLD2qbqszHQ==}
     engines: {node: '>=15'}
     dependencies:
       '@ipld/dag-cbor': 7.0.2
