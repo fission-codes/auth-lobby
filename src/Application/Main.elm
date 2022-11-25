@@ -229,11 +229,14 @@ update msg =
         -----------------------------------------
         -- Linking
         -----------------------------------------
+        CancelLink ->
+            Linking.cancelLinkAccount
+
         ConfirmProducerPin ->
             Linking.confirmProducerPin
 
         GotLinkAccountCancellation ->
-            Linking.cancelLinkAccount
+            Linking.linkAccountCancelled
 
         GotLinkAccountPin a ->
             Linking.gotAccountPin a

@@ -143,10 +143,11 @@ async function createAccountConsumer(username: string) {
   })
 
   consumer.on("link", async ({ approved, username }) => {
-    console.log(approved, username)
     if (approved) {
       app.ports.gotLinkAccountSuccess.send({ username })
       program.session = await program.auth.session()
+    } else {
+      app.ports.gotLinkAccountCancellation.send(null)
     }
   })
 }
@@ -163,15 +164,13 @@ async function createAccountProducer() {
       app.ports.confirmLinkAccountPin.unsubscribe()
     })
 
-    // TODO:
-    // app.ports.rejectLinkAccountPin.subscribe(() => {
-    //   challenge.rejectPin()
-    //   app.ports.rejectLinkAccountPin.unsubscribe()
-    // })
+    app.ports.rejectLinkAccountPin.subscribe(() => {
+      challenge.rejectPin()
+      app.ports.rejectLinkAccountPin.unsubscribe()
+    })
   })
 
   producer.on("link", ({ approved }) => {
-    console.log(approved)
     if (approved) app.ports.gotLinkAccountSuccess.send({ username: program.session?.username })
   })
 

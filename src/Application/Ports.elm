@@ -68,6 +68,9 @@ port linkedDevice :
     -> Cmd msg
 
 
+port rejectLinkAccountPin : () -> Cmd msg
+
+
 
 -- 📣  ▒▒  SHARING
 

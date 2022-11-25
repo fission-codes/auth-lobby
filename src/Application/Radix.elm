@@ -85,6 +85,7 @@ type Msg
       -----------------------------------------
       -- Linking
       -----------------------------------------
+    | CancelLink
     | ConfirmProducerPin
     | GotLinkAccountCancellation
     | GotLinkAccountPin (List Int)

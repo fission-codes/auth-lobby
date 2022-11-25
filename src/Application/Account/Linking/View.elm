@@ -130,9 +130,10 @@ exchangeView fallbackView context model =
 
                     --
                     , S.button
-                        [ -- E.onClick (CancelLink { onBothSides = True })
-                          --
-                          T.bg_base_400
+                        [ E.onClick CancelLink
+
+                        --
+                        , T.bg_base_400
                         , T.flex
                         , T.items_center
                         , T.ml_3

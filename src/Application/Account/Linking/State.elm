@@ -24,7 +24,9 @@ accountLinked { username } model =
 
 cancelLinkAccount : Manager
 cancelLinkAccount model =
-    Return.singleton { model | page = Page.SuggestAuthorisation }
+    return
+        { model | page = Page.SuggestAuthorisation }
+        (Ports.rejectLinkAccountPin ())
 
 
 confirmProducerPin : Manager
@@ -86,6 +88,11 @@ linkAccount context model =
             return
                 { model | page = Page.LinkAccount newContext }
                 (Ports.createAccountConsumer username)
+
+
+linkAccountCancelled : Manager
+linkAccountCancelled model =
+    Return.singleton { model | page = Page.LinkAccount Account.Linking.Context.default }
 
 
 waitForRequests : Manager
