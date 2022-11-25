@@ -1,6 +1,6 @@
 module Account.Linking.Context exposing (..)
 
-import Account.Linking.Exchange exposing (Exchange)
+import Account.Linking.Progress exposing (..)
 
 
 
@@ -8,8 +8,8 @@ import Account.Linking.Exchange exposing (Exchange)
 
 
 type alias Context =
-    { exchange : Maybe Exchange
-    , note : Maybe String
+    { note : Maybe String
+    , progress : Maybe Progress
     , username : String
     , waitingForDevices : Bool
     }
@@ -21,8 +21,18 @@ type alias Context =
 
 default : Context
 default =
-    { exchange = Nothing
-    , note = Nothing
+    { note = Nothing
+    , progress = Nothing
     , username = ""
     , waitingForDevices = False
     }
+
+
+initConsumerLink : Context
+initConsumerLink =
+    { default | progress = Just (Consumer WaitingOnProducer) }
+
+
+initProducerLink : Context
+initProducerLink =
+    { default | progress = Just (Producer WaitingOnConsumer) }

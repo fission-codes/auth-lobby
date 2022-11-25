@@ -6,6 +6,7 @@
 /src/Library/Tailwind.elm
 /web_modules
 
+.DS_Store
 .direnv
 fission.yaml
 

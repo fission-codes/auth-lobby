@@ -8,7 +8,6 @@ import Account.Linking.Url
 import Authorisation.State as Authorisation
 import Browser
 import Browser.Navigation as Nav
-import Channel.State as Channel
 import Debouncer.Messages as Debouncer
 import Debouncing
 import External.Context
@@ -195,15 +194,6 @@ update msg =
             Authorisation.gotLinkAppProgress a
 
         -----------------------------------------
-        -- Channel
-        -----------------------------------------
-        GotInvalidRootDid ->
-            Channel.gotInvalidRootDid
-
-        GotChannelMessage a ->
-            Channel.gotMessage a
-
-        -----------------------------------------
         -- Create
         -----------------------------------------
         CheckIfUsernameIsAvailable ->
@@ -239,23 +229,23 @@ update msg =
         -----------------------------------------
         -- Linking
         -----------------------------------------
-        CancelLink a ->
-            Linking.cancel a
+        ConfirmProducerPin ->
+            Linking.confirmProducerPin
 
-        GotLinked a ->
-            Linking.gotLinked a
+        GotLinkAccountCancellation ->
+            Linking.cancelLinkAccount
+
+        GotLinkAccountPin a ->
+            Linking.gotAccountPin a
+
+        GotLinkAccountSuccess a ->
+            Linking.accountLinked a
 
         GotLinkUsernameInput a ->
             Linking.gotUsernameInput a
 
-        GotLinkExchangeError a ->
-            Linking.gotExchangeError a
-
         LinkAccount a ->
             Linking.linkAccount a
-
-        SendLinkingUcan a ->
-            Linking.sendUcan a
 
         -----------------------------------------
         -- Routing
@@ -310,21 +300,15 @@ update msg =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ Ports.cancelLink CancelLink
-        , Ports.gotCreateAccountFailure GotCreateAccountFailure
+        [ Ports.gotCreateAccountFailure GotCreateAccountFailure
         , Ports.gotCreateAccountSuccess (\_ -> GotCreateAccountSuccess)
-        , Ports.gotLinked GotLinked
+        , Ports.gotLinkAccountCancellation (\_ -> GotLinkAccountCancellation)
+        , Ports.gotLinkAccountPin GotLinkAccountPin
+        , Ports.gotLinkAccountSuccess GotLinkAccountSuccess
         , Ports.gotLinkAppError GotLinkAppError
         , Ports.gotLinkAppParams GotLinkAppParams
         , Ports.gotLinkAppProgress GotLinkAppProgress
-        , Ports.gotLinkExchangeError GotLinkExchangeError
         , Ports.gotUsernameAvailability GotUsernameAvailability
-
-        -----------------------------------------
-        -- Channel
-        -----------------------------------------
-        , Ports.gotInvalidRootDid (\_ -> GotInvalidRootDid)
-        , Ports.gotChannelMessage GotChannelMessage
 
         -----------------------------------------
         -- Sharing
@@ -353,7 +337,7 @@ title model =
             "Accept share from " ++ sharedBy
 
         Page.Choose ->
-            "Fission"
+            "Lobby"
 
         Page.CreateAccount _ ->
             "Create account"
@@ -362,12 +346,12 @@ title model =
             "Sign in"
 
         Page.Note _ ->
-            "Fission"
+            "Lobby"
 
         Page.SuggestAuthorisation ->
             case model.externalContext of
                 NotAsked ->
-                    "Fission"
+                    "Lobby"
 
                 _ ->
                     "Authorise"
@@ -388,7 +372,7 @@ titleSuffix model =
                     ""
 
                 _ ->
-                    " - Fission"
+                    " - Lobby"
 
         _ ->
-            " - Fission"
+            " - Lobby"

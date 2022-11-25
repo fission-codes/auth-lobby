@@ -9,7 +9,6 @@ A root or point of origin.
 
 import Account.Creation.Context as Creation
 import Account.Linking.Context as Linking
-import Account.Linking.Exchange as Linking
 import Authorisation.Suggest.Params as Suggest
 import Authorisation.Suggest.Progress exposing (ProgressUpdate, TimedProgress)
 import Browser
@@ -69,11 +68,6 @@ type Msg
     | GotLinkAppParams Suggest.Params
     | GotLinkAppProgress ProgressUpdate
       -----------------------------------------
-      -- Channel
-      -----------------------------------------
-    | GotInvalidRootDid
-    | GotChannelMessage Json.Value
-      -----------------------------------------
       -- Create
       -----------------------------------------
     | CheckIfUsernameIsAvailable
@@ -91,12 +85,12 @@ type Msg
       -----------------------------------------
       -- Linking
       -----------------------------------------
-    | CancelLink { onBothSides : Bool }
-    | GotLinked { username : String }
-    | GotLinkExchangeError String
+    | ConfirmProducerPin
+    | GotLinkAccountCancellation
+    | GotLinkAccountPin (List Int)
+    | GotLinkAccountSuccess { username : String }
     | GotLinkUsernameInput String
     | LinkAccount Linking.Context
-    | SendLinkingUcan Linking.Exchange
       -----------------------------------------
       -- Routing
       -----------------------------------------

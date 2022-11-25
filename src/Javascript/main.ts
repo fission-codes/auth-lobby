@@ -41,6 +41,9 @@ const app = globalThis.Elm.Main.init({
 app.ports.checkIfUsernameIsAvailable.subscribe(checkIfUsernameIsAvailable)
 app.ports.copyToClipboard.subscribe(copyToClipboard)
 app.ports.createAccount.subscribe(createAccount)
+app.ports.createAccountConsumer.subscribe(createAccountConsumer)
+app.ports.createAccountProducer.subscribe(createAccountProducer)
+app.ports.destroyAccountProducer.subscribe(destroyAccountProducer)
 app.ports.leave.subscribe(leave)
 app.ports.linkApp.subscribe(linkApp)
 
@@ -112,27 +115,7 @@ async function createAccount(args) {
 
   if (success) {
     program.session = await program.auth.session()
-
-    if (!navigator.storage || !navigator.storage.persist) {
-      app.ports.gotCreateAccountSuccess.send(
-        null
-      )
-    } else if (await navigator.storage.persist()) {
-      app.ports.gotCreateAccountSuccess.send(
-        null
-      )
-    } else {
-      // Ideally we should do:
-      // app.ports.gotCreateAccountFailure.send(
-      //   "I need permission from you to store data in your browser."
-      // )
-      //
-      // But currently there's a bug in incognito Chromium
-      // where `navigator.storage.persist()` doesn't show the popup.
-      app.ports.gotCreateAccountSuccess.send(
-        null
-      )
-    }
+    app.ports.gotCreateAccountSuccess.send(null)
 
   } else {
     app.ports.gotCreateAccountFailure.send(
@@ -143,10 +126,62 @@ async function createAccount(args) {
 }
 
 
-// LINK
-// ----
+// LINKING
+// -------
 
 const SESSION_PATH = Webnative.path.file("public", "Apps", "Fission", "Lobby", "Session")
+
+
+let accountProducer: Webnative.AccountLinkingProducer | null = null
+
+
+async function createAccountConsumer(username: string) {
+  const consumer = await program.auth.accountConsumer(username)
+
+  consumer.on("challenge", ({ pin }) => {
+    app.ports.gotLinkAccountPin.send(pin)
+  })
+
+  consumer.on("link", async ({ approved, username }) => {
+    console.log(approved, username)
+    if (approved) {
+      app.ports.gotLinkAccountSuccess.send({ username })
+      program.session = await program.auth.session()
+    }
+  })
+}
+
+
+async function createAccountProducer() {
+  if (!program.session) throw new Error("Cannot create an account producer, no user session found.")
+  const producer = await program.auth.accountProducer(program.session.username)
+
+  producer.on("challenge", challenge => {
+    app.ports.gotLinkAccountPin.send(challenge.pin)
+    app.ports.confirmLinkAccountPin.subscribe(() => {
+      challenge.confirmPin()
+      app.ports.confirmLinkAccountPin.unsubscribe()
+    })
+
+    // TODO:
+    // app.ports.rejectLinkAccountPin.subscribe(() => {
+    //   challenge.rejectPin()
+    //   app.ports.rejectLinkAccountPin.unsubscribe()
+    // })
+  })
+
+  producer.on("link", ({ approved }) => {
+    console.log(approved)
+    if (approved) app.ports.gotLinkAccountSuccess.send({ username: program.session?.username })
+  })
+
+  accountProducer = producer
+}
+
+
+async function destroyAccountProducer() {
+  accountProducer?.cancel()
+}
 
 
 async function linkApp({
@@ -367,32 +402,6 @@ async function linkApp({
   // Send everything back to Elm
   app.ports.gotLinkAppParams.send({ cid: cid?.toString(), readKey: null, ucan: null })
 }
-
-
-/**
- * You got linked 🎢
- */
-// TODO: Should be handled by webnative
-//
-// async function linkedDevice({ readKey, ucan, username }) {
-//   if (!navigator.storage || !navigator.storage.persist) {
-//     app.ports.gotLinked.send({ username })
-//   } else if (await navigator.storage.persist()) {
-//     app.ports.gotLinked.send({ username })
-//   } else {
-//     // Ideally we should do:
-//     // alert("I need permission to store data on this browser. Refresh the page to try again.")
-//     // return
-//     //
-//     // But currently there's a bug in incognito Chromium
-//     // where `navigator.storage.persist()` doesn't show the popup.
-//     app.ports.gotLinked.send({ username })
-//   }
-
-//   await localforage.setItem("readKey", readKey)
-//   await localforage.setItem("ucan", ucan)
-//   await localforage.setItem("usedUsername", username)
-// }
 
 
 

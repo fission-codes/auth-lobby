@@ -2,10 +2,10 @@ module Account.Linking.View exposing (..)
 
 import Account.Creation.Context
 import Account.Linking.Context exposing (..)
-import Account.Linking.Exchange exposing (Exchange, Side(..), Step(..))
+import Account.Linking.Progress exposing (..)
 import Account.Linking.QRCode
 import Branding
-import Common exposing (ifThenElse)
+import Common
 import FeatherIcons
 import Html exposing (Html)
 import Html.Attributes as A
@@ -50,22 +50,8 @@ view context model =
                 ]
 
           else
-            errorOrExchange (form context) context.exchange model
+            exchangeView (form context) context model
         ]
-
-
-errorOrExchange : Html Msg -> Maybe Exchange -> Model -> Html Msg
-errorOrExchange fallbackView maybeExchange model =
-    case Maybe.andThen .error maybeExchange of
-        Just err ->
-            S.warning
-                [ Html.em [] [ Html.text "Got an error during the exchange:" ]
-                , Html.br [] []
-                , Html.text err
-                ]
-
-        Nothing ->
-            exchangeView fallbackView maybeExchange model
 
 
 qrOrUrlView : Url -> Html Msg
@@ -95,25 +81,26 @@ qrOrUrlView url =
 -- EXCHANGE
 
 
-exchangeView : Html Msg -> Maybe Exchange -> Model -> Html Msg
-exchangeView fallbackView maybeExchange model =
-    case Maybe.map (\e -> Tuple.pair e.side e) maybeExchange of
-        Just ( Inquirer (Delegation pin), exchange ) ->
+exchangeView : Html Msg -> Context -> Model -> Html Msg
+exchangeView fallbackView context model =
+    -- TODO:
+    --     Just ( Authoriser (Delegation []), exchange ) ->
+    --         S.messageBlock
+    --             [ T.italic ]
+    --             [ Html.text "Waiting to hear from your other device."
+    --             , Html.br [] []
+    --             , Html.text "If you have this page open on more than two devices, close this one."
+    --             ]
+    --
+    case context.progress of
+        Just (Consumer (ConsumerPin pin)) ->
             S.messageBlock
                 [ T.italic ]
                 [ Html.text "Do these numbers match the ones shown on your other device?"
                 , numberDisplay pin
                 ]
 
-        Just ( Authoriser (Delegation []), exchange ) ->
-            S.messageBlock
-                [ T.italic ]
-                [ Html.text "Waiting to hear from your other device."
-                , Html.br [] []
-                , Html.text "If you have this page open on more than two devices, close this one."
-                ]
-
-        Just ( Authoriser (Delegation pin), exchange ) ->
+        Just (Producer (ProducerPin pin)) ->
             S.messageBlock
                 []
                 [ Html.span
@@ -130,7 +117,7 @@ exchangeView fallbackView maybeExchange model =
                     , T.mt_10
                     ]
                     [ S.button
-                        [ E.onClick (SendLinkingUcan exchange)
+                        [ E.onClick ConfirmProducerPin
 
                         --
                         , T.bg_purple
@@ -143,10 +130,9 @@ exchangeView fallbackView maybeExchange model =
 
                     --
                     , S.button
-                        [ E.onClick (CancelLink { onBothSides = True })
-
-                        --
-                        , T.bg_base_400
+                        [ -- E.onClick (CancelLink { onBothSides = True })
+                          --
+                          T.bg_base_400
                         , T.flex
                         , T.items_center
                         , T.ml_3
@@ -161,7 +147,7 @@ exchangeView fallbackView maybeExchange model =
                     ]
                 ]
 
-        Just ( _, _ ) ->
+        Just _ ->
             S.messageBlock
                 [ T.italic ]
                 [ Html.text "Negotiating with your other device."

@@ -18,6 +18,10 @@ export const CONFIG: Configuration = {
   namespace: `lobby-${globalThis.DATA_ROOT_DOMAIN}`,
   debug: true,
 
+  fileSystem: {
+    loadImmediately: false,
+  },
+
   userMessages: {
     versionMismatch: {
       newer: async version => alert(`Your auth lobby is outdated. It might be cached. Try reloading the page until this message disappears.\n\nIf this doesn't help, please contact support@fission.codes.\n\n(Filesystem version: ${version}. Webnative version: ${Webnative.VERSION})`),
