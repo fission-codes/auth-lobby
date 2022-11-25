@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
 
   <meta charset="utf-8">
@@ -23,20 +24,14 @@
   <script>
     self.API_ENDPOINT = "{{{API_ENDPOINT}}}"
     self.DATA_ROOT_DOMAIN = "{{{DATA_ROOT_DOMAIN}}}"
-
-    self.RELAY = "{{{RELAY}}}"
-    self.SIGNALING_ADDR = "{{{SIGNALING_ADDR}}}"
-
     self.VERSION = "UNIX_TIMESTAMP"
   </script>
 
-  <!-- <script defer src="web_modules/ipfs.min.js"></script> -->
-  <script defer src="web_modules/localforage.min.js"></script>
-  <script defer src="web_modules/webnative/index.umd.min.js"></script>
   <script defer src="elm.js"></script>
-  <script defer src="index.js"></script>
+  <script defer src="index.min.js" type="module"></script>
 
 </head>
+
 <body>
 
 
@@ -50,4 +45,5 @@
   </script>
 
 </body>
+
 </html>

@@ -1,9 +1,5 @@
 {
   "API_ENDPOINT": "https://runfission.net",
   "DATA_ROOT_DOMAIN": "fissionuser.net",
-
-  "RELAY": "/dns4/node.fission.systems/tcp/4003/wss/p2p/QmVLEz2SxoNiFnuyLpbXsH6SvjPTrHNMU88vCQZyhgBzgw",
-  "SIGNALING_ADDR": "/dns4/webrtc.runfission.com/tcp/443/wss/p2p-webrtc-star/",
-
   "IPFS_WORKER_V1": "https://ipfs.runfission.net/ipfs/bafybeiecza5pwo2z5upmben75t7u6hpghpsiurzysp2wyegybxsvg5b4mi"
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
 
   <meta charset="utf-8">
@@ -17,10 +18,12 @@
   <link rel="stylesheet" href="../stylesheet.css" />
 
 </head>
+
 <body>
 
   <div class="flex flex-col font-body items-center justify-center h-screen p-4">
-    <button class="border-2 border-base-300 dark:border-base-600 cursor-pointer inline-flex p-3 rounded" onclick="clearData()">
+    <button class="border-2 border-base-300 dark:border-base-600 cursor-pointer inline-flex p-3 rounded"
+      onclick="clearData()">
       <span class="mr-2 pt-px">🧹</span>
       <span class="pt-px">Clear lobby Fission data</span>
     </button>
@@ -33,12 +36,12 @@
   <script src="../web_modules/webnative/index.umd.min.js"></script>
   <script>
     async function clearData(event) {
-      await webnative.keystore.clear()
-      await localforage.clear()
+      // TODO:
+      // Destroy session
 
       const button = document.body.querySelector("button")
       button.className = "cursor-default inline-flex p-3 text-green"
-      button.querySelectorAll("span")[1].innerHTML = "Cleared all traces"
+      button.querySelectorAll("span")[ 1 ].innerHTML = "Cleared all traces"
       button.blur()
 
       await renderDid()
@@ -53,4 +56,5 @@
   </script>
 
 </body>
+
 </html>
