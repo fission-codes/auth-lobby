@@ -83,15 +83,6 @@ qrOrUrlView url =
 
 exchangeView : Html Msg -> Context -> Model -> Html Msg
 exchangeView fallbackView context model =
-    -- TODO:
-    --     Just ( Authoriser (Delegation []), exchange ) ->
-    --         S.messageBlock
-    --             [ T.italic ]
-    --             [ Html.text "Waiting to hear from your other device."
-    --             , Html.br [] []
-    --             , Html.text "If you have this page open on more than two devices, close this one."
-    --             ]
-    --
     case context.progress of
         Just (Consumer (ConsumerPin pin)) ->
             S.messageBlock

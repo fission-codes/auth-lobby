@@ -115,6 +115,13 @@ async function createAccount(args) {
 
   if (success) {
     program.session = await program.auth.session()
+
+    // Ensure existence of read key by loading the file system
+    if (program.session) {
+      program.session.fs = program.session.fs || await program.loadRootFileSystem(program.session.username)
+    }
+
+    // 🚀
     app.ports.gotCreateAccountSuccess.send(null)
 
   } else {
