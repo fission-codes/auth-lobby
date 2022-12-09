@@ -1,29 +1,40 @@
-let sharing = {}
+import * as Webnative from "webnative"
+import { Links } from "webnative/fs/types"
+import { Link, SoftLink, UnixTree } from "webnative/fs/types"
+import { isSoftLink } from "webnative/fs/types/check"
 
 
-async function loadShare({ shareId, senderUsername }) {
-  const permissions = ROOT_PERMISSIONS
+let sharing: {
+  fs: Webnative.FileSystem | null,
+  share: UnixTree | null
+} = {
+  fs: null,
+  share: null
+}
 
-  // Load filesystem
-  const username = await localforage.getItem("usedUsername")
-  const dataRoot = await wn.dataRoot.lookup(username)
 
-  if (dataRoot) {
-    sharing.fs = await wn.fs.fromCID(dataRoot, { localOnly: true, permissions })
-  } else {
-    sharing.fs = await freshFileSystem({ permissions })
-  }
+export async function loadShare(program: Webnative.Program, app, { shareId, senderUsername }) {
+  const username = await program.auth.session().then(s => s?.username)
+  if (!username) throw new Error("Not authenticated")
+
+  sharing.fs = await program.loadFileSystem(username)
 
   // Load share
   app.ports.gotAcceptShareProgress.send("Loading")
   sharing.share = await sharing.fs.loadShare({ shareId, sharedBy: senderUsername })
 
   // List shared items
-  const sharedLinks = Object.values(await sharing.share.ls([]))
+  const sharedLinks: SoftLink[] = softLinksOnly(
+    await sharing.share.ls([])
+  )
+
   const sharedItems = await Promise.all(sharedLinks.map(async item => {
-    const resolvedItem = await sharing.fs.resolveSymlink(item)
+    const resolvedItem = await sharing.fs?.resolveSymlink(item)
+
     return {
       name: item.name,
+
+      // @ts-ignore
       isFile: resolvedItem.header.metadata.isFile
     }
   }))
@@ -34,48 +45,66 @@ async function loadShare({ shareId, senderUsername }) {
 }
 
 
-async function acceptShare({ sharedBy }) {
+export async function acceptShare(program: Webnative.Program, app, { sharedBy }) {
   const fs = sharing.fs
   const share = sharing.share
 
-  if (!share) return
+  if (!share || !fs) {
+    console.error("No share or file system loaded.")
+    return
+  }
+
+  const softLinks = softLinksOnly(await share.ls([]))
 
   // Accept
   await fs.add(
-    wn.path.directory(wn.path.Branch.Private, "Shared with me", sharedBy),
-    await share.ls([])
+    Webnative.path.directory(Webnative.path.Branch.Private, "Shared with me", sharedBy),
+    softLinks
   )
 
   // Publish
   app.ports.gotAcceptShareProgress.send("Publishing")
 
-  const issuer = await wn.did.write()
-  const fsUcan = await wn.ucan.build({
+  const issuer = await Webnative.did.write(program.components.crypto)
+  const fsUcan = await Webnative.ucan.build({
+    dependencies: { crypto: program.components.crypto },
+
     potency: "APPEND",
     resource: "*",
-    proof: await localforage.getItem("ucan"),
+    proof: await program.components.storage
+      .getItem(program.components.storage.KEYS.ACCOUNT_UCAN)
+      .then(a => typeof a === "string" ? Webnative.ucan.decode(a) : undefined),
 
     audience: issuer,
     issuer
   })
 
   const rootCid = await fs.root.put()
-  const res = await wn.dataRoot.update(rootCid, wn.ucan.encode(fsUcan))
+  const res = await program.components.reference.dataRoot.update(rootCid, fsUcan)
 
-  if (!res.success) return reportShareError("Failed to update data root 😰")
+  if (!res.success) return reportShareError(app, "Failed to update data root 😰")
 
   // Fin
   app.ports.gotAcceptShareProgress.send("Published")
-  sharing = {}
+  sharing = { fs: null, share: null }
 }
 
 
-function catchShareErrors(fn) {
-  return (...args) => fn.apply(null, args).catch(reportShareError)
+
+// 🛠
+
+
+export function softLinksOnly(links: Links): SoftLink[] {
+  return Object
+    .values(links)
+    .reduce((acc: SoftLink[], link: Link) => {
+      if (isSoftLink(link)) return [ ...acc, link ]
+      return acc
+    }, [])
 }
 
 
-function reportShareError(err) {
+export function reportShareError(app, err) {
   app.ports.gotAcceptShareError.send(err.message || err)
   throw err
 }

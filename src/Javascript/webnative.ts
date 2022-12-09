@@ -1,6 +1,6 @@
-import * as FissionAuthWithWnfs from "webnative/components/auth/implementation/fission-wnfs.js"
-import * as FissionReference from "webnative/components/reference/implementation/fission-base.js"
-import * as IpfsDefaultPkg from "webnative/components/depot/implementation/ipfs-default-pkg.js"
+import * as FissionAuthWithWnfs from "webnative/components/auth/implementation/fission-wnfs"
+import * as FissionReference from "webnative/components/reference/implementation/fission-base"
+import * as IpfsDefaultPkg from "webnative/components/depot/implementation/ipfs-default-pkg"
 
 import * as FileSystem from "webnative/fs/types"
 import * as Webnative from "webnative"
@@ -8,7 +8,7 @@ import * as Webnative from "webnative"
 import { Configuration, namespace } from "webnative"
 import { DataComponents } from "webnative/components/manners/implementation"
 import { Endpoints } from "webnative/common/fission"
-import { addSampleData, addPublicExchangeKey, hasPublicExchangeKey } from "webnative/fs/data.js"
+import { addSampleData, addPublicExchangeKey, hasPublicExchangeKey } from "webnative/fs/data"
 
 
 // 🏔

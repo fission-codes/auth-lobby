@@ -7,14 +7,15 @@
 import * as Uint8Arrays from "uint8arrays"
 import * as Webnative from "webnative"
 
-import { CID } from "webnative/common/cid.js"
+import { CID } from "webnative/common/cid"
 import { Crypto } from "webnative"
-import { DistinctivePath } from "webnative/path/index.js"
+import { DistinctivePath } from "webnative/path/index"
+import PrivateFile from "webnative/fs/v1/PrivateFile"
 import localforage from "localforage"
 
 import * as WN from "./webnative.js"
 import { backwardsCompatibility } from "./misc.js"
-import PrivateFile from "webnative/fs/v1/PrivateFile.js"
+import { acceptShare, loadShare, reportShareError } from "./sharing.js"
 
 
 // 🚀
@@ -48,8 +49,8 @@ app.ports.leave.subscribe(leave)
 app.ports.linkApp.subscribe(linkApp)
 
 // Sharing
-// app.ports.acceptShare.subscribe(catchShareErrors(acceptShare))
-// app.ports.loadShare.subscribe(catchShareErrors(loadShare))
+app.ports.acceptShare.subscribe(catchShareErrors(a => acceptShare(program, app, a)))
+app.ports.loadShare.subscribe(catchShareErrors(a => loadShare(program, app, a)))
 
 
 
@@ -424,4 +425,9 @@ async function updateDataRoot(fs: Webnative.FileSystem): Promise<{ success: bool
   const fsUcan = await reference.repositories.ucans.lookupFilesystemUcan("*")
   if (!fsUcan) throw new Error("Couldn't find an appropriate UCAN")
   return reference.dataRoot.update(await fs.root.put(), fsUcan)
+}
+
+
+function catchShareErrors(fn) {
+  return (...args) => fn.apply(null, args).catch(err => reportShareError(app, err))
 }
