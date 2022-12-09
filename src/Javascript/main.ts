@@ -72,7 +72,7 @@ async function leave() {
       // This is esp. important when the filesystem version doesn't match and
       // the user just wants to create/log in a new account on the same device.
       try {
-        const fs = await program.loadRootFileSystem(username)
+        const fs = await program.loadFileSystem(username)
         const publicDid = await Webnative.did.exchange(crypto)
         const path = Webnative.path.directory(Webnative.path.Branch.Public, ".well-known", "exchange", publicDid)
 
@@ -118,7 +118,7 @@ async function createAccount(args) {
 
     // Ensure existence of read key by loading the file system
     if (program.session) {
-      program.session.fs = program.session.fs || await program.loadRootFileSystem(program.session.username)
+      program.session.fs = program.session.fs || await program.loadFileSystem(program.session.username)
     }
 
     // 🚀
@@ -285,7 +285,7 @@ async function linkApp({
     }
   })
 
-  const fs = await program.loadRootFileSystem(username)
+  const fs = await program.loadFileSystem(username)
 
   app.ports.gotLinkAppProgress.send({
     time: Date.now(),
@@ -334,7 +334,7 @@ async function linkApp({
       ...acc,
       [ adjustedPath ]: await fs.get(path).then(f => {
         return {
-          key: (f as PrivateFile).key,
+          key: Uint8Arrays.toString((f as PrivateFile).key, "base64pad"),
           bareNameFilter: (f as PrivateFile).header.bareNameFilter
         }
       })
@@ -368,7 +368,7 @@ async function linkApp({
   const classified = JSON.stringify({
     iv: Uint8Arrays.toString(iv, "base64pad"),
     secrets: Uint8Arrays.toString(encryptedSecrets, "base64pad"),
-    sessionKey: await crypto.rsa.encrypt(sessionKeyBuffer, publicKey)
+    sessionKey: Uint8Arrays.toString(await crypto.rsa.encrypt(sessionKeyBuffer, publicKey), "base64pad")
   })
 
   // Store classified data
@@ -406,7 +406,7 @@ async function linkApp({
   if (!res.success) return app.ports.gotLinkAppError.send("Failed to update data root 😰")
 
   // Send everything back to Elm
-  app.ports.gotLinkAppParams.send({ cid: cid?.toString(), readKey: null, ucan: null })
+  app.ports.gotLinkAppParams.send({ cid: cid?.toString() || null, readKey: null, ucan: null })
 }
 
 
