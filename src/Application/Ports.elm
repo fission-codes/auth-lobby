@@ -56,6 +56,7 @@ port linkApp :
     -- TODO: Remove backwards compatibility
     , sharedRepo : Bool
     , oldFlow : Bool
+    , utf16SessionKey : Bool
     }
     -> Cmd msg
 

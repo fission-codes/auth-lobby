@@ -202,7 +202,8 @@ async function linkApp({
   oldFlow,
   sharedRepo,
   keyInSessionStorage,
-  raw
+  raw,
+  utf16SessionKey
 }) {
   const audience = didWrite
   const issuer = await Webnative.did.write(crypto)
@@ -369,7 +370,12 @@ async function linkApp({
   const classified = JSON.stringify({
     iv: Uint8Arrays.toString(iv, "base64pad"),
     secrets: Uint8Arrays.toString(encryptedSecrets, "base64pad"),
-    sessionKey: Uint8Arrays.toString(await crypto.rsa.encrypt(sessionKeyBuffer, publicKey), "base64pad")
+    sessionKey: Uint8Arrays.toString(
+      utf16SessionKey
+        ? await legacyUtf16SessionKeyEncryption(sessionKeyBuffer, publicKey)
+        : await crypto.rsa.encrypt(sessionKeyBuffer, publicKey),
+      "base64pad"
+    )
   })
 
   // Store classified data
@@ -408,6 +414,24 @@ async function linkApp({
 
   // Send everything back to Elm
   app.ports.gotLinkAppParams.send({ cid: cid?.toString() || null, readKey: null, ucan: null })
+}
+
+
+async function legacyUtf16SessionKeyEncryption(sessionKeyBuffer: Uint8Array, publicKey: Uint8Array): Promise<Uint8Array> {
+  const base64 = btoa(
+    Array
+      .from(new Uint8Array(sessionKeyBuffer))
+      .map(c => String.fromCharCode(c))
+      .join("")
+  )
+
+  const view = new Uint16Array(base64.length)
+
+  for (let i = 0, strLen = base64.length; i < strLen; i++) {
+    view[ i ] = base64.charCodeAt(i)
+  }
+
+  return crypto.rsa.encrypt(new Uint8Array(view.buffer), publicKey)
 }
 
 
