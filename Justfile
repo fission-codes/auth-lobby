@@ -112,6 +112,12 @@ insert-variables:
 		--outfile={{dist_dir}}/worker.min.js \
 		{{src_dir}}/Javascript/worker.js
 
+	{{node_bin}}/esbuild \
+		--bundle \
+		--format=esm \
+		--outfile={{dist_dir}}/reset.min.js \
+		{{src_dir}}/Javascript/reset.ts
+
 
 @minify-js:
 	echo "⚙️  Minifying Javascript Files"

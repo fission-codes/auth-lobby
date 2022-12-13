@@ -324,6 +324,6 @@ needsLink context model =
                     ]
 
               else
-                Html.text "TODO"
+                Html.text ""
             ]
         ]

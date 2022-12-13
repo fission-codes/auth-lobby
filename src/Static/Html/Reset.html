@@ -32,26 +32,10 @@
   </div>
 
 
-  <script src="../web_modules/localforage.min.js"></script>
-  <script src="../web_modules/webnative/index.umd.min.js"></script>
-  <script>
-    async function clearData(event) {
-      // TODO:
-      // Destroy session
+  <script type="module">
+    import { clearData, renderDid } from "./reset.min.js"
 
-      const button = document.body.querySelector("button")
-      button.className = "cursor-default inline-flex p-3 text-green"
-      button.querySelectorAll("span")[ 1 ].innerHTML = "Cleared all traces"
-      button.blur()
-
-      await renderDid()
-    }
-
-    async function renderDid() {
-      const did = await webnative.did.ucan()
-      document.querySelector("#did").innerHTML = did
-    }
-
+    window.clearData = clearData
     renderDid()
   </script>
 
