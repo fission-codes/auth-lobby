@@ -112,6 +112,10 @@ allow currentTime model =
                 -- TODO: Remove backwards compatibility
                 , sharedRepo = context.sharedRepo
                 , oldFlow = context.oldFlow
+                , utf16SessionKey =
+                    context.sdkVersion
+                        |> Maybe.map (\v -> Semver.lessThan v (Semver.version 0 35 0 [] []))
+                        |> Maybe.withDefault False
                 }
             )
 

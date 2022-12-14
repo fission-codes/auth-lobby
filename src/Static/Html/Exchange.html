@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
   <meta charset="utf-8">
-  <title>Fission Lobby IPFS Worker</title>
+  <title>Fission Lobby Exchange</title>
 </head>
+
 <body>
 
   <script>
-      window.addEventListener("message", event => {
-        // make sure the message is meant for us
-        if (event.data && event.data.webnative == null) return
-        const secretsKey = event.data && event.data.didExchange ?
-          `encrypted-secrets-for-${event.data.didExchange}` :
-          "encrypted-secrets" // backwards compatibility
-        // Note: Answering the event.source means we basically
-        // answer _anyone_ asking us via an iframe.
-        // This is not an issue because the secrets are encrypted.
-        // We don't share anything besides things prefixed as "encrypted-secrets".
-        event.source.postMessage(sessionStorage.getItem(secretsKey), event.origin)
+    window.addEventListener("message", event => {
+      // make sure the message is meant for us
+      if (event.data && event.data.webnative == null) return
+      const secretsKey = event.data && event.data.didExchange ?
+        `encrypted-secrets-for-${event.data.didExchange}` :
+        "encrypted-secrets" // backwards compatibility
+      // Note: Answering the event.source means we basically
+      // answer _anyone_ asking us via an iframe.
+      // This is not an issue because the secrets are encrypted.
+      // We don't share anything besides things prefixed as "encrypted-secrets".
+      event.source.postMessage(sessionStorage.getItem(secretsKey), event.origin)
 
-        // we don't delete the secrets, as the authenticating app might get
-        // interrupted between fetching the secrets & storing them, and therefore
-        // might re-request them.
-      })
+      // we don't delete the secrets, as the authenticating app might get
+      // interrupted between fetching the secrets & storing them, and therefore
+      // might re-request them.
+    })
   </script>
 
   <!-- Service worker -->
@@ -35,4 +37,5 @@
   </script>
 
 </body>
+
 </html>

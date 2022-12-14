@@ -21,8 +21,8 @@ goToPage page model =
     [ case model.page of
         Page.LinkAccount _ ->
             -- When moving away from the link-account page,
-            -- make sure to close the secure channel.
-            Ports.closeChannel ()
+            -- make sure to destroy the account producer.
+            Ports.destroyAccountProducer ()
 
         _ ->
             Cmd.none

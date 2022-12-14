@@ -2,7 +2,6 @@ module Account.Creation.State exposing (..)
 
 import Account.Common.State as Common
 import Account.Creation.Context as Context exposing (Context)
-import Account.Linking.Exchange as LinkingExchange
 import Account.Linking.State as Linking
 import Browser.Navigation as Nav
 import Debouncing
@@ -146,7 +145,7 @@ skipLinkDuringSetup model =
                             Cmd.none
 
                         _ ->
-                            Ports.closeChannel ()
+                            Ports.destroyAccountProducer ()
                     )
 
         _ ->

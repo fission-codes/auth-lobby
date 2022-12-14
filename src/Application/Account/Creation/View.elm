@@ -324,9 +324,6 @@ needsLink context model =
                     ]
 
               else
-                -----------------------------------------
-                -- Linking
-                -----------------------------------------
-                Account.Linking.View.errorOrExchange Html.nothing context.exchange model
+                Html.text ""
             ]
         ]

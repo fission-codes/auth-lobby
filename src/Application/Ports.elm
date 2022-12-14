@@ -24,6 +24,22 @@ port focusOnForm : () -> Cmd msg
 port leave : () -> Cmd msg
 
 
+
+-- 📣  ▒▒  LINKING
+
+
+port confirmLinkAccountPin : () -> Cmd msg
+
+
+port createAccountConsumer : String -> Cmd msg
+
+
+port createAccountProducer : () -> Cmd msg
+
+
+port destroyAccountProducer : () -> Cmd msg
+
+
 port linkApp :
     { attenuation :
         List
@@ -40,6 +56,7 @@ port linkApp :
     -- TODO: Remove backwards compatibility
     , sharedRepo : Bool
     , oldFlow : Bool
+    , utf16SessionKey : Bool
     }
     -> Cmd msg
 
@@ -52,17 +69,7 @@ port linkedDevice :
     -> Cmd msg
 
 
-
--- 📣  ▒▒  CHANNEL
-
-
-port closeChannel : () -> Cmd msg
-
-
-port openChannel : Maybe String -> Cmd msg
-
-
-port publishOnChannel : ( Maybe String, Maybe String, Json.Value ) -> Cmd msg
+port rejectLinkAccountPin : () -> Cmd msg
 
 
 
@@ -79,16 +86,23 @@ port acceptShare : { sharedBy : String } -> Cmd msg
 -- 📰
 
 
-port cancelLink : ({ onBothSides : Bool } -> msg) -> Sub msg
-
-
 port gotCreateAccountFailure : (String -> msg) -> Sub msg
 
 
 port gotCreateAccountSuccess : (() -> msg) -> Sub msg
 
 
-port gotLinked : ({ username : String } -> msg) -> Sub msg
+
+-- 📰  ▒▒  LINKING
+
+
+port gotLinkAccountCancellation : (() -> msg) -> Sub msg
+
+
+port gotLinkAccountPin : (List Int -> msg) -> Sub msg
+
+
+port gotLinkAccountSuccess : ({ username : String } -> msg) -> Sub msg
 
 
 port gotLinkAppError : (String -> msg) -> Sub msg
@@ -100,20 +114,7 @@ port gotLinkAppParams : (Suggest.Params -> msg) -> Sub msg
 port gotLinkAppProgress : (ProgressUpdate -> msg) -> Sub msg
 
 
-port gotLinkExchangeError : (String -> msg) -> Sub msg
-
-
 port gotUsernameAvailability : ({ available : Bool, valid : Bool } -> msg) -> Sub msg
-
-
-
--- 📰  ▒▒  SECURE CHANNEL
-
-
-port gotInvalidRootDid : (() -> msg) -> Sub msg
-
-
-port gotChannelMessage : (Json.Value -> msg) -> Sub msg
 
 
 

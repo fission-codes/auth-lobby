@@ -18,7 +18,6 @@
       elmPackages.elm
       elmPackages.elm-format
       nodejs-18_x
-      nodePackages.pnpm
     ];
 
   };

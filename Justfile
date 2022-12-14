@@ -87,12 +87,11 @@ insert-variables:
 
 @install-deps:
 	echo "🦕  Downloading dependencies"
-	pnpm install
+	npm install
 	rm -rf web_modules
 	mkdir -p web_modules
 	rsync -r node_modules/webnative/dist/ web_modules/webnative/
 
-	just download-web-module localforage.min.js https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js
 	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.62.3/index.min.js
 
 
@@ -100,12 +99,24 @@ insert-variables:
 	echo "📄  Copying JS files"
 	rm -rf {{dist_dir}}/web_modules
 	rsync -r web_modules/ {{dist_dir}}/web_modules/
-	cp {{src_dir}}/Javascript/Main.js {{dist_dir}}/index.js
+
+	{{node_bin}}/esbuild \
+		--bundle \
+		--format=esm \
+		--outfile={{dist_dir}}/index.min.js \
+		{{src_dir}}/Javascript/main.ts
+
 	{{node_bin}}/esbuild \
 		--bundle \
 		--define:API_ENDPOINT="$(jq .API_ENDPOINT config/{{config}}.json)" \
 		--outfile={{dist_dir}}/worker.min.js \
-		{{src_dir}}/Javascript/Worker.js
+		{{src_dir}}/Javascript/worker.js
+
+	{{node_bin}}/esbuild \
+		--bundle \
+		--format=esm \
+		--outfile={{dist_dir}}/reset.min.js \
+		{{src_dir}}/Javascript/reset.ts
 
 
 @minify-js:
@@ -234,7 +245,7 @@ main_elm := src_dir + "/Application/Main.elm"
 
 
 @watch-js:
-	watchexec -p -w src -e js -- just js
+	watchexec -p -w src -e js,ts -- just js
 
 
 @watch-schemas:
