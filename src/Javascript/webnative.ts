@@ -66,10 +66,12 @@ export async function program(): Promise<Webnative.Program> {
         afterLoadNew: async (fs: FileSystem.API, _account: FileSystem.AssociatedIdentity, dataComponents: DataComponents) => {
           await addSampleData(fs)
           await addPublicExchangeKey(dataComponents.crypto, fs)
+          await fs.publish()
         },
         afterLoadExisting: async (fs: FileSystem.API, _account: FileSystem.AssociatedIdentity, dataComponents: DataComponents) => {
           if (await hasPublicExchangeKey(dataComponents.crypto, fs) === false) {
             await addPublicExchangeKey(dataComponents.crypto, fs)
+            await fs.publish()
           }
         }
       }
