@@ -44,10 +44,6 @@ workbox_config := "workbox.config.cjs"
 	simple-http-server --port 8001 --try-file build/index.html --cors --index --nocache --silent -- build
 
 
-@download-web-module filename url:
-	curl --silent --show-error --fail -o web_modules/{{filename}} {{url}}
-
-
 @html:
 	echo "📄  Copying static HTML files"
 	mkdir -p {{dist_dir}}/ipfs/
@@ -86,8 +82,6 @@ insert-variables:
 
 @js:
 	echo "📄  Copying JS files"
-	rm -rf {{dist_dir}}/web_modules
-	rsync -r web_modules/ {{dist_dir}}/web_modules/
 
 	{{node_bin}}/esbuild \
 		--bundle \
