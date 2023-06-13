@@ -1,11 +1,11 @@
-import * as Webnative from "webnative"
-import { Links } from "webnative/fs/types"
-import { Link, SoftLink, UnixTree } from "webnative/fs/types"
-import { isSoftLink } from "webnative/fs/types/check"
+import * as Odd from "@oddjs/odd"
+import { Links } from "@oddjs/odd/fs/types"
+import { Link, SoftLink, UnixTree } from "@oddjs/odd/fs/types"
+import { isSoftLink } from "@oddjs/odd/fs/types/check"
 
 
 let sharing: {
-  fs: Webnative.FileSystem | null,
+  fs: Odd.FileSystem | null,
   share: UnixTree | null
 } = {
   fs: null,
@@ -13,11 +13,11 @@ let sharing: {
 }
 
 
-export async function loadShare(program: Webnative.Program, app, { shareId, senderUsername }) {
+export async function loadShare(program: Odd.Program, app, { shareId, senderUsername }) {
   const username = await program.auth.session().then(s => s?.username)
   if (!username) throw new Error("Not authenticated")
 
-  sharing.fs = await program.loadFileSystem(username)
+  sharing.fs = await program.fileSystem.load(username)
 
   // Load share
   app.ports.gotAcceptShareProgress.send("Loading")
@@ -45,7 +45,7 @@ export async function loadShare(program: Webnative.Program, app, { shareId, send
 }
 
 
-export async function acceptShare(program: Webnative.Program, app, { sharedBy }) {
+export async function acceptShare(program: Odd.Program, app, { sharedBy }) {
   const fs = sharing.fs
   const share = sharing.share
 
@@ -57,23 +57,23 @@ export async function acceptShare(program: Webnative.Program, app, { sharedBy })
   const softLinks = softLinksOnly(await share.ls([]))
 
   // Accept
-  await fs.add(
-    Webnative.path.directory(Webnative.path.Branch.Private, "Shared with me", sharedBy),
+  await fs.write(
+    Odd.path.directory(Odd.path.RootBranch.Private, "Shared with me", sharedBy),
     softLinks
   )
 
   // Publish
   app.ports.gotAcceptShareProgress.send("Publishing")
 
-  const issuer = await Webnative.did.write(program.components.crypto)
-  const fsUcan = await Webnative.ucan.build({
+  const issuer = await Odd.did.write(program.components.crypto)
+  const fsUcan = await Odd.ucan.build({
     dependencies: { crypto: program.components.crypto },
 
     potency: "APPEND",
     resource: "*",
     proof: await program.components.storage
       .getItem(program.components.storage.KEYS.ACCOUNT_UCAN)
-      .then(a => typeof a === "string" ? Webnative.ucan.decode(a) : undefined),
+      .then(a => typeof a === "string" ? Odd.ucan.decode(a) : undefined),
 
     audience: issuer,
     issuer

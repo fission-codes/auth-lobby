@@ -1,14 +1,14 @@
 import localforage from "localforage"
-import { namespace } from "webnative"
+import { namespace } from "@oddjs/odd"
 
-import { CONFIG } from "./webnative.js"
+import { CONFIG } from "./odd.js"
 
 
 export async function backwardsCompatibility(): Promise<void> {
   const newDB = localforage.createInstance({ name: namespace(CONFIG) })
   if (await newDB.getItem("migrated") === "true") return
 
-  // Let webnative handle this properly
+  // Let odd.js handle this properly
   const usedUsername = await localforage.getItem("usedUsername")
   if (usedUsername) await localforage.setItem("webnative.auth_username", usedUsername)
 }

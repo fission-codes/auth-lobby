@@ -5,15 +5,15 @@
 */
 
 import * as Uint8Arrays from "uint8arrays"
-import * as Webnative from "webnative"
+import * as Odd from "@oddjs/odd"
 
-import { CID } from "webnative/common/cid"
-import { Crypto } from "webnative"
-import { DistinctivePath } from "webnative/path/index"
-import PrivateFile from "webnative/fs/v1/PrivateFile"
+import { CID } from "@oddjs/odd/common/cid"
+import { Crypto } from "@oddjs/odd"
+import { DistinctivePath, Partition, PartitionedNonEmpty, Segments } from "@oddjs/odd/path/index"
+import PrivateFile from "@oddjs/odd/fs/v1/PrivateFile"
 import localforage from "localforage"
 
-import * as WN from "./webnative.js"
+import * as WN from "./odd.js"
 import { backwardsCompatibility } from "./misc.js"
 import { acceptShare, loadShare, reportShareError } from "./sharing.js"
 
@@ -73,9 +73,9 @@ async function leave() {
       // This is esp. important when the filesystem version doesn't match and
       // the user just wants to create/log in a new account on the same device.
       try {
-        const fs = await program.loadFileSystem(username)
-        const publicDid = await Webnative.did.exchange(crypto)
-        const path = Webnative.path.directory(Webnative.path.Branch.Public, ".well-known", "exchange", publicDid)
+        const fs = await program.fileSystem.load(username)
+        const publicDid = await Odd.did.exchange(crypto)
+        const path = Odd.path.directory(Odd.path.RootBranch.Public, ".well-known", "exchange", publicDid)
 
         if (await fs.exists(path)) {
           await fs.rm(path)
@@ -119,7 +119,7 @@ async function createAccount(args) {
 
     // Ensure existence of read key by loading the file system
     if (program.session) {
-      program.session.fs = program.session.fs || await program.loadFileSystem(program.session.username)
+      program.session.fs = program.session.fs || await program.fileSystem.load(program.session.username)
     }
 
     // 🚀
@@ -137,10 +137,10 @@ async function createAccount(args) {
 // LINKING
 // -------
 
-const SESSION_PATH = Webnative.path.file("public", "Apps", "Fission", "Lobby", "Session")
+const SESSION_PATH = Odd.path.file("public", "Apps", "Fission", "Lobby", "Session")
 
 
-let accountProducer: Webnative.AccountLinkingProducer | null = null
+let accountProducer: Odd.AccountLinkingProducer | null = null
 
 
 async function createAccountConsumer(username: string) {
@@ -198,7 +198,7 @@ async function linkApp({
   attenuation,
   lifetimeInSeconds,
 
-  // Webnative version-specific feature flags
+  // Odd version-specific feature flags
   oldFlow,
   sharedRepo,
   keyInSessionStorage,
@@ -206,7 +206,7 @@ async function linkApp({
   utf16SessionKey
 }) {
   const audience = didWrite
-  const issuer = await Webnative.did.write(crypto)
+  const issuer = await Odd.did.write(crypto)
   const username = program.session?.username
   if (!username) throw new Error("No session was set")
 
@@ -226,7 +226,7 @@ async function linkApp({
     // @ts-ignore
     const { cap, ...resource } = { ...a }
 
-    const ucan = await Webnative.ucan.build({
+    const ucan = await Odd.ucan.build({
       dependencies: { crypto },
 
       potency: "APPEND",
@@ -238,11 +238,11 @@ async function linkApp({
       lifetimeInSeconds
     })
 
-    return Webnative.ucan.encode(ucan)
+    return Odd.ucan.encode(ucan)
   })
     .concat(
       parsedRaw.map(async a => {
-        const ucan = await Webnative.ucan.build({
+        const ucan = await Odd.ucan.build({
           dependencies: { crypto },
 
           potency: a.ptc,
@@ -253,7 +253,7 @@ async function linkApp({
           audience,
           issuer,
         })
-        return Webnative.ucan.encode(ucan)
+        return Odd.ucan.encode(ucan)
       })
     )
 
@@ -266,8 +266,8 @@ async function linkApp({
     progress: "Resolving"
   })
 
-  const publicPaths: DistinctivePath[] = []
-  const privatePaths: DistinctivePath[] = []
+  const publicPaths: DistinctivePath<PartitionedNonEmpty<Partition>>[] = []
+  const privatePaths: DistinctivePath<PartitionedNonEmpty<Partition>>[] = []
 
   att.forEach(a => {
     let posixPath = a.wnfs || a.floofs
@@ -278,16 +278,16 @@ async function linkApp({
       posixPath += "/"
     }
 
-    const path = Webnative.path.fromPosix(posixPath)
+    const path = Odd.path.fromPosix(posixPath) as DistinctivePath<PartitionedNonEmpty<Partition>>
 
-    if (Webnative.path.isBranch(Webnative.path.Branch.Public, path)) {
+    if (Odd.path.isOnRootBranch(Odd.path.RootBranch.Public, path)) {
       publicPaths.push(path)
-    } else if (Webnative.path.isBranch(Webnative.path.Branch.Private, path)) {
+    } else if (Odd.path.isOnRootBranch(Odd.path.RootBranch.Private, path)) {
       privatePaths.push(path)
     }
   })
 
-  const fs = await program.loadFileSystem(username)
+  const fs = await program.fileSystem.load(username)
 
   app.ports.gotLinkAppProgress.send({
     time: Date.now(),
@@ -311,7 +311,7 @@ async function linkApp({
     const pathExists = await fs.exists(path)
 
     if (!pathExists) {
-      if (Webnative.path.isDirectory(path)) {
+      if (Odd.path.isDirectory(path)) {
         await fs.mkdir(path)
       } else {
         await fs.write(path, new Uint8Array())
@@ -327,7 +327,7 @@ async function linkApp({
 
   let fsSecrets = await privatePaths.reduce(async (promise, path) => {
     const acc = await promise
-    const posixPath = Webnative.path.toPosix(path, { absolute: true })
+    const posixPath = Odd.path.toPosix(path, { absolute: true })
     const adjustedPath = canPermissionFiles
       ? posixPath
       : posixPath.replace(/\/$/, "")
@@ -365,7 +365,7 @@ async function linkApp({
     iv
   )
 
-  const { publicKey } = Webnative.did.didToPublicKey(crypto, didExchange)
+  const { publicKey } = Odd.did.didToPublicKey(crypto, didExchange)
 
   const classified = JSON.stringify({
     iv: Uint8Arrays.toString(iv, "base64pad"),
@@ -399,7 +399,7 @@ async function linkApp({
     await fs.write(SESSION_PATH, Uint8Arrays.fromString(classified, "utf8"))
 
     cid = await fs.root.prettyTree
-      .get(Webnative.path.unwrap(SESSION_PATH).slice(1))
+      .get(Odd.path.unwrap(SESSION_PATH).slice(1))
       .then(f => f ? f.put() : null)
   }
 
@@ -445,7 +445,7 @@ function copyToClipboard(text) {
 }
 
 
-async function updateDataRoot(fs: Webnative.FileSystem): Promise<{ success: boolean }> {
+async function updateDataRoot(fs: Odd.FileSystem): Promise<{ success: boolean }> {
   const fsUcan = await reference.repositories.ucans.lookupFilesystemUcan("*")
   if (!fsUcan) throw new Error("Couldn't find an appropriate UCAN")
   return reference.dataRoot.update(await fs.root.put(), fsUcan)

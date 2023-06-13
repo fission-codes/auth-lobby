@@ -11,9 +11,11 @@
   <script>
     window.addEventListener("message", event => {
       // make sure the message is meant for us
-      if (event.data && event.data.webnative == null) return
-      const secretsKey = event.data && event.data.didExchange ?
-        `encrypted-secrets-for-${event.data.didExchange}` :
+      const data = event.data?.odd || event.data?.webnative
+      if (!data) return
+
+      const secretsKey = data.didExchange ?
+        `encrypted-secrets-for-${data.didExchange}` :
         "encrypted-secrets" // backwards compatibility
       // Note: Answering the event.source means we basically
       // answer _anyone_ asking us via an iframe.

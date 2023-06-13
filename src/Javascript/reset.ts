@@ -1,4 +1,4 @@
-import * as WN from "./webnative.js"
+import * as WN from "./odd.js"
 import { backwardsCompatibility } from "./misc.js"
 
 

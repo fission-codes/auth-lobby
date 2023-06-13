@@ -88,9 +88,6 @@ insert-variables:
 @install-deps:
 	echo "🦕  Downloading dependencies"
 	npm install
-	rm -rf web_modules
-	mkdir -p web_modules
-	rsync -r node_modules/webnative/dist/ web_modules/webnative/
 
 	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.62.3/index.min.js
 

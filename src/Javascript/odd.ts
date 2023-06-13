@@ -1,14 +1,14 @@
-import * as FissionAuthWithWnfs from "webnative/components/auth/implementation/fission-wnfs"
-import * as FissionReference from "webnative/components/reference/implementation/fission-base"
-import * as IpfsDefaultPkg from "webnative/components/depot/implementation/ipfs-default-pkg"
+import * as FissionAuthWithWnfs from "@oddjs/odd/components/auth/implementation/fission-wnfs"
+import * as FissionReference from "@oddjs/odd/components/reference/implementation/fission-base"
+import * as IpfsDefaultPkg from "@oddjs/odd/components/depot/implementation/ipfs-default-pkg"
 
-import * as FileSystem from "webnative/fs/types"
-import * as Webnative from "webnative"
+import * as FileSystem from "@oddjs/odd/fs/types"
+import * as Webnative from "@oddjs/odd"
 
-import { Configuration, namespace } from "webnative"
-import { DataComponents } from "webnative/components/manners/implementation"
-import { Endpoints } from "webnative/common/fission"
-import { addSampleData, addPublicExchangeKey, hasPublicExchangeKey } from "webnative/fs/data"
+import { Configuration, namespace } from "@oddjs/odd"
+import { DataComponents } from "@oddjs/odd/components/manners/implementation"
+import { Endpoints } from "@oddjs/odd/common/fission"
+import { addSampleData, addPublicExchangeKey, hasPublicExchangeKey } from "@oddjs/odd/fs/data"
 
 
 // 🏔
