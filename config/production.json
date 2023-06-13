@@ -1,5 +1,4 @@
 {
   "API_ENDPOINT": "https://runfission.com",
-  "DATA_ROOT_DOMAIN": "fission.name",
-  "IPFS_WORKER_V1": "https://ipfs.runfission.com/ipfs/bafybeie2kcmehpw37roa2jy4dbckahmrrkkgzubcbztxowffx5xehr6stm"
+  "DATA_ROOT_DOMAIN": "fission.name"
 }

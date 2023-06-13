@@ -79,7 +79,7 @@ export async function program(): Promise<Webnative.Program> {
   }
 
   // Remaining
-  const capabilities = Webnative.defaultCapabilitiesComponent({ crypto, depot })
+  const capabilities = Webnative.defaultCapabilitiesComponent({ crypto })
   const reference = await FissionReference.implementation(ENDPOINTS, { crypto, manners, storage })
   const auth = FissionAuthWithWnfs.implementation(ENDPOINTS, { crypto, reference, storage })
 

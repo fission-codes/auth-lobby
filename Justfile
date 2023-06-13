@@ -28,10 +28,6 @@ workbox_config := "workbox.config.cjs"
 	rm {{dist_dir}}/index.html
 	mv {{dist_dir}}/index.applied.html {{dist_dir}}/index.html
 
-	{{node_bin}}/mustache config/{{config}}.json {{dist_dir}}/ipfs.html > {{dist_dir}}/ipfs.applied.html
-	rm {{dist_dir}}/ipfs.html
-	mv {{dist_dir}}/ipfs.applied.html {{dist_dir}}/ipfs.html
-
 
 @clean:
 	rm -rf {{dist_dir}}
@@ -58,8 +54,6 @@ workbox_config := "workbox.config.cjs"
 	mkdir -p {{dist_dir}}/reset/
 
 	cp {{src_dir}}/Static/Html/Main.html {{dist_dir}}/index.html
-	cp {{src_dir}}/Static/Html/Ipfs.html {{dist_dir}}/ipfs.html
-	cp {{src_dir}}/Static/Html/Ipfs/v2.html {{dist_dir}}/ipfs/v2.html
 	cp {{src_dir}}/Static/Html/Exchange.html {{dist_dir}}/exchange.html
 	cp {{src_dir}}/Static/Html/Reset.html {{dist_dir}}/reset/index.html
 
@@ -89,8 +83,6 @@ insert-variables:
 	echo "🦕  Downloading dependencies"
 	npm install
 
-	just download-web-module ipfs.min.js https://unpkg.com/ipfs@0.62.3/index.min.js
-
 
 @js:
 	echo "📄  Copying JS files"
@@ -102,12 +94,6 @@ insert-variables:
 		--format=esm \
 		--outfile={{dist_dir}}/index.min.js \
 		{{src_dir}}/Javascript/main.ts
-
-	{{node_bin}}/esbuild \
-		--bundle \
-		--define:API_ENDPOINT="$(jq .API_ENDPOINT config/{{config}}.json)" \
-		--outfile={{dist_dir}}/worker.min.js \
-		{{src_dir}}/Javascript/worker.js
 
 	{{node_bin}}/esbuild \
 		--bundle \
